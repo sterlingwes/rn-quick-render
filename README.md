@@ -63,12 +63,15 @@ The first run downloads ~300 MB of dependencies. Subsequent runs are offline.
 
 ```json
 {
-  "jvm_to_first_snapshot_ms": 0,
+  "jvm_to_first_snapshot_ms": 4125,
   "iterations": 5,
-  "per_snapshot_ms": { "min": 0, "median": 0, "p95": 0, "max": 0, "total": 0 },
-  "rss_kb": { "before": 0, "after": 0, "delta": 0 }
+  "per_snapshot_ms": { "min": 83, "median": 121, "p95": 158, "max": 346, "total": 795 },
+  "rss_kb": { "before": 350832, "after": 423564, "delta": 72732 }
 }
 ```
+
+(Numbers above are the first green CI run on `ubuntu-latest`, GitHub-hosted
+runner — 4 vCPU / 16 GB. See _Phase 0 results_ below for interpretation.)
 
 - `jvm_to_first_snapshot_ms` — wall-clock from JVM start to first completed
   `Paparazzi.snapshot()`. This is the "cold start" number for Phase 0 success
@@ -80,13 +83,32 @@ The first run downloads ~300 MB of dependencies. Subsequent runs are offline.
 
 On CI the JSON is uploaded as the `phase0-metrics` artifact.
 
+### Phase 0 results — exit criteria met
+
+Measured on GitHub-hosted `ubuntu-latest` runner (4 vCPU / 16 GB):
+
+| Metric | Value | Target / note |
+| --- | --- | --- |
+| JVM → first Paparazzi snapshot | **4.1 s** | One-time cold start per test-class JVM fork. |
+| Per-snapshot median | **121 ms** | Well under the `< 2 s per screen` Phase 5 goal. |
+| Per-snapshot p95 | **158 ms** | |
+| Per-snapshot max | **346 ms** | First warm iteration absorbs trailing JIT / class-load cost. |
+| 5 warm iterations total | **795 ms** | ~159 ms amortised. |
+| Paparazzi-induced RSS delta | **+71 MB** | Baseline JVM ~343 MB → ~414 MB after layoutlib boot. |
+
+Four probe PNGs (`TextView`, `LinearLayout`, `ConstraintLayout`, `ImageView`)
+land under `snapshots/src/test/snapshots/images/` and are uploaded as the
+`phase0-snapshots` CI artifact. The four snapshots are the Phase 0 exit
+criteria from the explore plan.
+
 ### Status — what ran where
 
 | Check | Where |
 | --- | --- |
 | Gradle 8.9 wrapper boots, parses `settings.gradle.kts` + module scripts | ✅ locally |
-| Plugin resolution (`com.android.library`, `app.cash.paparazzi`) | ⚠ blocked in the Claude Code sandbox — outbound requests to `dl.google.com` are denied with `x-deny-reason: host_not_allowed`. Runs on any host with standard Google Maven access (GitHub Actions `ubuntu-latest`, local dev boxes, most CI). |
-| Record four probe snapshots + perf harness | 🟡 pending — runs on first push to CI. See `.github/workflows/phase-0-snapshot.yml`. |
+| Plugin resolution (`com.android.library`, `app.cash.paparazzi`) | ⚠ blocked in the Claude Code sandbox — outbound requests to `dl.google.com` are denied with `x-deny-reason: host_not_allowed`. Runs on CI. |
+| Record four probe snapshots | ✅ CI run `24608977811` |
+| Perf harness (`Phase0PerfHarness`) | ✅ CI, metrics above |
 
 Paparazzi has a hard dependency on the Android Gradle Plugin (which lives only
 on Google Maven). That's unavoidable at this phase because Paparazzi hooks into
@@ -96,14 +118,14 @@ the `layoutlib-native-linux` .so bundle.
 
 ### Open items rolling into Phase 1
 
-- Capture the actual Phase 0 metric numbers from CI and land them here (replace
-  the zeroed example above).
-- If `layoutlib-native-linux` peak RSS exceeds the 8 GB target, profile and
-  decide whether to cap `Paparazzi` instances per JVM fork (fork per test
-  class is Gradle's default).
+- Re-run perf on the actual low-end target host (4 vCPU / 8 GB) once available;
+  GitHub's `ubuntu-latest` is a 16 GB box so the RSS ceiling isn't stressed.
 - The Paparazzi bridge intentionally paints without HWUI. Document any
   drawable/shader divergence we see vs. a physical Pixel 5 before Phase 2
   lands the Fabric mount-instruction translator.
+- 4.1 s cold start per JVM fork will compound if every test class forks. Decide
+  whether to reuse a JVM across Paparazzi test classes (`--max-workers` /
+  `forkEvery`) before Phase 4's device-matrix benchmarking.
 
 ### Repository layout
 
