@@ -44,11 +44,14 @@ jobs:
         # Jest already checks equality, but this re-runs the standalone CLI
         # path (captureFixtures.ts) and fails the job if it drifts from the
         # tree-of-record. Belt and suspenders against ordering surprises.
+        # Only the instruction goldens belong to Phase 1 — layout goldens are
+        # derived artefacts owned by the Phase 2 workflow.
         run: |
           npm run capture
-          if ! git diff --quiet -- out/; then
+          # shellcheck disable=SC2046
+          if ! git diff --quiet -- $(git ls-files 'out/*.json' | grep -v '\.layout\.json$'); then
             echo "::error::Fixture re-capture produced a diff against committed goldens:"
-            git --no-pager diff -- out/
+            git --no-pager diff -- $(git ls-files 'out/*.json' | grep -v '\.layout\.json$')
             exit 1
           fi
 

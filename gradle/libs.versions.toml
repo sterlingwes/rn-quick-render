@@ -7,6 +7,7 @@ kotlin = "2.0.21"
 junit = "4.13.2"
 androidxAppcompat = "1.7.0"
 androidxConstraintlayout = "2.1.4"
+gson = "2.11.0"
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
@@ -17,3 +18,4 @@ paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 junit = { module = "junit:junit", version.ref = "junit" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppcompat" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidxConstraintlayout" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }

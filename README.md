@@ -217,3 +217,65 @@ npm --prefix rn-harness run capture # rewrite out/*.json from scratch
 - Wire a real text measurer (Yoga + Minikin or layoutlib's `BridgeTypefaceCache`)
   before mount instructions hit Android views, otherwise `RCTParagraph`
   layouts will be nonsense.
+
+## Phase 2 — Fabric → layoutlib translator
+
+**Goal:** take a Phase 1 mount-instruction stream and paint it through
+Paparazzi's layoutlib to a PNG on Linux. See
+[`docs/phase-2-translator.md`](docs/phase-2-translator.md) for the
+design writeup.
+
+**Exit criteria:**
+- Yoga runs in Node, emits `{x, y, width, height}` per node. Committed as
+  `rn-harness/out/<fixture>.layout.json`.
+- Kotlin translator reads instructions + layout, constructs a `FrameLayout`
+  tree with absolute positioning (no Android-side layout work).
+- Paparazzi captures one PNG per fixture; the PNGs are the Phase 2 goldens.
+- Text / image fidelity is honestly labelled as a Phase 2.5 gap.
+
+### New pieces
+
+| Path | Purpose |
+| --- | --- |
+| `rn-harness/src/computeLayout.ts` | Reads a captured instruction stream, reconstructs the tree, runs Yoga, returns per-node rects. Installs a rough text-measure function for `RCTParagraph`. |
+| `rn-harness/src/emitLayout.ts` | CLI that writes `out/<fixture>.layout.json` for all 5 fixtures. |
+| `rn-harness/test/layout.test.ts` | Pins computed rects for simpleView + nestedViews against regressions. |
+| `snapshots/src/test/java/com/example/snapshot/FabricTranslator.kt` | Instruction + layout JSON → Android `View` tree. FrameLayout-with-absolute-positioning everywhere. |
+| `snapshots/src/test/java/com/example/snapshot/Phase2TranslatorTest.kt` | One Paparazzi `@Test` per fixture. |
+| `.github/workflows/phase-2-translator.yml` | Regenerates layout JSON, diffs vs. committed, then records/verifies Phase 2 PNGs. |
+
+### Phase 2 findings (in-progress)
+
+- Moving Yoga to Node and treating layoutlib as a pure painter halves the
+  JVM-side code size. The translator is ~200 lines.
+- `yoga-layout@3.2.x` is ESM-with-top-level-await. Loaded via
+  `import("yoga-layout/load")` inside an async entry point; Jest needs
+  `--experimental-vm-modules` to exercise it.
+- Text metrics are the long pole. A linear-per-character approximation
+  produces believable container sizes but will diverge from real-device
+  output on multi-line wrap, measurement of glyphs with non-default
+  advance-width, and font fallback. Tracked as Phase 2.5.
+
+### Local run
+
+```bash
+# Node side — regenerate both goldens.
+npm --prefix rn-harness run capture
+npm --prefix rn-harness run layout
+npm --prefix rn-harness test
+
+# JVM side — first run records, subsequent runs verify.
+./gradlew :snapshots:recordPaparazziDebug --tests "*Phase2TranslatorTest*"
+./gradlew :snapshots:verifyPaparazziDebug --tests "*Phase2TranslatorTest*"
+```
+
+### Open items rolling into Phase 2.5
+
+- Replace the char-width text measurer with HarfBuzz/Minikin or layoutlib's
+  `BridgeTypefaceCache` so paragraph metrics match device rendering.
+- Wire image loading — currently `RCTImageView` paints a grey rect at the
+  computed bounds.
+- Handle `cloneNodeWithNewProps` and friends. Phase 1 fixtures are all
+  initial mounts; the update path is unexercised.
+- Map border/shadow/corner-radius/opacity/transform props.
+- Add an RTL fixture and expose `direction` as a surface option.

@@ -1,0 +1,67 @@
+{
+  "fixture": "conditional",
+  "surfaceId": 15,
+  "viewport": {
+    "width": 411,
+    "height": 891
+  },
+  "roots": [
+    12
+  ],
+  "rects": {
+    "1": {
+      "left": 8,
+      "top": 13,
+      "width": 8,
+      "height": 8
+    },
+    "3": {
+      "left": 24,
+      "top": 8,
+      "width": 108,
+      "height": 18
+    },
+    "4": {
+      "left": 16,
+      "top": 16,
+      "width": 379,
+      "height": 34
+    },
+    "6": {
+      "left": 8,
+      "top": 8,
+      "width": 93,
+      "height": 35
+    },
+    "7": {
+      "left": 16,
+      "top": 50,
+      "width": 379,
+      "height": 51
+    },
+    "8": {
+      "left": 8,
+      "top": 13,
+      "width": 8,
+      "height": 8
+    },
+    "10": {
+      "left": 24,
+      "top": 8,
+      "width": 108,
+      "height": 18
+    },
+    "11": {
+      "left": 16,
+      "top": 101,
+      "width": 379,
+      "height": 33
+    },
+    "12": {
+      "left": 0,
+      "top": 0,
+      "width": 411,
+      "height": 150
+    }
+  }
+}
