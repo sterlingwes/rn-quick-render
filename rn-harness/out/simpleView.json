@@ -2,7 +2,6 @@
   "fixture": "simpleView",
   "surfaceId": 11,
   "instructionCount": 4,
-  "elapsedMs": 57,
   "instructions": [
     {
       "op": "createNode",

@@ -2,7 +2,6 @@
   "fixture": "textAndImage",
   "surfaceId": 13,
   "instructionCount": 16,
-  "elapsedMs": 1,
   "instructions": [
     {
       "op": "createNode",

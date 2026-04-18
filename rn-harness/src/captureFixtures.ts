@@ -21,7 +21,7 @@ function main() {
     const elapsedMs = Date.now() - started;
 
     const outPath = path.join(outDir, `${name}.json`);
-    const payload = { fixture: name, surfaceId, instructionCount: instructions.length, elapsedMs, instructions };
+    const payload = { fixture: name, surfaceId, instructionCount: instructions.length, instructions };
     fs.writeFileSync(outPath, JSON.stringify(payload, null, 2) + "\n");
     console.log(`[rn-harness] ${name}: ${instructions.length} instructions, ${elapsedMs} ms → ${path.relative(process.cwd(), outPath)}`);
   }

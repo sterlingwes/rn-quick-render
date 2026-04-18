@@ -2,7 +2,6 @@
   "fixture": "conditional",
   "surfaceId": 15,
   "instructionCount": 26,
-  "elapsedMs": 3,
   "instructions": [
     {
       "op": "createNode",

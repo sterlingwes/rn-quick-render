@@ -2,7 +2,6 @@
   "fixture": "scrollView",
   "surfaceId": 14,
   "instructionCount": 18,
-  "elapsedMs": 1,
   "instructions": [
     {
       "op": "createNode",

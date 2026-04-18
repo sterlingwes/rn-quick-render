@@ -2,7 +2,6 @@
   "fixture": "nestedViews",
   "surfaceId": 12,
   "instructionCount": 20,
-  "elapsedMs": 2,
   "instructions": [
     {
       "op": "createNode",
