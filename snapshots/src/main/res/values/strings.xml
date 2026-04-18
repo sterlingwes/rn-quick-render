@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="phase0_greeting">Phase 0 · layoutlib on Linux</string>
+    <string name="phase0_headline">Hello from Paparazzi</string>
+    <string name="phase0_subline">Rendered without an Android emulator</string>
+</resources>

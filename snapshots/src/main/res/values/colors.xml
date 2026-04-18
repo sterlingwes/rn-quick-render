@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="phase0_bg">#FFF5F5F5</color>
+    <color name="phase0_primary">#FF3F51B5</color>
+    <color name="phase0_accent">#FFE91E63</color>
+    <color name="phase0_ink">#FF1A1A1A</color>
+</resources>
