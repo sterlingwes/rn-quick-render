@@ -151,3 +151,69 @@ the `layoutlib-native-linux` .so bundle.
 ├── .github/workflows/phase-0-snapshot.yml
 └── docs/explore-plan.md
 ```
+
+## Phase 1 — Fabric mount-instruction capture in Node
+
+**Goal:** prove we can run React Native's Fabric JS renderer outside an app —
+no Metro, no emulator, no Gradle — by hand-stubbing the single global seam
+(`nativeFabricUIManager`) and recording every JS→native call it makes.
+
+**Exit criteria:**
+- Render 5 representative fixture screens (View nesting, Text, Image,
+  ScrollView, conditional component boundaries) through Fabric in pure Node.
+- Produce a deterministic JSON instruction stream per fixture — committed as
+  goldens and diffed on every CI run.
+- Document the full set of instruction types the translator has to implement.
+
+### What's under `rn-harness/`
+
+| Path | Purpose |
+| --- | --- |
+| `src/captureStub.ts` | In-memory `nativeFabricUIManager` that appends every `createNode` / clone / `appendChild*` / `completeRoot` call to an ordered array. |
+| `src/privateInterfaceStub.ts` | Narrow stand-in for `ReactNativePrivateInterface` — the only RN internal the Fabric renderer calls at runtime. Covers `createAttributePayload`, `diffAttributePayloads`, `ReactNativeViewConfigRegistry`, `Platform`, and a handful of instance/handle helpers. |
+| `src/loadFabric.ts` | Installs the globals and RN-internal stubs in the right order, then `require()`s `ReactFabric-dev.js`. Works under plain Node (via `require.cache`) and under Jest (via `moduleNameMapper`). |
+| `src/renderFixture.ts` | `ReactFabric.render(…, concurrentRoot=false)` → copy instructions → `stopSurface`. Synchronous commit, isolated per fixture. |
+| `src/captureFixtures.ts` | CLI that renders all five fixtures in a fixed order and writes `out/*.json`. |
+| `fixtures/*.ts` | Hand-written React trees using RN host types (`RCTView`, `RCTRawText`, `RCTImageView`, `RCTScrollView`, `RCTParagraph`). |
+| `out/*.json` | Committed goldens. |
+| `test/mount-instructions.test.ts` | Jest suite that re-renders each fixture and deep-equals against its golden. |
+| `docs/fabric-mount-instructions.md` | Catalogue of every call the renderer makes, cross-referenced with RN source lines. |
+
+### Local run
+
+```bash
+npm --prefix rn-harness install
+npm --prefix rn-harness test        # Jest: re-render + diff against goldens
+npm --prefix rn-harness run capture # rewrite out/*.json from scratch
+```
+
+### Phase 1 findings
+
+- The Fabric JS renderer talks to C++ through a single global
+  (`nativeFabricUIManager`) plus 10 mount-instruction functions. The full
+  catalogue is in [`docs/fabric-mount-instructions.md`](docs/fabric-mount-instructions.md).
+- Stream is self-contained for structural mount. Two gaps: text measurement
+  (requires a Yoga+Minikin measurer) and mount-changes emitted from native
+  threads outside JS (Reanimated, gesture handler). Phase 2 handles the first;
+  Phase 3's native-module audit handles the second.
+- Five fixtures, 84 total instructions, captured in <300 ms of Node time
+  (cold-includes-require). CI runs the whole loop — `npm ci && jest && capture
+  && git diff --quiet out/` — in under a minute.
+
+### Status
+
+| Check | Where |
+| --- | --- |
+| Fabric-dev boots under Node 22 with only globals + two internal stubs | ✅ locally + CI |
+| 5 fixture goldens render byte-identically on re-capture | ✅ `rn-harness/out/*.json` |
+| Catalogue of mount-instruction types with RN source line refs | ✅ `docs/fabric-mount-instructions.md` |
+| CI re-capture + golden diff | ✅ `.github/workflows/phase-1-rn-harness.yml` |
+
+### Open items rolling into Phase 2
+
+- Add a concurrent-root fixture once the translator is under construction —
+  concurrent updates can fragment the stream across multiple `completeRoot`
+  calls and the Phase 1 stream assumes synchronous commits.
+- Wire a real text measurer (Yoga + Minikin or layoutlib's `BridgeTypefaceCache`)
+  before mount instructions hit Android views, otherwise `RCTParagraph`
+  layouts will be nonsense.

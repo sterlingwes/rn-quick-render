@@ -3,9 +3,16 @@
 build/
 **/build/
 out/
+# Phase 1 Fabric capture goldens live here and are version-controlled.
+!rn-harness/out/
+!rn-harness/out/*.json
 
 # Generated Paparazzi output (kept under version control via the runner artifacts, not here)
 **/src/test/snapshots/images/*.png.tmp
+
+# Node / Phase 1 harness
+rn-harness/node_modules/
+rn-harness/dist/
 
 # IDE
 .idea/

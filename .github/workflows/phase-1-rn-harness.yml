@@ -1,0 +1,60 @@
+name: phase-1-rn-harness
+
+on:
+  push:
+    branches:
+      - claude/phase-0-layoutlib-validation-4apB6
+      - main
+    paths:
+      - "rn-harness/**"
+      - ".github/workflows/phase-1-rn-harness.yml"
+  pull_request:
+    paths:
+      - "rn-harness/**"
+      - ".github/workflows/phase-1-rn-harness.yml"
+  workflow_dispatch:
+
+jobs:
+  fabric-capture:
+    name: Fabric capture in Node (golden diff)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: rn-harness
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: rn-harness/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Run Jest (goldens vs. fresh capture)
+        run: npm test -- --ci
+
+      - name: Re-run capture CLI and diff against committed goldens
+        # Jest already checks equality, but this re-runs the standalone CLI
+        # path (captureFixtures.ts) and fails the job if it drifts from the
+        # tree-of-record. Belt and suspenders against ordering surprises.
+        run: |
+          npm run capture
+          if ! git diff --quiet -- out/; then
+            echo "::error::Fixture re-capture produced a diff against committed goldens:"
+            git --no-pager diff -- out/
+            exit 1
+          fi
+
+      - name: Upload captured instruction JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase1-fabric-captures
+          path: rn-harness/out/*.json

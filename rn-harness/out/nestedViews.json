@@ -1,0 +1,192 @@
+{
+  "fixture": "nestedViews",
+  "surfaceId": 12,
+  "instructionCount": 20,
+  "elapsedMs": 2,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 4,
+      "viewName": "RCTView",
+      "surfaceId": 12,
+      "props": {
+        "style": {
+          "width": 32,
+          "height": 32,
+          "backgroundColor": "#fff",
+          "marginEnd": 8
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 6,
+      "viewName": "RCTView",
+      "surfaceId": 12,
+      "props": {
+        "style": {
+          "width": 32,
+          "height": 32,
+          "backgroundColor": "#fff",
+          "marginEnd": 8
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 8,
+      "viewName": "RCTView",
+      "surfaceId": 12,
+      "props": {
+        "style": {
+          "width": 32,
+          "height": 32,
+          "backgroundColor": "#fff"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 4,
+      "tag": 10,
+      "viewName": "RCTView",
+      "surfaceId": 12,
+      "props": {
+        "style": {
+          "flexDirection": "row",
+          "padding": 8,
+          "backgroundColor": "#E3F2FD"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 1
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 2
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 3
+    },
+    {
+      "op": "createNode",
+      "nodeId": 5,
+      "tag": 12,
+      "viewName": "RCTView",
+      "surfaceId": 12,
+      "props": {
+        "style": {
+          "width": 32,
+          "height": 32,
+          "backgroundColor": "#fff",
+          "marginEnd": 8
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 6,
+      "tag": 14,
+      "viewName": "RCTView",
+      "surfaceId": 12,
+      "props": {
+        "style": {
+          "width": 32,
+          "height": 32,
+          "backgroundColor": "#fff",
+          "marginEnd": 8
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 7,
+      "tag": 16,
+      "viewName": "RCTView",
+      "surfaceId": 12,
+      "props": {
+        "style": {
+          "width": 32,
+          "height": 32,
+          "backgroundColor": "#fff"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 8,
+      "tag": 18,
+      "viewName": "RCTView",
+      "surfaceId": 12,
+      "props": {
+        "style": {
+          "flexDirection": "row",
+          "padding": 8,
+          "backgroundColor": "#FCE4EC"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 8,
+      "childNodeId": 5
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 8,
+      "childNodeId": 6
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 8,
+      "childNodeId": 7
+    },
+    {
+      "op": "createNode",
+      "nodeId": 9,
+      "tag": 20,
+      "viewName": "RCTView",
+      "surfaceId": 12,
+      "props": {
+        "style": {
+          "flexDirection": "column",
+          "padding": 16,
+          "backgroundColor": "#F5F5F5"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 9,
+      "childNodeId": 4
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 9,
+      "childNodeId": 8
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 9
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 12,
+      "childSetId": 1
+    }
+  ]
+}
