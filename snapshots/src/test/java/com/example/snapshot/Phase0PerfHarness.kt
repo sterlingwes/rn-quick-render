@@ -11,7 +11,6 @@ import org.junit.AfterClass
 import org.junit.Rule
 import org.junit.Test
 import java.io.File
-import java.lang.management.ManagementFactory
 
 /**
  * Phase 0 perf harness.
@@ -39,7 +38,7 @@ class Phase0PerfHarness {
             paparazzi.snapshot(view, name = "perf_$i")
             timings[i] = System.nanoTime() - start
             if (jvmToFirstSnapshotMs < 0) {
-                jvmToFirstSnapshotMs = ManagementFactory.getRuntimeMXBean().uptime
+                jvmToFirstSnapshotMs = System.currentTimeMillis() - classLoadEpochMs
             }
         }
 
@@ -70,6 +69,13 @@ class Phase0PerfHarness {
 
     companion object {
         private const val ITERATIONS = 5
+
+        // Captured at class load. Gradle forks a fresh JVM per test class,
+        // so this is a faithful stand-in for "JVM start" without needing
+        // java.lang.management (which AGP hides from the unit-test classpath
+        // because android.jar doesn't include the java.management module).
+        @JvmStatic
+        private val classLoadEpochMs: Long = System.currentTimeMillis()
 
         @JvmStatic
         private var jvmToFirstSnapshotMs = -1L
