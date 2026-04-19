@@ -8,10 +8,14 @@ junit = "4.13.2"
 androidxAppcompat = "1.7.0"
 androidxConstraintlayout = "2.1.4"
 gson = "2.11.0"
+layoutlib-api = "31.4.2"
+layoutlib = "14.0.11"
+kxml2 = "2.3.0"
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 
 [libraries]
@@ -19,3 +23,8 @@ junit = { module = "junit:junit", version.ref = "junit" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppcompat" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidxConstraintlayout" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+layoutlib-api = { module = "com.android.tools.layoutlib:layoutlib-api", version.ref = "layoutlib-api" }
+layoutlib-bridge = { module = "com.android.tools.layoutlib:layoutlib", version.ref = "layoutlib" }
+layoutlib-runtime = { module = "com.android.tools.layoutlib:layoutlib-runtime", version.ref = "layoutlib" }
+layoutlib-resources = { module = "com.android.tools.layoutlib:layoutlib-resources", version.ref = "layoutlib" }
+kxml2 = { module = "net.sf.kxml:kxml2", version.ref = "kxml2" }
