@@ -201,9 +201,63 @@ class FabricTranslator(private val context: Context) {
 
     private fun applyCommonProps(view: View, props: JsonObject) {
         val style = styleObject(props) ?: return
-        if (style.has("backgroundColor")) {
+
+        val hasCornerProp = CORNER_RADIUS_KEYS.any { style.has(it) }
+        val hasBorder = style.has("borderWidth") || style.has("borderColor")
+        val hasBackground = style.has("backgroundColor")
+
+        if (!hasCornerProp && !hasBorder && hasBackground) {
             view.setBackgroundColor(parseColor(style.get("backgroundColor").asString))
+            return
         }
+
+        if (hasCornerProp || hasBorder || hasBackground) {
+            val drawable = android.graphics.drawable.GradientDrawable()
+            drawable.shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+            if (hasBackground) {
+                drawable.setColor(parseColor(style.get("backgroundColor").asString))
+            }
+            applyCornerRadii(drawable, style)
+            applyBorder(drawable, style)
+            view.background = drawable
+        }
+    }
+
+    private fun applyCornerRadii(drawable: android.graphics.drawable.GradientDrawable, style: JsonObject) {
+        // React Native resolves start/end to left/right at LTR. We hard-code LTR
+        // for Phase 2; an RTL surface option flips these later.
+        val uniform = style.get("borderRadius")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asFloat
+        val tl = cornerValue(style, "TopLeft", "TopStart", uniform)
+        val tr = cornerValue(style, "TopRight", "TopEnd", uniform)
+        val br = cornerValue(style, "BottomRight", "BottomEnd", uniform)
+        val bl = cornerValue(style, "BottomLeft", "BottomStart", uniform)
+        if (tl == null && tr == null && br == null && bl == null) return
+        val tlPx = dpF(tl ?: 0f)
+        val trPx = dpF(tr ?: 0f)
+        val brPx = dpF(br ?: 0f)
+        val blPx = dpF(bl ?: 0f)
+        drawable.cornerRadii = floatArrayOf(
+            tlPx, tlPx,
+            trPx, trPx,
+            brPx, brPx,
+            blPx, blPx,
+        )
+    }
+
+    private fun cornerValue(style: JsonObject, ltrSuffix: String, logicalSuffix: String, fallback: Float?): Float? {
+        // Explicit physical wins over logical; logical wins over uniform.
+        style.get("border${ltrSuffix}Radius")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.let { return it.asFloat }
+        style.get("border${logicalSuffix}Radius")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.let { return it.asFloat }
+        return fallback
+    }
+
+    private fun applyBorder(drawable: android.graphics.drawable.GradientDrawable, style: JsonObject) {
+        val widthRaw = style.get("borderWidth")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asFloat
+        val colorRaw = style.get("borderColor")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
+        if (widthRaw == null && colorRaw == null) return
+        val color = colorRaw?.let { parseColor(it) } ?: Color.BLACK
+        val widthPx = dp(widthRaw ?: 0f)
+        drawable.setStroke(widthPx, color)
     }
 
     private fun styleObject(props: JsonObject): JsonObject? =
@@ -233,7 +287,22 @@ class FabricTranslator(private val context: Context) {
     private fun dp(value: Int): Int =
         (value * context.resources.displayMetrics.density).toInt()
 
+    private fun dp(value: Float): Int =
+        (value * context.resources.displayMetrics.density).toInt()
+
+    /** Float-valued dp → px (for [android.graphics.drawable.GradientDrawable.cornerRadii]). */
+    private fun dpF(value: Float): Float =
+        value * context.resources.displayMetrics.density
+
     companion object {
+        private val CORNER_RADIUS_KEYS = listOf(
+            "borderRadius",
+            "borderTopLeftRadius", "borderTopRightRadius",
+            "borderBottomLeftRadius", "borderBottomRightRadius",
+            "borderTopStartRadius", "borderTopEndRadius",
+            "borderBottomStartRadius", "borderBottomEndRadius",
+        )
+
         /** Unused, here to keep Gson pre-registered if we expand to typed parsing later. */
         @Suppress("unused")
         private val gson = Gson()
