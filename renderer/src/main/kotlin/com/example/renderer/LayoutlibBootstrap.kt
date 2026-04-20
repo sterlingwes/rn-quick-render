@@ -15,6 +15,27 @@ class LayoutlibBootstrap private constructor(
     private val bridge: Bridge,
     val renderSession: RenderSession,
 ) {
+    /**
+     * Execute a block within the render session's scope. This acquires the
+     * session lock, initializes system resources (Resources_Delegate.initSystem),
+     * and sets up the BridgeContext — required before constructing any Android Views.
+     */
+    fun <T> executeInSession(block: (context: android.content.Context) -> T): T {
+        var result: T? = null
+        var thrown: Throwable? = null
+        renderSession.execute {
+            try {
+                val rootView = renderSession.rootViews.first().viewObject as android.view.View
+                result = block(rootView.context)
+            } catch (e: Throwable) {
+                thrown = e
+            }
+        }
+        if (thrown != null) throw thrown!!
+        @Suppress("UNCHECKED_CAST")
+        return result as T
+    }
+
     companion object {
         /**
          * Initialise layoutlib from system properties set by the Gradle build:
