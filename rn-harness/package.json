@@ -6,13 +6,11 @@
   "type": "commonjs",
   "scripts": {
     "capture": "node -r ts-node/register src/captureFixtures.ts",
-    "layout": "node -r ts-node/register src/emitLayout.ts",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
     "react": "19.2.5",
-    "react-native": "0.85.1",
-    "yoga-layout": "^3.2.1"
+    "react-native": "0.85.1"
   },
   "devDependencies": {
     "@types/jest": "29.5.14",

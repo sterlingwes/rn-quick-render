@@ -16,5 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "rn-quick-render"
 
-include(":snapshots")
 include(":renderer")

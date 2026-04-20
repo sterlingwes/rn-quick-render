@@ -3,7 +3,6 @@ name: phase-1-rn-harness
 on:
   push:
     branches:
-      - claude/phase-0-layoutlib-validation-4apB6
       - main
     paths:
       - "rn-harness/**"
