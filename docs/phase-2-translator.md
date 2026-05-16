@@ -161,9 +161,14 @@ into `renderer/build/layoutlib-data/`.
 3. Caches `~/.gradle` + `renderer/build/yoga-native`.
 4. Runs `./gradlew :renderer:test`.
 5. Uploads `renderer/build/snapshot-output/*.png` as the
-   `phase2-fresh-renders` artifact on every run (success or failure) —
-   this is how new goldens are bootstrapped: download the artifact,
-   commit the PNGs under `renderer/src/test/snapshots/`.
+   `phase2-fresh-renders` artifact on every run (success or failure).
+
+The workflow also supports a `workflow_dispatch` input `record=true`:
+when set, the test class writes committed goldens in-place and the job
+commits + pushes them as `github-actions[bot]` to the dispatching
+branch. This is the recommended way to seed the
+`renderer/src/test/snapshots/` directory on the first run. Subsequent
+push/PR runs always verify against the committed goldens.
 
 ## Known gaps — Phase 2.5 backlog
 

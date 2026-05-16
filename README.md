@@ -195,16 +195,21 @@ submodule must be checked out (`git submodule update --init --recursive`).
 ### Bootstrapping the goldens
 
 The committed-PNG directory (`renderer/src/test/snapshots/`) starts
-empty. First CI run:
+empty. Two ways to seed it:
 
-1. Renders all five fixtures into `renderer/build/snapshot-output/`.
-2. Uploads them as the `phase2-fresh-renders` artifact.
-3. Tests fail with `no committed golden at …`.
+1. **Manual-dispatch the workflow with `record=true`** (recommended for
+   the first run). The job runs in record mode, writes the PNGs into
+   `renderer/src/test/snapshots/`, commits them as
+   `github-actions[bot]`, and pushes back to the dispatching branch.
+   Requires the workflow to run from a branch you control. Subsequent
+   runs without the `record` input default to verify mode.
+2. **Download + commit by hand.** Every run uploads
+   `renderer/build/snapshot-output/*.png` as the `phase2-fresh-renders`
+   artifact (even on failure). Download, eyeball, drop into
+   `renderer/src/test/snapshots/`, commit.
 
-Download the artifact, eyeball the PNGs, and commit them to
-`renderer/src/test/snapshots/`. Subsequent runs verify against those
-goldens and fail (uploading the fresh renders for inspection) when
-pixels drift.
+After the goldens are in place, every push/PR verifies against them. A
+pixel diff fails the job and uploads the fresh renders for inspection.
 
 ### Phase 2.5 backlog
 
