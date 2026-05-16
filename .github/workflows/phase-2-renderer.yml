@@ -1,0 +1,115 @@
+name: phase-2-renderer
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "renderer/**"
+      - "yoga/**"
+      - "rn-harness/out/**"
+      - "gradle/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - ".github/workflows/phase-2-renderer.yml"
+  pull_request:
+    paths:
+      - "renderer/**"
+      - "yoga/**"
+      - "rn-harness/out/**"
+      - "gradle/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - ".github/workflows/phase-2-renderer.yml"
+  workflow_dispatch:
+    inputs:
+      record:
+        description: "Record committed PNG goldens and push them back to this branch."
+        type: boolean
+        default: false
+
+jobs:
+  renderer-snapshots:
+    name: Renderer goldens (Linux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # Needed so the bot can push the recorded goldens back. Default
+          # GITHUB_TOKEN works for same-repo branches; the contents:write
+          # permission above is what makes it pushable.
+          persist-credentials: true
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install build tools for Yoga JNI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential ninja-build
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle.kts', 'gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Cache CMake build
+        uses: actions/cache@v4
+        with:
+          path: renderer/build/yoga-native
+          key: yoga-native-${{ runner.os }}-${{ hashFiles('yoga/yoga/**', 'renderer/cmake/CMakeLists.txt') }}
+
+      - name: Run renderer tests
+        env:
+          # When the manual `record` input is true, write committed goldens
+          # in-place instead of diffing. The test class only commits the PNG
+          # if this flag is set; otherwise it diffs against whatever is on
+          # disk in renderer/src/test/snapshots/.
+          GRADLE_RECORD_FLAG: ${{ inputs.record == true && '-Drenderer.record=true' || '' }}
+        run: ./gradlew :renderer:test --console=plain --stacktrace $GRADLE_RECORD_FLAG
+
+      - name: Commit recorded goldens
+        if: ${{ inputs.record == true && github.event_name == 'workflow_dispatch' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add renderer/src/test/snapshots/*.png
+          if git diff --cached --quiet; then
+            echo "No golden changes to commit."
+            exit 0
+          fi
+          git commit -m "Record Phase 2 PNG goldens
+
+          Auto-recorded by phase-2-renderer workflow on ${{ github.ref_name }}."
+          git push origin HEAD:${{ github.ref_name }}
+
+      - name: Upload fresh PNG renders
+        # Always upload so that on first run (or after intentional drift) the
+        # PNGs are downloadable and can be committed as the new goldens.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase2-fresh-renders
+          path: renderer/build/snapshot-output/*.png
+          if-no-files-found: warn
+
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase2-test-reports
+          path: renderer/build/reports/tests/test

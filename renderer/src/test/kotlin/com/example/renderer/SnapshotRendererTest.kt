@@ -1,51 +1,104 @@
 package com.example.renderer
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.BeforeClass
 import org.junit.Test
+import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO
 
 /**
- * End-to-end test: mount instructions → Yoga layout → View tree → BufferedImage.
+ * End-to-end Phase 2 goldens: mount instructions → Yoga layout → View tree → PNG.
+ *
+ * Each test renders one of the five Phase 1 fixtures and compares against a
+ * committed PNG under `src/test/snapshots/`. The fresh render is always written
+ * to `build/snapshot-output/<fixture>.png` so CI can upload it as an artifact —
+ * which is how new goldens get bootstrapped (first run uploads, developer
+ * downloads and commits).
+ *
+ * Record mode (rewrites committed goldens):
+ *   ./gradlew :renderer:test -Drenderer.record=true
  */
 class SnapshotRendererTest {
 
     companion object {
         private lateinit var bootstrap: LayoutlibBootstrap
 
+        private val goldenDir = File("src/test/snapshots")
+        private val outputDir = File("build/snapshot-output")
+        private val record = System.getProperty("renderer.record") == "true"
+
         @JvmStatic
         @BeforeClass
         fun setup() {
+            outputDir.mkdirs()
             bootstrap = LayoutlibBootstrap.create()
         }
     }
 
-    @Test
-    fun renderSimpleView() {
-        val json = File("../rn-harness/out/simpleView.json").readText()
+    @Test fun simpleView() = runFixture("simpleView")
+    @Test fun nestedViews() = runFixture("nestedViews")
+    @Test fun textAndImage() = runFixture("textAndImage")
+    @Test fun scrollView() = runFixture("scrollView")
+    @Test fun conditional() = runFixture("conditional")
+
+    private fun runFixture(name: String) {
+        val json = File("../rn-harness/out/$name.json").readText()
         val renderer = SnapshotRenderer(bootstrap)
         val image = renderer.render(json)
 
-        assertNotNull(image)
-        assertTrue("image width > 0", image.width > 0)
-        assertTrue("image height > 0", image.height > 0)
-        // Verify it's not all-transparent: check that at least some pixels are non-zero
-        val hasContent = (0 until image.width).any { x ->
-            (0 until image.height).any { y ->
-                image.getRGB(x, y) != 0
-            }
+        assertNotNull("$name: render returned null", image)
+        assertTrue("$name: empty image", image.width > 0 && image.height > 0)
+
+        // Always write the fresh render to build/ so CI can upload it.
+        val fresh = File(outputDir, "$name.png")
+        ImageIO.write(image, "png", fresh)
+
+        val golden = File(goldenDir, "$name.png")
+
+        if (record) {
+            goldenDir.mkdirs()
+            ImageIO.write(image, "png", golden)
+            return
         }
-        assertTrue("rendered image should have non-transparent content", hasContent)
+
+        if (!golden.exists()) {
+            fail(
+                "$name: no committed golden at ${golden.path}. " +
+                    "Fresh PNG was written to ${fresh.absolutePath}. " +
+                    "Run with -Drenderer.record=true to record, or download the " +
+                    "phase-2 CI artifact and commit it."
+            )
+        }
+
+        val expected = ImageIO.read(golden)
+        compareImages(name, fresh, image, expected)
     }
 
-    @Test
-    fun renderTextAndImage() {
-        val json = File("../rn-harness/out/textAndImage.json").readText()
-        val renderer = SnapshotRenderer(bootstrap)
-        val image = renderer.render(json)
+    private fun compareImages(
+        name: String,
+        freshFile: File,
+        actual: BufferedImage,
+        expected: BufferedImage,
+    ) {
+        assertEquals("$name: width", expected.width, actual.width)
+        assertEquals("$name: height", expected.height, actual.height)
 
-        assertNotNull(image)
-        assertTrue("image width > 0", image.width > 0)
-        assertTrue("image height > 0", image.height > 0)
+        var diffPixels = 0
+        for (y in 0 until expected.height) {
+            for (x in 0 until expected.width) {
+                if (actual.getRGB(x, y) != expected.getRGB(x, y)) diffPixels++
+            }
+        }
+        if (diffPixels > 0) {
+            fail(
+                "$name: $diffPixels pixels differ from golden. " +
+                    "Fresh render at ${freshFile.absolutePath}; " +
+                    "rerun with -Drenderer.record=true if the change is intentional."
+            )
+        }
     }
 }
