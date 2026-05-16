@@ -48,3 +48,11 @@ export function richParagraph(
   );
   return React.createElement(RCTParagraph, { style: paragraphStyle }, ...elements);
 }
+
+// A 64×64 four-quadrant test PNG (red / green / blue / yellow, white 1px
+// border) encoded as a data: URI. Inlined so fixtures stay self-contained
+// without a binary asset committed to the repo. Generated once via a Python
+// stdlib script — see commit message of the image-loading PR for the source.
+export const TEST_QUADRANT_PNG =
+  "data:image/png;base64," +
+  "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg==";

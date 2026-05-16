@@ -1,0 +1,330 @@
+{
+  "fixture": "imageResizeModes",
+  "surfaceId": 17,
+  "instructionCount": 36,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 100,
+      "viewName": "RCTRawText",
+      "surfaceId": 17,
+      "props": {
+        "text": "cover"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 102,
+      "viewName": "RCTParagraph",
+      "surfaceId": 17,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 104,
+      "viewName": "RCTImageView",
+      "surfaceId": 17,
+      "props": {
+        "source": {
+          "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg=="
+        },
+        "resizeMode": "cover",
+        "style": {
+          "width": 200,
+          "height": 100,
+          "backgroundColor": "#F0F0F0"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 4,
+      "tag": 106,
+      "viewName": "RCTView",
+      "surfaceId": 17,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 2
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 3
+    },
+    {
+      "op": "createNode",
+      "nodeId": 5,
+      "tag": 108,
+      "viewName": "RCTRawText",
+      "surfaceId": 17,
+      "props": {
+        "text": "contain"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 6,
+      "tag": 110,
+      "viewName": "RCTParagraph",
+      "surfaceId": 17,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 6,
+      "childNodeId": 5
+    },
+    {
+      "op": "createNode",
+      "nodeId": 7,
+      "tag": 112,
+      "viewName": "RCTImageView",
+      "surfaceId": 17,
+      "props": {
+        "source": {
+          "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg=="
+        },
+        "resizeMode": "contain",
+        "style": {
+          "width": 200,
+          "height": 100,
+          "backgroundColor": "#F0F0F0"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 8,
+      "tag": 114,
+      "viewName": "RCTView",
+      "surfaceId": 17,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 8,
+      "childNodeId": 6
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 8,
+      "childNodeId": 7
+    },
+    {
+      "op": "createNode",
+      "nodeId": 9,
+      "tag": 116,
+      "viewName": "RCTRawText",
+      "surfaceId": 17,
+      "props": {
+        "text": "stretch"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 10,
+      "tag": 118,
+      "viewName": "RCTParagraph",
+      "surfaceId": 17,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 10,
+      "childNodeId": 9
+    },
+    {
+      "op": "createNode",
+      "nodeId": 11,
+      "tag": 120,
+      "viewName": "RCTImageView",
+      "surfaceId": 17,
+      "props": {
+        "source": {
+          "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg=="
+        },
+        "resizeMode": "stretch",
+        "style": {
+          "width": 200,
+          "height": 100,
+          "backgroundColor": "#F0F0F0"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 12,
+      "tag": 122,
+      "viewName": "RCTView",
+      "surfaceId": 17,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 12,
+      "childNodeId": 10
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 12,
+      "childNodeId": 11
+    },
+    {
+      "op": "createNode",
+      "nodeId": 13,
+      "tag": 124,
+      "viewName": "RCTRawText",
+      "surfaceId": 17,
+      "props": {
+        "text": "center"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 14,
+      "tag": 126,
+      "viewName": "RCTParagraph",
+      "surfaceId": 17,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 14,
+      "childNodeId": 13
+    },
+    {
+      "op": "createNode",
+      "nodeId": 15,
+      "tag": 128,
+      "viewName": "RCTImageView",
+      "surfaceId": 17,
+      "props": {
+        "source": {
+          "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg=="
+        },
+        "resizeMode": "center",
+        "style": {
+          "width": 200,
+          "height": 100,
+          "backgroundColor": "#F0F0F0"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 16,
+      "tag": 130,
+      "viewName": "RCTView",
+      "surfaceId": 17,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 16,
+      "childNodeId": 14
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 16,
+      "childNodeId": 15
+    },
+    {
+      "op": "createNode",
+      "nodeId": 17,
+      "tag": 132,
+      "viewName": "RCTView",
+      "surfaceId": 17,
+      "props": {
+        "style": {
+          "padding": 16,
+          "backgroundColor": "#FFFFFF"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 4
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 8
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 12
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 16
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 17
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 17,
+      "childSetId": 1
+    }
+  ]
+}
