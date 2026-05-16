@@ -117,23 +117,30 @@ smaller grey "1 reminder" against a black base style.
 - Five `resizeMode` cases mapped to `ImageView.ScaleType` (`cover`,
   `contain`, `stretch`, `center`; `repeat` falls back to `tile` via
   `BitmapShader` — verify against device).
-- Unsupported schemes (today: `http(s)://`, `asset://`) render the
-  loud grey placeholder instead of failing the build.
-- Fixture: `imageResizeModes` — same inline base64 64×64 PNG against a
-  200×100 container in four modes, one PNG row per mode.
+- `tintColor` applied via `PorterDuffColorFilter(color, SRC_IN)` so
+  every opaque pixel of the source collapses to the tint colour while
+  alpha is preserved. Matches RN Android's behaviour for solid tints.
+- Metro-shaped source objects (`{ uri, width, height, scale,
+  __packager_asset: true }`) decode cleanly — `decodeImage` only reads
+  `source.uri`, the extra fields are tolerated silently. The actual
+  Metro `require('./foo.png')` → `file://` resolution lands in Phase
+  3's `AssetRegistry` capture-time hook; the renderer-side contract is
+  already in place.
+- Unsupported schemes (today: `http(s)://`, plus `asset://` until the
+  Phase 3 hook ships) render the loud grey placeholder instead of
+  failing the build.
+- Fixtures: `imageResizeModes` (four resize modes) and
+  `imageTintAndAsset` (control + three `tintColor` variants against a
+  Metro-shaped source).
 
 ### Open for real-app integration
 
-- **Metro asset pipeline.** `require('./foo.png')` lowers to a synthetic
-  source object (`{ uri: 'asset:///foo.png', width, height, scale }` in
-  release; a `http://localhost:8081/…` URL in dev). The Node-side
-  harness needs to either resolve those `require()` calls to `file://`
-  URIs at capture time, or the renderer needs an `asset://` scheme that
-  reads from a configured assets root. The Phase 3 design covers this.
-- **`tintColor`.** Not applied. Would set a `ColorMatrixColorFilter`
-  (or a simpler `PorterDuff.Mode.SRC_IN` filter for solid tints).
 - **HTTP source caching.** Out of scope for snapshot tests — fixtures
   should pin assets locally.
+- **Multi-stop colour matrix tints.** RN's `tintColor` only takes a
+  single colour. If a future feature wants gradient tints or
+  preserve-luminance modes we'll switch from `PorterDuffColorFilter` to
+  `ColorMatrixColorFilter`.
 
 ## 4. Update path (resolved)
 
