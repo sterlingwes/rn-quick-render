@@ -5,18 +5,21 @@ Fabric mount instructions in Node; Phase 2 paints them through Android's
 `layoutlib` to PNGs on a plain JVM (no Paparazzi, no AGP, no emulator).
 
 See [`docs/explore-plan.md`](docs/explore-plan.md) for the full
-exploration plan and [`docs/phase-2-translator.md`](docs/phase-2-translator.md)
-for the current renderer design.
+exploration plan, [`docs/phase-2-translator.md`](docs/phase-2-translator.md)
+for the current renderer design,
+[`docs/phase-2.5.md`](docs/phase-2.5.md) for per-item fidelity status,
+and [`docs/phase-3.md`](docs/phase-3.md) for what it'll take to render
+a screen from a real RN app.
 
 ## Status at a glance
 
 | Phase | What | Status |
 | --- | --- | --- |
 | 0 | Paparazzi validates layoutlib-on-Linux | ✅ done — retrospective only, module deleted |
-| 1 | Fabric mount-instruction capture in Node | ✅ 5 fixtures, CI green |
-| 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | 🟡 code landed, PNG goldens being bootstrapped |
-| 2.5 | Text spans, image loading, transforms, RTL, updates | ⏳ backlog |
-| 3 | Native-module audit on a real codebase | ⏳ not started |
+| 1 | Fabric mount-instruction capture in Node | ✅ 7 fixtures, CI green |
+| 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
+| 2.5 | Text spans, image loading, transforms, updates, RTL, fonts | 🟡 #1–#5 landed; #6 (RTL), #7 (custom fonts), Metro asset shape still open |
+| 3 | Render a real RN app screen (native-module shim + asset pipeline) | ⏳ design in [`docs/phase-3.md`](docs/phase-3.md) |
 | 4 | Device / theme matrix + perf | ⏳ not started |
 | 5 | Packaging (Gradle plugin + npm CLI) | ⏳ not started |
 
@@ -211,34 +214,18 @@ empty. Two ways to seed it:
 After the goldens are in place, every push/PR verifies against them. A
 pixel diff fails the job and uploads the fresh renders for inspection.
 
-### Phase 2.5 backlog
+### Phase 2.5 status
 
-The full plan and per-item experiments live in
-[`docs/phase-2.5.md`](docs/phase-2.5.md). Headlines:
+Per-item detail and findings live in
+[`docs/phase-2.5.md`](docs/phase-2.5.md). Snapshot:
 
-1. ~~**ScrollView row outline anomaly.**~~ Resolved. The apparent
-   outline was the transparent area around the view tree being
-   composited against the image viewer's page background — the rows
-   themselves are pure rectangles. `SnapshotRenderer` now pre-fills the
-   bitmap with `windowBackgroundColor` (default `Color.WHITE`) before
-   drawing, matching what a real device's `?attr/windowBackground`
-   draws. Phase 2 goldens re-recorded. See
-   [`docs/phase-2.5.md`](docs/phase-2.5.md) §1.
-2. **Nested text styling.** `<Text>` weight / colour spans collapse
-   into the parent paragraph; needs `SpannableStringBuilder` in
-   `buildTextView`.
-3. **Image loading.** `RCTImageView` paints a grey rect; need
-   `source.uri` + `resizeMode` handling.
-4. **Update path (`cloneNodeWithNewProps` and friends).** Phase 1
-   fixtures are all initial mounts; the update path is unexercised on
-   the JVM side.
-5. **`transform` / `opacity` / shadows.** Read from props, not applied.
-6. **RTL.** Hard-coded `DIRECTION_LTR` at the Yoga root; add an RTL
-   fixture and expose `direction`.
-7. **Custom font loading.** Today only layoutlib's bundled Roboto +
-   Noto fallbacks are available; `fontFamily` is silently dropped.
-   Needs a registration API + plumbing through measurer, span builder,
-   and `buildTextView`.
-- **Concurrent-root capture.** Phase 1 stream assumes synchronous
-  commits; the translator should be exercised against a fixture that
-  spans multiple `completeRoot` calls before Phase 3.
+| # | Item | Status |
+| --- | --- | --- |
+| 1 | ScrollView row outline anomaly | ✅ resolved — canvas pre-fills with `windowBackgroundColor` |
+| 2 | Nested text styling | ✅ `ParagraphTextBuilder` + `SpannableStringBuilder` per-run spans |
+| 3 | Image loading | 🟡 `data:` + `file://` decoding + 4 `resizeMode`s done; Metro asset shape (`require('./img.png')`) and `tintColor` open |
+| 4 | Update path (`cloneNodeWithNewProps` & friends) | ✅ multi-frame fixtures + `cloneInto` in both engines |
+| 5 | `transform` / `opacity` / `boxShadow` | ✅ + `ShadowProxyDrawable` for software-canvas blur approximation |
+| 6 | RTL | ⏳ Yoga root still hard-coded `DIRECTION_LTR` |
+| 7 | Custom font loading | ⏳ `LayoutlibTextMeasurer` uses `Typeface.DEFAULT`; `fontFamily` silently dropped |
+| – | Concurrent-root capture | ⏳ Phase 1 stream still assumes synchronous commits |

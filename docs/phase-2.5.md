@@ -84,63 +84,118 @@ PNGs becomes `#FFFFFF`. Visible diff per fixture:
 - Pixel-perfect shadow / elevation support for views that *do* request
   it. Also §5.
 
-## 2. Nested text styling
+## 2. Nested text styling (resolved)
 
-`RCTParagraph` currently collapses all descendant `RCTRawText` nodes
-into a single concatenated string and assigns one font size / weight /
+`RCTParagraph` originally collapsed all descendant `RCTRawText` nodes
+into a single concatenated string and assigned one font size / weight /
 colour from the paragraph's own style. Real RN renders nested `<Text>`
-with weight spans, colour runs, and font-family-per-span via
+with weight spans, colour runs, and per-span sizing via
 `SpannableStringBuilder`.
 
-**Work:** in `FabricViewBuilder.buildTextView`, walk the descendants
-and build spans (`StyleSpan`, `ForegroundColorSpan`, `TypefaceSpan`,
-`AbsoluteSizeSpan`) instead of flattening. Adjust
-`LayoutlibTextMeasurer` to measure the same spanned text so Yoga and
-the painter agree.
+### Outcome
 
-**Touches:** all text goldens. Re-record after.
+`ParagraphTextBuilder` walks the `RCTParagraph` subtree and produces a
+`SpannableStringBuilder` with `AbsoluteSizeSpan` / `ForegroundColorSpan`
+/ `StyleSpan` per `RCTText` run. Both `FabricViewBuilder.buildTextView`
+and the Yoga text measurer go through it, so layout and draw agree
+on what's being rendered. Inherited styles cascade through nested
+`RCTText` via `SpanStyle.mergedWith(...)`.
 
-## 3. Image loading
+Covered: `fontSize`, `color`, `fontWeight` (bold via `StyleSpan`),
+`fontStyle: italic`. Not covered yet: per-span `fontFamily` (depends
+on §7 custom font registry).
 
-`RCTImageView` paints a grey rect at the computed bounds. A real device
-loads `source.uri`, decodes it, scales via `resizeMode`, applies
-`tintColor`.
+Fixture: `nestedTextSpans` — bold "Wes", bold magenta "3 new",
+smaller grey "1 reminder" against a black base style.
 
-**Work:**
-- Resolve `source.uri` against a configured base path (file URIs first,
-  HTTP later — snapshot tests should not hit the network by default).
-- Decode with `BitmapFactory.decodeFile` / `decodeByteArray`.
-- Honour `resizeMode` (`cover`, `contain`, `stretch`, `center`,
-  `repeat`).
-- Stub uri schemes the fixture doesn't bundle (e.g. `https://`) with
-  an explicit placeholder so the failure mode is loud.
+## 3. Image loading (partially resolved)
 
-**Touches:** every fixture with an `RCTImageView`. Re-record after.
+### Done
 
-## 4. Update path (`cloneNodeWithNewProps` and friends)
+- `source.uri` decoding for `data:image/*;base64,…` (via
+  `BitmapFactory.decodeByteArray`) and `file://` (via `decodeFile`).
+- Five `resizeMode` cases mapped to `ImageView.ScaleType` (`cover`,
+  `contain`, `stretch`, `center`; `repeat` falls back to `tile` via
+  `BitmapShader` — verify against device).
+- Unsupported schemes (today: `http(s)://`, `asset://`) render the
+  loud grey placeholder instead of failing the build.
+- Fixture: `imageResizeModes` — same inline base64 64×64 PNG against a
+  200×100 container in four modes, one PNG row per mode.
 
-Phase 1 fixtures all complete in a single synchronous commit. The
-Fabric mount-instruction stream supports update operations
-(`cloneNode`, `cloneNodeWithNewProps`, `cloneNodeWithNewChildren`, etc.)
-that the translator currently ignores. A real app's stream interleaves
-these freely.
+### Open for real-app integration
 
-**Work:**
-- Capture a fixture that triggers `setState` between mount and commit
-  (or a concurrent root render).
-- Teach `FabricViewBuilder` to apply update ops to the in-progress tree
-  before measure/layout/draw.
+- **Metro asset pipeline.** `require('./foo.png')` lowers to a synthetic
+  source object (`{ uri: 'asset:///foo.png', width, height, scale }` in
+  release; a `http://localhost:8081/…` URL in dev). The Node-side
+  harness needs to either resolve those `require()` calls to `file://`
+  URIs at capture time, or the renderer needs an `asset://` scheme that
+  reads from a configured assets root. The Phase 3 design covers this.
+- **`tintColor`.** Not applied. Would set a `ColorMatrixColorFilter`
+  (or a simpler `PorterDuff.Mode.SRC_IN` filter for solid tints).
+- **HTTP source caching.** Out of scope for snapshot tests — fixtures
+  should pin assets locally.
 
-## 5. transform / opacity / shadows
+## 4. Update path (resolved)
 
-Currently read off `style` and dropped. Map them:
-- `transform: [{translateX, scale, rotate, ...}]` → `View.translationX`,
-  `View.scaleX`, `View.rotation`, etc.
-- `opacity` → `View.alpha`.
-- `shadowColor` / `shadowOffset` / `shadowOpacity` / `shadowRadius`
-  (iOS-ish) and `elevation` (Android) — set `view.elevation` and
-  override `view.outlineProvider` when we need a non-rect outline.
-  This sits next to the §1 investigation; do them in the same change.
+Phase 1 fixtures originally completed in a single synchronous commit;
+the Fabric stream's `clone*` ops were ignored. Now wired:
+
+- `rn-harness/src/renderFixture.ts` exports `renderFrames(elements)`
+  that drives N sequential `ReactFabric.render` calls into the same
+  surface. Frame ≥ 2 reconciles against frame 1, so Fabric emits the
+  `clone*` / `appendChild` update ops.
+- `captureFixtures` and `mount-instructions.test` treat an array
+  default export as a multi-frame spec.
+- `YogaLayoutEngine.cloneNode` and `FabricViewBuilder.cloneInto` apply
+  `cloneNode` / `cloneNodeWithNewProps` /
+  `cloneNodeWithNewChildren{,AndProps}` against the in-flight tree.
+  Props shallow-merge (`JsonNull` → key removal, matching the capture
+  stub's `diffAttributePayloads`); children either copy from source or
+  reset to empty. Last `completeRoot` wins.
+
+Fixture: `updateBadgeCount` — two-frame inbox card transitioning grey
+"0 unread" → magenta "3 unread".
+
+Still open: a fixture that spans multiple `completeRoot` calls without
+explicit `renderFrames` — i.e. a concurrent / Suspense-driven update
+where Fabric itself decides to split the commit. Phase 1 stream still
+assumes synchronous commits inside each `render()` call.
+
+## 5. transform / opacity / shadows (resolved)
+
+### Outcome
+
+- `applyTransform` reads `style.transform: [{translateX, translateY,
+  scale, scaleX, scaleY, rotate, rotateZ}, …]` → `View.translationX/Y`,
+  `View.scaleX/Y`, `View.rotation`. Accepts `"Xdeg"`, `"Xrad"`, or
+  numeric for rotate.
+- `applyOpacity`: `style.opacity` → `View.alpha`, clamped to `[0, 1]`.
+- `applyBoxShadow`: `style.boxShadow: [{offsetX, offsetY, blurRadius,
+  spreadDistance, color}, …]` (RN's modern cross-platform prop, RN ≥
+  0.76) → `ShadowProxyDrawable` installed on each shadowed view's
+  parent. The drawable paints the parent's original background, then
+  each child's shadow at the child's local position, then the parent
+  dispatches draws on top. Falloff approximated with concentric
+  expanded rects (layoutlib's software canvas has no `BlurMaskFilter`).
+  Ancestors get `clipChildren = false` so the shadow extends past the
+  parent. `parseColor` accepts `rgba(r,g,b,a)` for shadow colours.
+
+Fixture: `transformsAndEffects` — one labeled row per effect with a
+reference box beside the affected one.
+
+### Deferred
+
+- `rotateX` / `rotateY` / `skew*` — need a `Camera` matrix.
+- iOS-style `shadowColor` / `shadowOffset` / `shadowOpacity` /
+  `shadowRadius` — RN's docs now point to `boxShadow` as the
+  cross-platform replacement, so deferring until a fixture actually
+  needs them.
+- CSS-string form of `boxShadow` (`"0 4px 12px rgba(0,0,0,.35)"`) — the
+  array form is the canonical RN serialization.
+- `inset` shadows — need a clip + invert draw strategy.
+- `View.elevation` (legacy Android-only) — layoutlib's software canvas
+  doesn't render platform shadows. Not bridging this; users should
+  migrate to `boxShadow`.
 
 ## 6. RTL
 
