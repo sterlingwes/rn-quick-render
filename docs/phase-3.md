@@ -71,11 +71,13 @@ Concretely, what's in the way:
    keyed in `AssetRegistry`, which the JS side then passes to `<Image
    source={…}>`. The renderer's image decoder doesn't understand that
    shape and the harness's `require` doesn't run Metro's transform.
-5. **Custom fonts.** Apps ship `.ttf` under
-   `android/app/src/main/assets/fonts/`. Phase 2.5 §7 still has
-   `LayoutlibTextMeasurer` hard-coded to `Typeface.DEFAULT`, so every
-   `<Text style={{fontFamily: 'Inter'}}>` falls back to Roboto with
-   no warning.
+5. **App font registration.** `FontRegistry` (Phase 2.5 §7) is the
+   renderer-side hook for `<Text style={{fontFamily: 'Inter'}}>`; what
+   Phase 3 still has to do is wire the app's
+   `android/app/src/main/assets/fonts/` directory + any
+   `react-native.config.js` family aliasing into a registry the test
+   harness can build automatically, instead of asking each fixture to
+   list the fonts by hand.
 6. **`AppRegistry` entry points.** Apps register a component name and
    the host (Android `ReactRootView` / iOS `RCTRootView`) constructs
    the surface from it. The harness's `renderFixture` skips
@@ -97,8 +99,9 @@ Concretely, what's in the way:
   `require` interceptor translates `require('./inbox.png')` to a
   `file://` URI with width/height/scale, so the renderer keeps the
   same `source.uri` contract it already supports.
-- Custom font registration (Phase 2.5 §7 closes here — the
-  integration test will be the forcing function).
+- Wire the target app's `assets/fonts/` directory + any
+  `react-native.config.js` family aliasing into a `FontRegistry`
+  automatically (the renderer-side primitive landed in Phase 2.5 §7).
 - An `AppRegistry`-driven entry point: `captureFromAppKey(appKey,
   appProps)` that mirrors what `ReactRootView` does on Android.
 - A vetted "Phase 3 first target" repo and a single screen from it,
@@ -212,12 +215,6 @@ rn-harness/src/
 
 ### Renderer changes
 
-- **Custom fonts (Phase 2.5 §7).** `SnapshotRenderer` gains a
-  `fontRegistry: Map<String, Typeface>` constructor parameter.
-  `LayoutlibTextMeasurer.measure` and `ParagraphTextBuilder.applySpans`
-  both look up `fontFamily` in the registry, falling back to
-  `Typeface.DEFAULT` with a logged warning. `FabricViewBuilder.buildTextView`
-  sets the paragraph-base typeface from the registry too.
 - **`tintColor` on Image (Phase 2.5 §3 polish).** Set
   `ImageView.imageTintList = ColorStateList.valueOf(color)` when
   present.
@@ -306,28 +303,26 @@ that requires Phase 4.
 
 ## Order of work
 
-1. **Phase 2.5 §7 — custom fonts.** Already required regardless of
-   target; the integration test will need it on day one. One PR.
-2. **Phase 2.5 §3 polish — `tintColor` + Metro asset shape.** Lands
+1. **Phase 2.5 §3 polish — `tintColor` + Metro asset shape.** Lands
    the renderer-side contract that the capture-time asset resolver
    will emit. One PR.
-3. **`loadRealRn` + native-module proxy shim.** Boot
+2. **`loadRealRn` + native-module proxy shim.** Boot
    `require('react-native')` successfully and `<View><Text>hi</Text></View>`
    render against a no-op `NativeModules`. Synthetic fixture
    (`fixtures/realRnHelloWorld.ts`) imports from `react-native`
    instead of the DSL. One PR.
-4. **`AssetRegistry` hook + capture-time `require()` interceptor.**
+3. **`AssetRegistry` hook + capture-time `require()` interceptor.**
    Fixture with `<Image source={require('./assets/quadrant.png')} />`
    produces the same PNG today's `imageResizeModes` does. One PR.
-5. **`captureFromAppKey`.** AppRegistry-driven entry. One PR.
-6. **First-target integration.** Pick the repo + screen, vendor the
+4. **`captureFromAppKey`.** AppRegistry-driven entry. One PR.
+5. **First-target integration.** Pick the repo + screen, vendor the
    minimum source needed (or git-submodule it), add a capture + render
    + reference-PNG diff job to CI. One PR; this is the real exit
    criterion.
 
-Each PR ends with a green CI run, and #6 includes a hand-eyeballed
+Each PR ends with a green CI run, and #5 includes a hand-eyeballed
 reference render committed alongside the generated one. The diff
-threshold for #6 is intentionally generous on the first pass (e.g.
+threshold for #5 is intentionally generous on the first pass (e.g.
 ≤ 5 % pixel delta) — getting a *recognisable* render of a real screen
 matters more than pixel parity on the first attempt; the gap closes
 in Phase 4.

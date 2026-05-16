@@ -18,7 +18,7 @@ a screen from a real RN app.
 | 0 | Paparazzi validates layoutlib-on-Linux | ✅ done — retrospective only, module deleted |
 | 1 | Fabric mount-instruction capture in Node | ✅ 7 fixtures, CI green |
 | 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
-| 2.5 | Text spans, image loading, transforms, updates, RTL, fonts | 🟡 #1–#5 landed; #6 (RTL), #7 (custom fonts), Metro asset shape still open |
+| 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; #6 (RTL) and the Metro asset shape still open |
 | 3 | Render a real RN app screen (native-module shim + asset pipeline) | ⏳ design in [`docs/phase-3.md`](docs/phase-3.md) |
 | 4 | Device / theme matrix + perf | ⏳ not started |
 | 5 | Packaging (Gradle plugin + npm CLI) | ⏳ not started |
@@ -227,5 +227,5 @@ Per-item detail and findings live in
 | 4 | Update path (`cloneNodeWithNewProps` & friends) | ✅ multi-frame fixtures + `cloneInto` in both engines |
 | 5 | `transform` / `opacity` / `boxShadow` | ✅ + `ShadowProxyDrawable` for software-canvas blur approximation |
 | 6 | RTL | ⏳ Yoga root still hard-coded `DIRECTION_LTR` |
-| 7 | Custom font loading | ⏳ `LayoutlibTextMeasurer` uses `Typeface.DEFAULT`; `fontFamily` silently dropped |
+| 7 | Custom font loading | ✅ `FontRegistry` + `SnapshotRenderer(fontRegistry=…)` + CLI `--fonts DIR` |
 | – | Concurrent-root capture | ⏳ Phase 1 stream still assumes synchronous commits |

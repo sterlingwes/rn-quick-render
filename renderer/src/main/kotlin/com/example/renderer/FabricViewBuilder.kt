@@ -25,7 +25,11 @@ import java.util.Base64
  * directly (no Paparazzi). Takes [YogaLayoutEngine.LayoutResult] instead of
  * a separate layout JSON file.
  */
-class FabricViewBuilder(private val context: Context, private val density: Float) {
+class FabricViewBuilder(
+    private val context: Context,
+    private val density: Float,
+    private val fontRegistry: FontRegistry = FontRegistry.EMPTY,
+) {
 
     private data class NodeSpec(
         val nodeId: Int,
@@ -286,6 +290,7 @@ class FabricViewBuilder(private val context: Context, private val density: Float
         tv.text = ParagraphTextBuilder.build(
             paragraphChildIds = node.children,
             density = density,
+            fontRegistry = fontRegistry,
             viewNameOf = { id -> all[id]?.viewName },
             propsOf = { id -> all[id]?.props },
             childrenOf = { id -> all[id]?.children ?: emptyList() },
@@ -294,16 +299,28 @@ class FabricViewBuilder(private val context: Context, private val density: Float
         // Paragraph base style lives on the TextView itself; spans on the
         // CharSequence above are deltas for nested RCTText runs.
         val style = styleObject(node.props)
+        // Resolve the base typeface (custom font + weight). Always set this
+        // so the paragraph picks up the registered family even when there's
+        // no fontWeight on the style.
+        val baseWeight = paragraphWeight(style)
+        val baseFamily = style?.get("fontFamily")
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
+        tv.typeface = fontRegistry.resolve(baseFamily, baseWeight)
         style?.let { s ->
             if (s.has("fontSize")) tv.textSize = s.get("fontSize").asFloat
             if (s.has("color")) tv.setTextColor(parseColor(s.get("color").asString))
-            if (s.has("fontWeight")) {
-                val w = s.get("fontWeight").asString
-                val bold = w == "bold" || w.toIntOrNull()?.let { it >= 600 } == true
-                if (bold) tv.setTypeface(tv.typeface, Typeface.BOLD)
-            }
         }
         return tv
+    }
+
+    private fun paragraphWeight(style: JsonObject?): Int {
+        val w = style?.get("fontWeight")
+            ?.takeIf { it.isJsonPrimitive }?.asString ?: return Typeface.NORMAL
+        return if (w == "bold" || (w.toIntOrNull()?.let { it >= 600 } == true)) {
+            Typeface.BOLD
+        } else {
+            Typeface.NORMAL
+        }
     }
 
     // --- Common prop application ---

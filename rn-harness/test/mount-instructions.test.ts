@@ -16,6 +16,7 @@ const FIXTURES = [
   { name: "imageResizeModes", modulePath: "../fixtures/imageResizeModes" },
   { name: "transformsAndEffects", modulePath: "../fixtures/transformsAndEffects" },
   { name: "updateBadgeCount", modulePath: "../fixtures/updateBadgeCount" },
+  { name: "customFontText", modulePath: "../fixtures/customFontText" },
 ];
 
 describe("Fabric mount instruction capture", () => {

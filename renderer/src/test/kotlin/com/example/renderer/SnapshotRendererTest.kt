@@ -48,10 +48,17 @@ class SnapshotRendererTest {
     @Test fun imageResizeModes() = runFixture("imageResizeModes")
     @Test fun transformsAndEffects() = runFixture("transformsAndEffects")
     @Test fun updateBadgeCount() = runFixture("updateBadgeCount")
+    @Test fun customFontText() = runFixture(
+        "customFontText",
+        fontRegistry = FontRegistry().registerFile(
+            "TestMono",
+            File(javaClass.classLoader.getResource("fonts/LiberationMono-Regular.ttf")!!.toURI()),
+        ),
+    )
 
-    private fun runFixture(name: String) {
+    private fun runFixture(name: String, fontRegistry: FontRegistry = FontRegistry.EMPTY) {
         val json = File("../rn-harness/out/$name.json").readText()
-        val renderer = SnapshotRenderer(bootstrap)
+        val renderer = SnapshotRenderer(bootstrap, fontRegistry = fontRegistry)
         val image = renderer.render(json)
 
         assertNotNull("$name: render returned null", image)

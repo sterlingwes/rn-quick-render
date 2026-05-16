@@ -205,41 +205,60 @@ a surface option that flows through to Yoga's
 `YogaConfig.setLayoutDirection` and to the `TextView`'s
 `layoutDirection`.
 
-## 7. Custom font loading
+## 7. Custom font loading (resolved)
 
-Today the renderer uses only the fonts layoutlib bundles — Roboto plus
-the Noto fallbacks indexed by `Bridge.init(systemProps, fontsDir, …)` in
-`LayoutlibBootstrap`. `LayoutlibTextMeasurer` always sets
-`paint.typeface = Typeface.create(Typeface.DEFAULT, weight)` and never
-consults `fontFamily`; `FabricViewBuilder.buildTextView` silently drops
-`fontFamily`; `ParagraphTextBuilder.SpanStyle` parses it into a dead
-field. A `<Text style={{ fontFamily: "Inter" }}>` renders as Roboto
-with no warning.
+### Outcome
 
-To make app-shipped fonts work:
+`FontRegistry` (`renderer/src/main/kotlin/.../FontRegistry.kt`) maps
+`fontFamily` strings to loaded `Typeface`s. Construct one, call
+`register(family, typeface)` or `registerFile(family, ttfFile)` per
+app font, and hand it to `SnapshotRenderer` via the constructor:
 
-1. **Registration API on `SnapshotRenderer`** — `register(name: String,
-   ttf: File)` that calls `Typeface.createFromFile(ttf)` and stashes it
-   in a `Map<String, Typeface>`. Take the registry as a constructor
-   parameter so callers can pre-build it.
-2. **Thread the registry into `LayoutlibTextMeasurer`** — look up the
-   paragraph's `fontFamily` and call `Typeface.create(custom, weight)`
-   instead of `DEFAULT`. Falls back to `DEFAULT` when the family is
-   absent so missing-asset diagnostics stay loud (log + use default).
-3. **`TypefaceSpan` in `ParagraphTextBuilder.applySpans`** for nested
-   `RCTText` runs that override `fontFamily`. Wire `applySpans` against
-   the same registry rather than the global `TypefaceSpan(name)`
-   constructor, which only looks up *system* families.
-4. **Paragraph-level `fontFamily` on the base `TextView`** in
-   `buildTextView`.
-5. **Asset-pipeline integration.** RN apps ship `.ttf` under
-   `android/app/src/main/assets/fonts/` and reference them by the
-   `PostScript` name (or basename, depending on configuration). A
-   pragmatic v1: the renderer accepts a directory, registers every
-   `.ttf` under it keyed by `file.nameWithoutExtension`, and the test
-   harness points at the app's fonts directory. Phase 3's native-module
-   audit will need to handle the full RN asset story (multi-weight
-   families, the `react-native.config.js` mappings, etc.).
+```kotlin
+val fonts = FontRegistry()
+    .registerFile("Inter", File("…/Inter-Regular.ttf"))
+    .registerFile("InterBold", File("…/Inter-Bold.ttf"))
+SnapshotRenderer(bootstrap, fontRegistry = fonts)
+```
 
-Touches every text golden once it lands. Re-record after.
+Lookup order in `FontRegistry.resolve(family, weight)`:
+1. Custom registrations.
+2. Built-in family names handled by `Typeface.create` (`"sans-serif"`,
+   `"serif"`, `"monospace"`).
+3. `Typeface.DEFAULT` with the requested weight, plus a one-line stderr
+   warning per missing family (deduped) so silent fallbacks stay
+   visible.
+
+Where the registry is consulted:
+- `LayoutlibTextMeasurer.measure` — uses `resolve(fontFamily, weight)`
+  for the paragraph's base typeface so Yoga measurement matches what
+  the painter draws.
+- `FabricViewBuilder.buildTextView` — sets `tv.typeface` from the
+  registry (paragraph-level `fontFamily` + `fontWeight`).
+- `ParagraphTextBuilder.applySpans` — emits `TypefaceSpan(typeface)`
+  (the API-28 Typeface-overload) for any nested `RCTText` whose
+  `fontFamily` is a custom registration. System families and the
+  no-`fontFamily` case stay on the paragraph base + `StyleSpan` for
+  bold/italic.
+
+The CLI grew a `--fonts <dir>` flag that registers every `.ttf` / `.otf`
+under the directory keyed by `file.nameWithoutExtension`. RN apps ship
+their fonts under `android/app/src/main/assets/fonts/` so passing that
+directory is the v1 integration path.
+
+Fixture: `customFontText` registers `TestMono` →
+`renderer/src/test/resources/fonts/LiberationMono-Regular.ttf` (SIL OFL
+1.1, license bundled alongside) and demonstrates paragraph-level,
+per-span, weighted, and missing-family rendering — the last row
+visibly falls back to Roboto.
+
+### Deferred
+
+- The `react-native.config.js` family-name mapping. Phase 3's first
+  integration with a real app will need a small loader that
+  understands the project's font declarations (PostScript names,
+  multi-weight families). For now callers pre-build the registry.
+- Per-weight TTF files. `Typeface.create(base, BOLD)` synthesises bold
+  glyphs from the registered face — visually fine for sans-serif but
+  fuzzy for display fonts shipped as separate weight files.
 
