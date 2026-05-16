@@ -44,6 +44,7 @@ class SnapshotRendererTest {
     @Test fun textAndImage() = runFixture("textAndImage")
     @Test fun scrollView() = runFixture("scrollView")
     @Test fun conditional() = runFixture("conditional")
+    @Test fun nestedTextSpans() = runFixture("nestedTextSpans")
 
     private fun runFixture(name: String) {
         val json = File("../rn-harness/out/$name.json").readText()

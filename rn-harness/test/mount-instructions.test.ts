@@ -12,6 +12,7 @@ const FIXTURES = [
   { name: "textAndImage", modulePath: "../fixtures/textAndImage" },
   { name: "scrollView", modulePath: "../fixtures/scrollView" },
   { name: "conditional", modulePath: "../fixtures/conditional" },
+  { name: "nestedTextSpans", modulePath: "../fixtures/nestedTextSpans" },
 ];
 
 describe("Fabric mount instruction capture", () => {

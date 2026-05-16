@@ -149,3 +149,42 @@ fixture (mirrored row, `start`/`end` margins) and expose `direction` as
 a surface option that flows through to Yoga's
 `YogaConfig.setLayoutDirection` and to the `TextView`'s
 `layoutDirection`.
+
+## 7. Custom font loading
+
+Today the renderer uses only the fonts layoutlib bundles — Roboto plus
+the Noto fallbacks indexed by `Bridge.init(systemProps, fontsDir, …)` in
+`LayoutlibBootstrap`. `LayoutlibTextMeasurer` always sets
+`paint.typeface = Typeface.create(Typeface.DEFAULT, weight)` and never
+consults `fontFamily`; `FabricViewBuilder.buildTextView` silently drops
+`fontFamily`; `ParagraphTextBuilder.SpanStyle` parses it into a dead
+field. A `<Text style={{ fontFamily: "Inter" }}>` renders as Roboto
+with no warning.
+
+To make app-shipped fonts work:
+
+1. **Registration API on `SnapshotRenderer`** — `register(name: String,
+   ttf: File)` that calls `Typeface.createFromFile(ttf)` and stashes it
+   in a `Map<String, Typeface>`. Take the registry as a constructor
+   parameter so callers can pre-build it.
+2. **Thread the registry into `LayoutlibTextMeasurer`** — look up the
+   paragraph's `fontFamily` and call `Typeface.create(custom, weight)`
+   instead of `DEFAULT`. Falls back to `DEFAULT` when the family is
+   absent so missing-asset diagnostics stay loud (log + use default).
+3. **`TypefaceSpan` in `ParagraphTextBuilder.applySpans`** for nested
+   `RCTText` runs that override `fontFamily`. Wire `applySpans` against
+   the same registry rather than the global `TypefaceSpan(name)`
+   constructor, which only looks up *system* families.
+4. **Paragraph-level `fontFamily` on the base `TextView`** in
+   `buildTextView`.
+5. **Asset-pipeline integration.** RN apps ship `.ttf` under
+   `android/app/src/main/assets/fonts/` and reference them by the
+   `PostScript` name (or basename, depending on configuration). A
+   pragmatic v1: the renderer accepts a directory, registers every
+   `.ttf` under it keyed by `file.nameWithoutExtension`, and the test
+   harness points at the app's fonts directory. Phase 3's native-module
+   audit will need to handle the full RN asset story (multi-weight
+   families, the `react-native.config.js` mappings, etc.).
+
+Touches every text golden once it lands. Re-record after.
+

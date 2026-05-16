@@ -235,6 +235,10 @@ The full plan and per-item experiments live in
 5. **`transform` / `opacity` / shadows.** Read from props, not applied.
 6. **RTL.** Hard-coded `DIRECTION_LTR` at the Yoga root; add an RTL
    fixture and expose `direction`.
+7. **Custom font loading.** Today only layoutlib's bundled Roboto +
+   Noto fallbacks are available; `fontFamily` is silently dropped.
+   Needs a registration API + plumbing through measurer, span builder,
+   and `buildTextView`.
 - **Concurrent-root capture.** Phase 1 stream assumes synchronous
   commits; the translator should be exercised against a fixture that
   spans multiple `completeRoot` calls before Phase 3.

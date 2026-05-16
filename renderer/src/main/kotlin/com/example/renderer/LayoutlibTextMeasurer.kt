@@ -26,7 +26,7 @@ class LayoutlibTextMeasurer(
 ) : YogaLayoutEngine.TextMeasureProvider {
 
     override fun measure(
-        text: String,
+        text: CharSequence,
         fontSize: Float,
         fontWeight: String?,
         availableWidth: Float,
@@ -37,7 +37,8 @@ class LayoutlibTextMeasurer(
         paint.textSize = fontSize * density
 
         // Weight bucketing matching RN Android's Typeface resolution:
-        // "bold" or >= 600 → BOLD, else NORMAL
+        // "bold" or >= 600 → BOLD, else NORMAL. Spans on the input may
+        // override per-character (StyleSpan, AbsoluteSizeSpan, etc.).
         val weight = resolveWeight(fontWeight)
         paint.typeface = Typeface.create(Typeface.DEFAULT, weight)
 

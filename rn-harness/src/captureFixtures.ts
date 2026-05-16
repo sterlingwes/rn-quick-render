@@ -8,6 +8,7 @@ const FIXTURES = [
   { name: "textAndImage", path: "../fixtures/textAndImage" },
   { name: "scrollView", path: "../fixtures/scrollView" },
   { name: "conditional", path: "../fixtures/conditional" },
+  { name: "nestedTextSpans", path: "../fixtures/nestedTextSpans" },
 ] as const;
 
 function main() {

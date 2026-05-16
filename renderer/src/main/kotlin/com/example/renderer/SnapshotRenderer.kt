@@ -33,7 +33,7 @@ class SnapshotRenderer(
 
     fun render(instructionsJson: String): BufferedImage {
         val textMeasurer = LayoutlibTextMeasurer(density)
-        val engine = YogaLayoutEngine(textMeasurer)
+        val engine = YogaLayoutEngine(textMeasurer, textDensity = density)
         val layoutResult = engine.computeLayout(
             instructionsJson,
             YogaLayoutEngine.ComputeLayoutOptions(

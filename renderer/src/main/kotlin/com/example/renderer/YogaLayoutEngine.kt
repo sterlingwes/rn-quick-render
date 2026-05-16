@@ -14,11 +14,19 @@ import com.google.gson.JsonParser
  */
 class YogaLayoutEngine(
     private val textMeasurer: TextMeasureProvider? = null,
+    // px-per-dp; needed when nested-text spans construct AbsoluteSizeSpan(px).
+    // Defaults to 1 so the heuristic fallback path (no measurer) keeps working
+    // in dp without any conversion.
+    private val textDensity: Float = 1f,
 ) {
 
-    /** Pluggable text measurement — defaults to a crude heuristic. */
+    /**
+     * Pluggable text measurement — defaults to a crude heuristic when null.
+     * Receives a [CharSequence] so callers can pass a `SpannableStringBuilder`
+     * with per-span weight/size/colour overrides for nested `<Text>` runs.
+     */
     fun interface TextMeasureProvider {
-        fun measure(text: String, fontSize: Float, fontWeight: String?, availableWidth: Float): Pair<Float, Float>
+        fun measure(text: CharSequence, fontSize: Float, fontWeight: String?, availableWidth: Float): Pair<Float, Float>
     }
 
     data class LayoutRect(val left: Float, val top: Float, val width: Float, val height: Float)
@@ -64,15 +72,23 @@ class YogaLayoutEngine(
         val (nodes, roots) = reconstructTree(instructions)
         val viewport = opts.width to opts.height
 
-        // Build Yoga nodes — skip RCTRawText (layout owned by parent RCTParagraph).
+        // Build Yoga nodes. RCTRawText (text leaves) and RCTText (virtual span
+        // wrappers inside a paragraph) don't get Yoga nodes — they exist only
+        // to carry text + style runs into the parent RCTParagraph's measure.
         val yogaNodes = mutableMapOf<Int, YogaNode>()
         for (node in nodes.values) {
-            if (node.viewName == "RCTRawText") continue
+            if (node.viewName == "RCTRawText" || node.viewName == "RCTText") continue
             val y = YogaNodeFactory.create()
             applyStyle(y, node.props.getAsJsonObject("style"))
 
             if (isTextLeaf(node.viewName)) {
-                val text = collectParagraphText(node, nodes)
+                val spanned = ParagraphTextBuilder.build(
+                    paragraphChildIds = node.children,
+                    density = textDensity,
+                    viewNameOf = { id -> nodes[id]?.viewName },
+                    propsOf = { id -> nodes[id]?.props },
+                    childrenOf = { id -> nodes[id]?.children ?: emptyList() },
+                )
                 val style = node.props.getAsJsonObject("style")
                 val fontSize = style?.get("fontSize")?.takeIf { it.isJsonPrimitive }?.asFloat ?: 14f
                 val fontWeight = style?.get("fontWeight")?.takeIf { it.isJsonPrimitive }?.asString
@@ -82,7 +98,7 @@ class YogaLayoutEngine(
                         YogaMeasureMode.AT_MOST -> width
                         else -> Float.MAX_VALUE
                     }
-                    val (w, h) = measureParagraph(text, fontSize, fontWeight, availableWidth)
+                    val (w, h) = measureParagraph(spanned, fontSize, fontWeight, availableWidth)
                     YogaMeasureOutput.make(w, h)
                 })
             }
@@ -319,25 +335,9 @@ class YogaLayoutEngine(
     // Text measurement
     // -----------------------------------------------------------------------
     private fun isTextLeaf(viewName: String): Boolean =
-        viewName == "RCTParagraph" || viewName == "RCTText"
+        viewName == "RCTParagraph"
 
-    private fun collectParagraphText(root: Node, nodes: Map<Int, Node>): String {
-        val sb = StringBuilder()
-        fun visit(n: Node) {
-            if (n.viewName == "RCTRawText") {
-                val txt = n.props.get("text")
-                if (txt != null && txt.isJsonPrimitive) sb.append(txt.asString)
-            }
-            for (childId in n.children) {
-                val child = nodes[childId]
-                if (child != null) visit(child)
-            }
-        }
-        visit(root)
-        return sb.toString()
-    }
-
-    private fun measureParagraph(text: String, fontSize: Float, fontWeight: String?, availableWidth: Float): Pair<Float, Float> {
+    private fun measureParagraph(text: CharSequence, fontSize: Float, fontWeight: String?, availableWidth: Float): Pair<Float, Float> {
         if (text.isEmpty()) return 0f to 0f
 
         // Delegate to pluggable measurer if available
@@ -345,7 +345,7 @@ class YogaLayoutEngine(
             return textMeasurer.measure(text, fontSize, fontWeight, availableWidth)
         }
 
-        // Heuristic fallback — matches computeLayout.ts
+        // Heuristic fallback — matches computeLayout.ts. Ignores spans.
         val charW = fontSize * AVG_CHAR_WIDTH_RATIO
         val lineH = fontSize * LINE_HEIGHT_RATIO
         val unconstrainedW = text.length * charW
