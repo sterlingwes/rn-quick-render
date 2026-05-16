@@ -165,6 +165,10 @@ tasks.test {
     // Paths for Bridge.init()
     systemProperty("layoutlib.data", layoutlibDataDir.resolve("data").absolutePath)
     systemProperty("layoutlib.resources", layoutlibDataDir.resolve("layoutlib-resources").absolutePath)
+
+    // Forward the record toggle from gradle CLI (-Drenderer.record=true) to
+    // the test JVM so SnapshotRendererTest can re-record committed goldens.
+    System.getProperty("renderer.record")?.let { systemProperty("renderer.record", it) }
 }
 
 dependencies {
