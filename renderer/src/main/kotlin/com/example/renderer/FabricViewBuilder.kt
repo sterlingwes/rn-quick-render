@@ -89,6 +89,7 @@ class FabricViewBuilder(private val context: Context, private val density: Float
             "RCTImageView" -> buildImageView(node)
             "RCTParagraph" -> buildTextView(node, all)
             "RCTRawText" -> error("RCTRawText should be consumed by parent RCTParagraph")
+            "RCTText" -> error("RCTText should be consumed by parent RCTParagraph as a span")
             else -> buildFrameLayout(node, all, rects)
         }
     }
@@ -142,7 +143,21 @@ class FabricViewBuilder(private val context: Context, private val density: Float
     private fun buildTextView(node: NodeSpec, all: Map<Int, NodeSpec>): TextView {
         val tv = TextView(context)
         applyCommonProps(tv, node.props)
-        tv.text = collectRawText(node, all)
+
+        // Always build a SpannableStringBuilder — for paragraphs without
+        // nested RCTText runs it's equivalent to a plain String (no spans),
+        // but using the same path everywhere keeps the measurer and the view
+        // in sync on which text they're rendering.
+        tv.text = ParagraphTextBuilder.build(
+            paragraphChildIds = node.children,
+            density = density,
+            viewNameOf = { id -> all[id]?.viewName },
+            propsOf = { id -> all[id]?.props },
+            childrenOf = { id -> all[id]?.children ?: emptyList() },
+        )
+
+        // Paragraph base style lives on the TextView itself; spans on the
+        // CharSequence above are deltas for nested RCTText runs.
         val style = styleObject(node.props)
         style?.let { s ->
             if (s.has("fontSize")) tv.textSize = s.get("fontSize").asFloat
@@ -154,23 +169,6 @@ class FabricViewBuilder(private val context: Context, private val density: Float
             }
         }
         return tv
-    }
-
-    private fun collectRawText(node: NodeSpec, all: Map<Int, NodeSpec>): String {
-        val sb = StringBuilder()
-        val stack = ArrayDeque<NodeSpec>()
-        stack.addLast(node)
-        while (stack.isNotEmpty()) {
-            val cur = stack.removeLast()
-            if (cur.viewName == "RCTRawText" && cur.props.has("text")) {
-                sb.append(cur.props.get("text").asString)
-            }
-            for (i in cur.children.indices.reversed()) {
-                val child = all[cur.children[i]] ?: continue
-                stack.addLast(child)
-            }
-        }
-        return sb.toString()
     }
 
     // --- Common prop application ---
