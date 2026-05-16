@@ -279,7 +279,7 @@ class FabricViewBuilder(private val context: Context, private val density: Float
         applyBackground(view, style)
         applyOpacity(view, style)
         applyTransform(view, style)
-        applyElevation(view, style)
+        applyBoxShadow(view, style)
     }
 
     private fun applyBackground(view: View, style: JsonObject) {
@@ -358,21 +358,50 @@ class FabricViewBuilder(private val context: Context, private val density: Float
         }
     }
 
-    private fun applyElevation(view: View, style: JsonObject) {
-        // RN's `elevation` style (Android-only) is dp. iOS-style
-        // shadowOffset/Opacity/Radius/Color don't have a direct Android
-        // analog — Android draws one shadow per view, coloured by the
-        // platform theme. Map elevation only for now; the iOS props are
-        // logged for the shadow follow-up.
-        val elevation = style.get("elevation")
-            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }
-            ?.asFloat ?: return
-        view.elevation = dpF(elevation)
-        // View.outlineProvider defaults to BACKGROUND; the elevation
-        // shadow uses the background drawable's outline. As long as the
-        // view has a background (set by applyBackground above), the
-        // shadow draws automatically.
+    private fun applyBoxShadow(view: View, style: JsonObject) {
+        // RN's modern cross-platform shadow prop. Accepts an array of
+        //   { offsetX, offsetY, blurRadius, spreadDistance, color, inset }
+        // descriptors (and a CSS string form which we don't parse yet).
+        // We deliberately don't touch `View.elevation` — layoutlib's
+        // software canvas doesn't render the platform shadow, and box-shadow
+        // is the supported style going forward (RN ≥ 0.76).
+        val shadows = parseBoxShadow(style) ?: return
+        if (shadows.isEmpty()) return
+        boxShadows[view] = shadows
     }
+
+    /** Per-view shadow specs registered during build; consumed by
+     *  [SnapshotRenderer]'s shadow pre-pass. */
+    val boxShadows: MutableMap<View, List<BoxShadowSpec>> = mutableMapOf()
+
+    private fun parseBoxShadow(style: JsonObject): List<BoxShadowSpec>? {
+        val raw = style.get("boxShadow") ?: return null
+        if (!raw.isJsonArray) return null  // CSS string form not yet supported
+        val out = mutableListOf<BoxShadowSpec>()
+        for (entry in raw.asJsonArray) {
+            if (!entry.isJsonObject) continue
+            val obj = entry.asJsonObject
+            // Skip inset shadows for now — they paint *inside* the view
+            // rect and need a different draw strategy (clip + invert).
+            val inset = obj.get("inset")?.takeIf { it.isJsonPrimitive }?.asBoolean ?: false
+            if (inset) continue
+            out.add(
+                BoxShadowSpec(
+                    offsetX = floatProp(obj, "offsetX") ?: 0f,
+                    offsetY = floatProp(obj, "offsetY") ?: 0f,
+                    blurRadius = floatProp(obj, "blurRadius") ?: 0f,
+                    spreadDistance = floatProp(obj, "spreadDistance") ?: 0f,
+                    color = obj.get("color")
+                        ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }
+                        ?.asString?.let { parseColor(it) } ?: Color.BLACK,
+                ),
+            )
+        }
+        return if (out.isEmpty()) null else out
+    }
+
+    private fun floatProp(obj: JsonObject, key: String): Float? =
+        obj.get(key)?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asFloat
 
     private fun applyCornerRadii(drawable: GradientDrawable, style: JsonObject) {
         val uniform = style.get("borderRadius")
@@ -419,6 +448,7 @@ class FabricViewBuilder(private val context: Context, private val density: Float
 
     private fun parseColor(raw: String): Int {
         return when {
+            raw.startsWith("rgba(") || raw.startsWith("rgb(") -> parseRgbaString(raw)
             raw.length == 5 && raw.startsWith("#") -> Color.parseColor(expandShortHex(raw))
             raw.length == 4 && raw.startsWith("#") -> Color.parseColor(expandShortHex(raw))
             raw.length == 9 && raw.startsWith("#") -> {
@@ -427,6 +457,21 @@ class FabricViewBuilder(private val context: Context, private val density: Float
             }
             else -> Color.parseColor(raw)
         }
+    }
+
+    private fun parseRgbaString(raw: String): Int {
+        val open = raw.indexOf('(')
+        val close = raw.indexOf(')')
+        if (open < 0 || close <= open) return Color.BLACK
+        val parts = raw.substring(open + 1, close).split(',').map { it.trim() }
+        if (parts.size < 3) return Color.BLACK
+        val r = parts[0].toFloatOrNull()?.toInt()?.coerceIn(0, 255) ?: return Color.BLACK
+        val g = parts[1].toFloatOrNull()?.toInt()?.coerceIn(0, 255) ?: return Color.BLACK
+        val b = parts[2].toFloatOrNull()?.toInt()?.coerceIn(0, 255) ?: return Color.BLACK
+        val a = if (parts.size >= 4) {
+            ((parts[3].toFloatOrNull() ?: 1f).coerceIn(0f, 1f) * 255f).toInt()
+        } else 255
+        return Color.argb(a, r, g, b)
     }
 
     private fun expandShortHex(raw: String): String {

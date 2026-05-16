@@ -505,7 +505,7 @@
       "viewName": "RCTRawText",
       "surfaceId": 18,
       "props": {
-        "text": "elevation 8 (shadow)"
+        "text": "boxShadow 0 4 12 rgba(0,0,0,.35)"
       }
     },
     {
@@ -564,7 +564,15 @@
           "width": 64,
           "height": 64,
           "backgroundColor": "#3F51B5",
-          "elevation": 8
+          "boxShadow": [
+            {
+              "offsetX": 0,
+              "offsetY": 4,
+              "blurRadius": 12,
+              "spreadDistance": 0,
+              "color": "rgba(0,0,0,0.35)"
+            }
+          ]
         }
       }
     },

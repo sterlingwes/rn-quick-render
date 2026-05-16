@@ -45,5 +45,15 @@ export default React.createElement(
   row("rotate 15deg", { transform: [{ rotate: "15deg" }] }),
   row("scale 1.3", { transform: [{ scale: 1.3 }] }),
   row("opacity 0.4", { opacity: 0.4 }),
-  row("elevation 8 (shadow)", { elevation: 8 }),
+  row("boxShadow 0 4 12 rgba(0,0,0,.35)", {
+    boxShadow: [
+      {
+        offsetX: 0,
+        offsetY: 4,
+        blurRadius: 12,
+        spreadDistance: 0,
+        color: "rgba(0,0,0,0.35)",
+      },
+    ],
+  }),
 );
