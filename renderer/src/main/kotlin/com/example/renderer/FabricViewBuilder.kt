@@ -225,6 +225,7 @@ class FabricViewBuilder(
             image.scaleType = resolveScaleType(
                 node.props.get("resizeMode")?.takeIf { it.isJsonPrimitive }?.asString
             )
+            applyTintColor(image, node.props)
         } else if (image.background == null) {
             // Unsupported scheme or decode failure — render the legacy grey
             // placeholder so the slot is still visible. http(s):// URIs land
@@ -232,6 +233,19 @@ class FabricViewBuilder(
             image.setBackgroundColor(Color.parseColor("#CFD8DC"))
         }
         return image
+    }
+
+    private fun applyTintColor(image: ImageView, props: JsonObject) {
+        val raw = props.get("tintColor")
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString ?: return
+        val color = parseColor(raw)
+        // SRC_IN with a solid colour replaces every opaque pixel of the
+        // bitmap with the tint colour, preserving the source's alpha
+        // channel — same behaviour RN Android wires for tintColor via
+        // its custom ImageDrawable.
+        image.colorFilter = android.graphics.PorterDuffColorFilter(
+            color, android.graphics.PorterDuff.Mode.SRC_IN,
+        )
     }
 
     private fun decodeImage(props: JsonObject): Bitmap? {

@@ -303,26 +303,25 @@ that requires Phase 4.
 
 ## Order of work
 
-1. **Phase 2.5 §3 polish — `tintColor` + Metro asset shape.** Lands
-   the renderer-side contract that the capture-time asset resolver
-   will emit. One PR.
-2. **`loadRealRn` + native-module proxy shim.** Boot
+1. **`loadRealRn` + native-module proxy shim.** Boot
    `require('react-native')` successfully and `<View><Text>hi</Text></View>`
    render against a no-op `NativeModules`. Synthetic fixture
    (`fixtures/realRnHelloWorld.ts`) imports from `react-native`
    instead of the DSL. One PR.
-3. **`AssetRegistry` hook + capture-time `require()` interceptor.**
+2. **`AssetRegistry` hook + capture-time `require()` interceptor.**
    Fixture with `<Image source={require('./assets/quadrant.png')} />`
-   produces the same PNG today's `imageResizeModes` does. One PR.
-4. **`captureFromAppKey`.** AppRegistry-driven entry. One PR.
-5. **First-target integration.** Pick the repo + screen, vendor the
+   produces the same PNG today's `imageResizeModes` does. The
+   renderer-side contract (Metro-shaped sources + `tintColor`) is
+   already in place — this PR is purely capture-time wiring. One PR.
+3. **`captureFromAppKey`.** AppRegistry-driven entry. One PR.
+4. **First-target integration.** Pick the repo + screen, vendor the
    minimum source needed (or git-submodule it), add a capture + render
    + reference-PNG diff job to CI. One PR; this is the real exit
    criterion.
 
-Each PR ends with a green CI run, and #5 includes a hand-eyeballed
+Each PR ends with a green CI run, and #4 includes a hand-eyeballed
 reference render committed alongside the generated one. The diff
-threshold for #5 is intentionally generous on the first pass (e.g.
+threshold for #4 is intentionally generous on the first pass (e.g.
 ≤ 5 % pixel delta) — getting a *recognisable* render of a real screen
 matters more than pixel parity on the first attempt; the gap closes
 in Phase 4.

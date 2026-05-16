@@ -18,7 +18,7 @@ a screen from a real RN app.
 | 0 | Paparazzi validates layoutlib-on-Linux | ✅ done — retrospective only, module deleted |
 | 1 | Fabric mount-instruction capture in Node | ✅ 7 fixtures, CI green |
 | 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
-| 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; #6 (RTL) and the Metro asset shape still open |
+| 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; #6 (RTL) still open; the Metro asset *resolver* sits in Phase 3 |
 | 3 | Render a real RN app screen (native-module shim + asset pipeline) | ⏳ design in [`docs/phase-3.md`](docs/phase-3.md) |
 | 4 | Device / theme matrix + perf | ⏳ not started |
 | 5 | Packaging (Gradle plugin + npm CLI) | ⏳ not started |
@@ -223,7 +223,7 @@ Per-item detail and findings live in
 | --- | --- | --- |
 | 1 | ScrollView row outline anomaly | ✅ resolved — canvas pre-fills with `windowBackgroundColor` |
 | 2 | Nested text styling | ✅ `ParagraphTextBuilder` + `SpannableStringBuilder` per-run spans |
-| 3 | Image loading | 🟡 `data:` + `file://` decoding + 4 `resizeMode`s done; Metro asset shape (`require('./img.png')`) and `tintColor` open |
+| 3 | Image loading | ✅ `data:` + `file://` decoding, 4 `resizeMode`s, `tintColor` via `PorterDuffColorFilter`, tolerates Metro-shaped sources (the capture-time `require()` resolver lives in Phase 3 #2) |
 | 4 | Update path (`cloneNodeWithNewProps` & friends) | ✅ multi-frame fixtures + `cloneInto` in both engines |
 | 5 | `transform` / `opacity` / `boxShadow` | ✅ + `ShadowProxyDrawable` for software-canvas blur approximation |
 | 6 | RTL | ⏳ Yoga root still hard-coded `DIRECTION_LTR` |

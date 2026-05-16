@@ -48,6 +48,7 @@ class SnapshotRendererTest {
     @Test fun imageResizeModes() = runFixture("imageResizeModes")
     @Test fun transformsAndEffects() = runFixture("transformsAndEffects")
     @Test fun updateBadgeCount() = runFixture("updateBadgeCount")
+    @Test fun imageTintAndAsset() = runFixture("imageTintAndAsset")
     @Test fun customFontText() = runFixture(
         "customFontText",
         fontRegistry = FontRegistry().registerFile(
