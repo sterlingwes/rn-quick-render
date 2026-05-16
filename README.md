@@ -213,15 +213,28 @@ pixel diff fails the job and uploads the fresh renders for inspection.
 
 ### Phase 2.5 backlog
 
-- **Nested text styling.** `<Text>` weight / colour spans collapse into
-  the parent paragraph; needs `SpannableStringBuilder` in `buildTextView`.
-- **Image loading.** `RCTImageView` paints a grey rect; need `source.uri`
-  + `resizeMode` handling.
-- **`cloneNodeWithNewProps` and friends.** Phase 1 fixtures are all
-  initial mounts; the update path is unexercised on the JVM side.
-- **`transform` / `opacity` / shadows.** Read from props, not applied.
-- **RTL.** Hard-coded `DIRECTION_LTR` at the Yoga root; add an RTL fixture
-  and expose `direction`.
+The full plan and per-item experiments live in
+[`docs/phase-2.5.md`](docs/phase-2.5.md). Headlines:
+
+1. ~~**ScrollView row outline anomaly.**~~ Resolved. The apparent
+   outline was the transparent area around the view tree being
+   composited against the image viewer's page background — the rows
+   themselves are pure rectangles. `SnapshotRenderer` now pre-fills the
+   bitmap with `windowBackgroundColor` (default `Color.WHITE`) before
+   drawing, matching what a real device's `?attr/windowBackground`
+   draws. Phase 2 goldens re-recorded. See
+   [`docs/phase-2.5.md`](docs/phase-2.5.md) §1.
+2. **Nested text styling.** `<Text>` weight / colour spans collapse
+   into the parent paragraph; needs `SpannableStringBuilder` in
+   `buildTextView`.
+3. **Image loading.** `RCTImageView` paints a grey rect; need
+   `source.uri` + `resizeMode` handling.
+4. **Update path (`cloneNodeWithNewProps` and friends).** Phase 1
+   fixtures are all initial mounts; the update path is unexercised on
+   the JVM side.
+5. **`transform` / `opacity` / shadows.** Read from props, not applied.
+6. **RTL.** Hard-coded `DIRECTION_LTR` at the Yoga root; add an RTL
+   fixture and expose `direction`.
 - **Concurrent-root capture.** Phase 1 stream assumes synchronous
   commits; the translator should be exercised against a fixture that
   spans multiple `completeRoot` calls before Phase 3.
