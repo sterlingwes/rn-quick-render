@@ -108,8 +108,11 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload test reports
-        if: failure()
+        # Always upload — diagnostic tests print into the surefire XML and
+        # we want those readable on green runs too.
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: phase2-test-reports
           path: renderer/build/reports/tests/test
+          if-no-files-found: warn

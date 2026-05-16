@@ -1,7 +1,6 @@
 package com.example.renderer
 
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Test
 import java.awt.image.BufferedImage
 import java.io.File
@@ -11,13 +10,10 @@ import java.io.File
  * the source of the faint outline noted in the Phase 2 spot-check. See
  * docs/phase-2.5.md §1 for the hypotheses this is meant to discriminate.
  *
- * Ignored by default so CI does not gate on it. To gather samples:
- *   ./gradlew :renderer:test --tests \
- *     com.example.renderer.ScrollViewOutlineInvestigationTest
- * and read the captured table from the test's stdout in
- * renderer/build/reports/tests/test.
+ * Always runs — it makes no assertions, just prints. The RGB table lands
+ * in the test's stdout (visible in renderer/build/reports/tests/test on
+ * CI under the `phase2-test-reports` artifact, or in the surefire XML).
  */
-@Ignore("Diagnostic-only; un-ignore to capture pixel samples for the outline investigation.")
 class ScrollViewOutlineInvestigationTest {
 
     companion object {
