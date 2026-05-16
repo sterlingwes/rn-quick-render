@@ -14,6 +14,10 @@ import java.awt.image.BufferedImage
  *    device draws under the view tree via `?attr/windowBackground`), then
  *    measure / layout / draw the view tree on top.
  *
+ * Box-shadows are painted inside the view tree's draw pass by a
+ * [ShadowProxyDrawable] installed on each shadowed view's parent in
+ * [FabricViewBuilder]; this renderer doesn't need to know about them.
+ *
  * Views are drawn directly via [Canvas]/[Bitmap] rather than through the
  * render session's `render()` method, matching Paparazzi's approach.
  */

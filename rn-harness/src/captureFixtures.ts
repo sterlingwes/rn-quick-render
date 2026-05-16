@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { renderFixture } from "./renderFixture";
+import { renderFixture, renderFrames } from "./renderFixture";
 
 const FIXTURES = [
   { name: "simpleView", path: "../fixtures/simpleView" },
@@ -10,6 +10,8 @@ const FIXTURES = [
   { name: "conditional", path: "../fixtures/conditional" },
   { name: "nestedTextSpans", path: "../fixtures/nestedTextSpans" },
   { name: "imageResizeModes", path: "../fixtures/imageResizeModes" },
+  { name: "transformsAndEffects", path: "../fixtures/transformsAndEffects" },
+  { name: "updateBadgeCount", path: "../fixtures/updateBadgeCount" },
 ] as const;
 
 function main() {
@@ -19,7 +21,12 @@ function main() {
   for (const { name, path: modulePath } of FIXTURES) {
     const element = require(modulePath).default;
     const started = Date.now();
-    const { surfaceId, instructions } = renderFixture(element);
+    // An array default export means a multi-frame fixture: each frame
+    // is rendered into the same surface so the second and later
+    // produce clone* update ops.
+    const { surfaceId, instructions } = Array.isArray(element)
+      ? renderFrames(element)
+      : renderFixture(element);
     const elapsedMs = Date.now() - started;
 
     const outPath = path.join(outDir, `${name}.json`);

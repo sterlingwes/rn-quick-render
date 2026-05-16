@@ -54,12 +54,24 @@ class FabricViewBuilder(private val context: Context, private val density: Float
                         op.getAsJsonObject("props") else JsonObject()
                     nodes[id] = NodeSpec(id, viewName, props)
                 }
+                "cloneNode" -> cloneInto(op, nodes, keepChildren = true, newProps = null)
+                "cloneNodeWithNewProps" -> cloneInto(op, nodes,
+                    keepChildren = true,
+                    newProps = op.get("newProps")?.takeIf { it.isJsonObject }?.asJsonObject)
+                "cloneNodeWithNewChildren" -> cloneInto(op, nodes,
+                    keepChildren = false, newProps = null)
+                "cloneNodeWithNewChildrenAndProps" -> cloneInto(op, nodes,
+                    keepChildren = false,
+                    newProps = op.get("newProps")?.takeIf { it.isJsonObject }?.asJsonObject)
                 "appendChild" -> {
                     val parent = nodes[op.get("parentNodeId").asInt]
                         ?: error("appendChild parent ${op.get("parentNodeId")} not found")
                     parent.children.add(op.get("childNodeId").asInt)
                 }
                 "appendChildToSet" -> {
+                    // Last child appended to a set is the root that the
+                    // following completeRoot publishes. Across multi-frame
+                    // streams (update path) the last completeRoot wins.
                     rootNodeId = op.get("childNodeId").asInt
                 }
                 "createChildSet", "completeRoot", "registerEventHandler" -> {}
@@ -79,7 +91,71 @@ class FabricViewBuilder(private val context: Context, private val density: Float
         rootView.layoutParams = FrameLayout.LayoutParams(
             dp(rootRect.width), dp(rootRect.height)
         )
+        installShadowDrawables()
         return rootView
+    }
+
+    /**
+     * Hand registered box-shadow specs to a [ShadowProxyDrawable] on each
+     * shadowed view's parent. Run after the tree is fully assembled (so
+     * `view.parent` is set), but before measure/layout (the drawable
+     * reads child positions lazily at draw time).
+     *
+     * Also clears `clipChildren` on every ancestor of a shadowed view —
+     * Android-side, parent ViewGroups clip child draws to their own
+     * bounds by default, which would chop off any shadow extending past
+     * the parent. RN core does the same on Android when boxShadow is set.
+     */
+    private fun installShadowDrawables() {
+        if (boxShadows.isEmpty()) return
+        val byParent: MutableMap<ViewGroup, MutableList<Pair<View, List<BoxShadowSpec>>>> =
+            mutableMapOf()
+        for ((view, specs) in boxShadows) {
+            val parent = view.parent as? ViewGroup ?: continue
+            byParent.getOrPut(parent) { mutableListOf() }.add(view to specs)
+            var ancestor: android.view.ViewParent? = parent
+            while (ancestor is ViewGroup) {
+                ancestor.clipChildren = false
+                ancestor = ancestor.parent
+            }
+        }
+        for ((parent, list) in byParent) {
+            parent.background = ShadowProxyDrawable(
+                inner = parent.background,
+                children = list,
+                density = density,
+            )
+        }
+    }
+
+    /**
+     * Materialise a `clone*` instruction. Mirror of the logic in
+     * `YogaLayoutEngine.cloneNode`; the two engines reconstruct trees
+     * independently so this is intentionally duplicated.
+     */
+    private fun cloneInto(
+        op: JsonObject,
+        nodes: MutableMap<Int, NodeSpec>,
+        keepChildren: Boolean,
+        newProps: JsonObject?,
+    ) {
+        val id = op.get("nodeId").asInt
+        val sourceId = op.get("sourceNodeId").asInt
+        val source = nodes[sourceId] ?: return
+        val mergedProps = mergeProps(source.props, newProps)
+        val children: MutableList<Int> =
+            if (keepChildren) source.children.toMutableList() else mutableListOf()
+        nodes[id] = NodeSpec(id, source.viewName, mergedProps, children)
+    }
+
+    private fun mergeProps(base: JsonObject, diff: JsonObject?): JsonObject {
+        if (diff == null) return base
+        val merged = base.deepCopy()
+        for ((key, value) in diff.entrySet()) {
+            if (value.isJsonNull) merged.remove(key)
+            else merged.add(key, value)
+        }
+        return merged
     }
 
     private fun buildView(
@@ -234,7 +310,13 @@ class FabricViewBuilder(private val context: Context, private val density: Float
 
     private fun applyCommonProps(view: View, props: JsonObject) {
         val style = styleObject(props) ?: return
+        applyBackground(view, style)
+        applyOpacity(view, style)
+        applyTransform(view, style)
+        applyBoxShadow(view, style)
+    }
 
+    private fun applyBackground(view: View, style: JsonObject) {
         val hasCornerProp = CORNER_RADIUS_KEYS.any { style.has(it) }
         val hasBorder = style.has("borderWidth") || style.has("borderColor")
         val hasBackground = style.has("backgroundColor")
@@ -255,6 +337,105 @@ class FabricViewBuilder(private val context: Context, private val density: Float
             view.background = drawable
         }
     }
+
+    private fun applyOpacity(view: View, style: JsonObject) {
+        val opacity = style.get("opacity")
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }
+            ?.asFloat ?: return
+        view.alpha = opacity.coerceIn(0f, 1f)
+    }
+
+    private fun applyTransform(view: View, style: JsonObject) {
+        val transform = style.get("transform")?.takeIf { it.isJsonArray }?.asJsonArray ?: return
+        var tx = 0f
+        var ty = 0f
+        var sx = 1f
+        var sy = 1f
+        var rotation = 0f
+        for (entry in transform) {
+            if (!entry.isJsonObject) continue
+            for ((key, value) in entry.asJsonObject.entrySet()) {
+                if (!value.isJsonPrimitive) continue
+                val prim = value.asJsonPrimitive
+                when (key) {
+                    "translateX" -> if (prim.isNumber) tx += prim.asFloat
+                    "translateY" -> if (prim.isNumber) ty += prim.asFloat
+                    "scale" -> if (prim.isNumber) {
+                        sx *= prim.asFloat
+                        sy *= prim.asFloat
+                    }
+                    "scaleX" -> if (prim.isNumber) sx *= prim.asFloat
+                    "scaleY" -> if (prim.isNumber) sy *= prim.asFloat
+                    "rotate", "rotateZ" -> parseAngleDegrees(prim)?.let { rotation += it }
+                    // rotateX / rotateY / skewX / skewY exist in RN but
+                    // need a Camera matrix. Out of scope for the v1 prop
+                    // mapping; logged as a 2.5 follow-up.
+                }
+            }
+        }
+        if (tx != 0f) view.translationX = dpF(tx)
+        if (ty != 0f) view.translationY = dpF(ty)
+        if (sx != 1f) view.scaleX = sx
+        if (sy != 1f) view.scaleY = sy
+        if (rotation != 0f) view.rotation = rotation
+    }
+
+    private fun parseAngleDegrees(prim: com.google.gson.JsonPrimitive): Float? {
+        if (prim.isNumber) return prim.asFloat
+        if (!prim.isString) return null
+        val s = prim.asString.trim()
+        return when {
+            s.endsWith("deg") -> s.dropLast(3).toFloatOrNull()
+            s.endsWith("rad") -> s.dropLast(3).toFloatOrNull()
+                ?.let { Math.toDegrees(it.toDouble()).toFloat() }
+            else -> s.toFloatOrNull()
+        }
+    }
+
+    private fun applyBoxShadow(view: View, style: JsonObject) {
+        // RN's modern cross-platform shadow prop. Accepts an array of
+        //   { offsetX, offsetY, blurRadius, spreadDistance, color, inset }
+        // descriptors (and a CSS string form which we don't parse yet).
+        // We deliberately don't touch `View.elevation` — layoutlib's
+        // software canvas doesn't render the platform shadow, and box-shadow
+        // is the supported style going forward (RN ≥ 0.76).
+        val shadows = parseBoxShadow(style) ?: return
+        if (shadows.isEmpty()) return
+        boxShadows[view] = shadows
+    }
+
+    /** Per-view shadow specs registered during build; consumed by
+     *  [SnapshotRenderer]'s shadow pre-pass. */
+    val boxShadows: MutableMap<View, List<BoxShadowSpec>> = mutableMapOf()
+
+    private fun parseBoxShadow(style: JsonObject): List<BoxShadowSpec>? {
+        val raw = style.get("boxShadow") ?: return null
+        if (!raw.isJsonArray) return null  // CSS string form not yet supported
+        val out = mutableListOf<BoxShadowSpec>()
+        for (entry in raw.asJsonArray) {
+            if (!entry.isJsonObject) continue
+            val obj = entry.asJsonObject
+            // Skip inset shadows for now — they paint *inside* the view
+            // rect and need a different draw strategy (clip + invert).
+            val inset = obj.get("inset")?.takeIf { it.isJsonPrimitive }?.asBoolean ?: false
+            if (inset) continue
+            out.add(
+                BoxShadowSpec(
+                    offsetX = floatProp(obj, "offsetX") ?: 0f,
+                    offsetY = floatProp(obj, "offsetY") ?: 0f,
+                    blurRadius = floatProp(obj, "blurRadius") ?: 0f,
+                    spreadDistance = floatProp(obj, "spreadDistance") ?: 0f,
+                    color = obj.get("color")
+                        ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }
+                        ?.asString?.let { parseColor(it) } ?: Color.BLACK,
+                ),
+            )
+        }
+        return if (out.isEmpty()) null else out
+    }
+
+    private fun floatProp(obj: JsonObject, key: String): Float? =
+        obj.get(key)?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asFloat
 
     private fun applyCornerRadii(drawable: GradientDrawable, style: JsonObject) {
         val uniform = style.get("borderRadius")
@@ -301,6 +482,7 @@ class FabricViewBuilder(private val context: Context, private val density: Float
 
     private fun parseColor(raw: String): Int {
         return when {
+            raw.startsWith("rgba(") || raw.startsWith("rgb(") -> parseRgbaString(raw)
             raw.length == 5 && raw.startsWith("#") -> Color.parseColor(expandShortHex(raw))
             raw.length == 4 && raw.startsWith("#") -> Color.parseColor(expandShortHex(raw))
             raw.length == 9 && raw.startsWith("#") -> {
@@ -309,6 +491,21 @@ class FabricViewBuilder(private val context: Context, private val density: Float
             }
             else -> Color.parseColor(raw)
         }
+    }
+
+    private fun parseRgbaString(raw: String): Int {
+        val open = raw.indexOf('(')
+        val close = raw.indexOf(')')
+        if (open < 0 || close <= open) return Color.BLACK
+        val parts = raw.substring(open + 1, close).split(',').map { it.trim() }
+        if (parts.size < 3) return Color.BLACK
+        val r = parts[0].toFloatOrNull()?.toInt()?.coerceIn(0, 255) ?: return Color.BLACK
+        val g = parts[1].toFloatOrNull()?.toInt()?.coerceIn(0, 255) ?: return Color.BLACK
+        val b = parts[2].toFloatOrNull()?.toInt()?.coerceIn(0, 255) ?: return Color.BLACK
+        val a = if (parts.size >= 4) {
+            ((parts[3].toFloatOrNull() ?: 1f).coerceIn(0f, 1f) * 255f).toInt()
+        } else 255
+        return Color.argb(a, r, g, b)
     }
 
     private fun expandShortHex(raw: String): String {

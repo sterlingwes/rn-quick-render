@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { renderFixture } from "../src/renderFixture";
+import { renderFixture, renderFrames } from "../src/renderFixture";
 
 // Rendered in the same order as src/captureFixtures.ts so that Fabric's
 // internal react-tag counter lines up with the committed goldens. If you add
@@ -14,13 +14,17 @@ const FIXTURES = [
   { name: "conditional", modulePath: "../fixtures/conditional" },
   { name: "nestedTextSpans", modulePath: "../fixtures/nestedTextSpans" },
   { name: "imageResizeModes", modulePath: "../fixtures/imageResizeModes" },
+  { name: "transformsAndEffects", modulePath: "../fixtures/transformsAndEffects" },
+  { name: "updateBadgeCount", modulePath: "../fixtures/updateBadgeCount" },
 ];
 
 describe("Fabric mount instruction capture", () => {
   for (const { name, modulePath } of FIXTURES) {
     test(`${name} matches golden`, () => {
       const element = require(modulePath).default;
-      const { surfaceId, instructions } = renderFixture(element);
+      const { surfaceId, instructions } = Array.isArray(element)
+        ? renderFrames(element)
+        : renderFixture(element);
 
       const goldenPath = path.resolve(__dirname, "..", "out", `${name}.json`);
       const golden = JSON.parse(fs.readFileSync(goldenPath, "utf8"));
