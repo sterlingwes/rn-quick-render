@@ -1,0 +1,674 @@
+{
+  "fixture": "transformsAndEffects",
+  "surfaceId": 18,
+  "instructionCount": 74,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 134,
+      "viewName": "RCTRawText",
+      "surfaceId": 18,
+      "props": {
+        "text": "translateX 24, translateY 8"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 136,
+      "viewName": "RCTParagraph",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 138,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 4,
+      "tag": 140,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 32
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 5,
+      "tag": 142,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5",
+          "transform": [
+            {
+              "translateX": 24
+            },
+            {
+              "translateY": 8
+            }
+          ]
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 6,
+      "tag": 144,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "flexDirection": "row",
+          "alignItems": "center"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 6,
+      "childNodeId": 3
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 6,
+      "childNodeId": 4
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 6,
+      "childNodeId": 5
+    },
+    {
+      "op": "createNode",
+      "nodeId": 7,
+      "tag": 146,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 7,
+      "childNodeId": 2
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 7,
+      "childNodeId": 6
+    },
+    {
+      "op": "createNode",
+      "nodeId": 8,
+      "tag": 148,
+      "viewName": "RCTRawText",
+      "surfaceId": 18,
+      "props": {
+        "text": "rotate 15deg"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 9,
+      "tag": 150,
+      "viewName": "RCTParagraph",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 9,
+      "childNodeId": 8
+    },
+    {
+      "op": "createNode",
+      "nodeId": 10,
+      "tag": 152,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 11,
+      "tag": 154,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 32
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 12,
+      "tag": 156,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5",
+          "transform": [
+            {
+              "rotate": "15deg"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 13,
+      "tag": 158,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "flexDirection": "row",
+          "alignItems": "center"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 13,
+      "childNodeId": 10
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 13,
+      "childNodeId": 11
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 13,
+      "childNodeId": 12
+    },
+    {
+      "op": "createNode",
+      "nodeId": 14,
+      "tag": 160,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 14,
+      "childNodeId": 9
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 14,
+      "childNodeId": 13
+    },
+    {
+      "op": "createNode",
+      "nodeId": 15,
+      "tag": 162,
+      "viewName": "RCTRawText",
+      "surfaceId": 18,
+      "props": {
+        "text": "scale 1.3"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 16,
+      "tag": 164,
+      "viewName": "RCTParagraph",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 16,
+      "childNodeId": 15
+    },
+    {
+      "op": "createNode",
+      "nodeId": 17,
+      "tag": 166,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 18,
+      "tag": 168,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 32
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 19,
+      "tag": 170,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5",
+          "transform": [
+            {
+              "scale": 1.3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 20,
+      "tag": 172,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "flexDirection": "row",
+          "alignItems": "center"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 20,
+      "childNodeId": 17
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 20,
+      "childNodeId": 18
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 20,
+      "childNodeId": 19
+    },
+    {
+      "op": "createNode",
+      "nodeId": 21,
+      "tag": 174,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 21,
+      "childNodeId": 16
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 21,
+      "childNodeId": 20
+    },
+    {
+      "op": "createNode",
+      "nodeId": 22,
+      "tag": 176,
+      "viewName": "RCTRawText",
+      "surfaceId": 18,
+      "props": {
+        "text": "opacity 0.4"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 23,
+      "tag": 178,
+      "viewName": "RCTParagraph",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 23,
+      "childNodeId": 22
+    },
+    {
+      "op": "createNode",
+      "nodeId": 24,
+      "tag": 180,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 25,
+      "tag": 182,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 32
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 26,
+      "tag": 184,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5",
+          "opacity": 0.4
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 27,
+      "tag": 186,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "flexDirection": "row",
+          "alignItems": "center"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 27,
+      "childNodeId": 24
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 27,
+      "childNodeId": 25
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 27,
+      "childNodeId": 26
+    },
+    {
+      "op": "createNode",
+      "nodeId": 28,
+      "tag": 188,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 28,
+      "childNodeId": 23
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 28,
+      "childNodeId": 27
+    },
+    {
+      "op": "createNode",
+      "nodeId": 29,
+      "tag": 190,
+      "viewName": "RCTRawText",
+      "surfaceId": 18,
+      "props": {
+        "text": "elevation 8 (shadow)"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 30,
+      "tag": 192,
+      "viewName": "RCTParagraph",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 30,
+      "childNodeId": 29
+    },
+    {
+      "op": "createNode",
+      "nodeId": 31,
+      "tag": 194,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 32,
+      "tag": 196,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 32
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 33,
+      "tag": 198,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "width": 64,
+          "height": 64,
+          "backgroundColor": "#3F51B5",
+          "elevation": 8
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 34,
+      "tag": 200,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "flexDirection": "row",
+          "alignItems": "center"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 34,
+      "childNodeId": 31
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 34,
+      "childNodeId": 32
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 34,
+      "childNodeId": 33
+    },
+    {
+      "op": "createNode",
+      "nodeId": 35,
+      "tag": 202,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 35,
+      "childNodeId": 30
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 35,
+      "childNodeId": 34
+    },
+    {
+      "op": "createNode",
+      "nodeId": 36,
+      "tag": 204,
+      "viewName": "RCTView",
+      "surfaceId": 18,
+      "props": {
+        "style": {
+          "padding": 32,
+          "backgroundColor": "#FFFFFF"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 36,
+      "childNodeId": 7
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 36,
+      "childNodeId": 14
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 36,
+      "childNodeId": 21
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 36,
+      "childNodeId": 28
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 36,
+      "childNodeId": 35
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 36
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 18,
+      "childSetId": 1
+    }
+  ]
+}

@@ -54,12 +54,24 @@ class FabricViewBuilder(private val context: Context, private val density: Float
                         op.getAsJsonObject("props") else JsonObject()
                     nodes[id] = NodeSpec(id, viewName, props)
                 }
+                "cloneNode" -> cloneInto(op, nodes, keepChildren = true, newProps = null)
+                "cloneNodeWithNewProps" -> cloneInto(op, nodes,
+                    keepChildren = true,
+                    newProps = op.get("newProps")?.takeIf { it.isJsonObject }?.asJsonObject)
+                "cloneNodeWithNewChildren" -> cloneInto(op, nodes,
+                    keepChildren = false, newProps = null)
+                "cloneNodeWithNewChildrenAndProps" -> cloneInto(op, nodes,
+                    keepChildren = false,
+                    newProps = op.get("newProps")?.takeIf { it.isJsonObject }?.asJsonObject)
                 "appendChild" -> {
                     val parent = nodes[op.get("parentNodeId").asInt]
                         ?: error("appendChild parent ${op.get("parentNodeId")} not found")
                     parent.children.add(op.get("childNodeId").asInt)
                 }
                 "appendChildToSet" -> {
+                    // Last child appended to a set is the root that the
+                    // following completeRoot publishes. Across multi-frame
+                    // streams (update path) the last completeRoot wins.
                     rootNodeId = op.get("childNodeId").asInt
                 }
                 "createChildSet", "completeRoot", "registerEventHandler" -> {}
@@ -80,6 +92,36 @@ class FabricViewBuilder(private val context: Context, private val density: Float
             dp(rootRect.width), dp(rootRect.height)
         )
         return rootView
+    }
+
+    /**
+     * Materialise a `clone*` instruction. Mirror of the logic in
+     * `YogaLayoutEngine.cloneNode`; the two engines reconstruct trees
+     * independently so this is intentionally duplicated.
+     */
+    private fun cloneInto(
+        op: JsonObject,
+        nodes: MutableMap<Int, NodeSpec>,
+        keepChildren: Boolean,
+        newProps: JsonObject?,
+    ) {
+        val id = op.get("nodeId").asInt
+        val sourceId = op.get("sourceNodeId").asInt
+        val source = nodes[sourceId] ?: return
+        val mergedProps = mergeProps(source.props, newProps)
+        val children: MutableList<Int> =
+            if (keepChildren) source.children.toMutableList() else mutableListOf()
+        nodes[id] = NodeSpec(id, source.viewName, mergedProps, children)
+    }
+
+    private fun mergeProps(base: JsonObject, diff: JsonObject?): JsonObject {
+        if (diff == null) return base
+        val merged = base.deepCopy()
+        for ((key, value) in diff.entrySet()) {
+            if (value.isJsonNull) merged.remove(key)
+            else merged.add(key, value)
+        }
+        return merged
     }
 
     private fun buildView(
@@ -234,7 +276,13 @@ class FabricViewBuilder(private val context: Context, private val density: Float
 
     private fun applyCommonProps(view: View, props: JsonObject) {
         val style = styleObject(props) ?: return
+        applyBackground(view, style)
+        applyOpacity(view, style)
+        applyTransform(view, style)
+        applyElevation(view, style)
+    }
 
+    private fun applyBackground(view: View, style: JsonObject) {
         val hasCornerProp = CORNER_RADIUS_KEYS.any { style.has(it) }
         val hasBorder = style.has("borderWidth") || style.has("borderColor")
         val hasBackground = style.has("backgroundColor")
@@ -254,6 +302,76 @@ class FabricViewBuilder(private val context: Context, private val density: Float
             applyBorder(drawable, style)
             view.background = drawable
         }
+    }
+
+    private fun applyOpacity(view: View, style: JsonObject) {
+        val opacity = style.get("opacity")
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }
+            ?.asFloat ?: return
+        view.alpha = opacity.coerceIn(0f, 1f)
+    }
+
+    private fun applyTransform(view: View, style: JsonObject) {
+        val transform = style.get("transform")?.takeIf { it.isJsonArray }?.asJsonArray ?: return
+        var tx = 0f
+        var ty = 0f
+        var sx = 1f
+        var sy = 1f
+        var rotation = 0f
+        for (entry in transform) {
+            if (!entry.isJsonObject) continue
+            for ((key, value) in entry.asJsonObject.entrySet()) {
+                if (!value.isJsonPrimitive) continue
+                val prim = value.asJsonPrimitive
+                when (key) {
+                    "translateX" -> if (prim.isNumber) tx += prim.asFloat
+                    "translateY" -> if (prim.isNumber) ty += prim.asFloat
+                    "scale" -> if (prim.isNumber) {
+                        sx *= prim.asFloat
+                        sy *= prim.asFloat
+                    }
+                    "scaleX" -> if (prim.isNumber) sx *= prim.asFloat
+                    "scaleY" -> if (prim.isNumber) sy *= prim.asFloat
+                    "rotate", "rotateZ" -> parseAngleDegrees(prim)?.let { rotation += it }
+                    // rotateX / rotateY / skewX / skewY exist in RN but
+                    // need a Camera matrix. Out of scope for the v1 prop
+                    // mapping; logged as a 2.5 follow-up.
+                }
+            }
+        }
+        if (tx != 0f) view.translationX = dpF(tx)
+        if (ty != 0f) view.translationY = dpF(ty)
+        if (sx != 1f) view.scaleX = sx
+        if (sy != 1f) view.scaleY = sy
+        if (rotation != 0f) view.rotation = rotation
+    }
+
+    private fun parseAngleDegrees(prim: com.google.gson.JsonPrimitive): Float? {
+        if (prim.isNumber) return prim.asFloat
+        if (!prim.isString) return null
+        val s = prim.asString.trim()
+        return when {
+            s.endsWith("deg") -> s.dropLast(3).toFloatOrNull()
+            s.endsWith("rad") -> s.dropLast(3).toFloatOrNull()
+                ?.let { Math.toDegrees(it.toDouble()).toFloat() }
+            else -> s.toFloatOrNull()
+        }
+    }
+
+    private fun applyElevation(view: View, style: JsonObject) {
+        // RN's `elevation` style (Android-only) is dp. iOS-style
+        // shadowOffset/Opacity/Radius/Color don't have a direct Android
+        // analog — Android draws one shadow per view, coloured by the
+        // platform theme. Map elevation only for now; the iOS props are
+        // logged for the shadow follow-up.
+        val elevation = style.get("elevation")
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }
+            ?.asFloat ?: return
+        view.elevation = dpF(elevation)
+        // View.outlineProvider defaults to BACKGROUND; the elevation
+        // shadow uses the background drawable's outline. As long as the
+        // view has a background (set by applyBackground above), the
+        // shadow draws automatically.
     }
 
     private fun applyCornerRadii(drawable: GradientDrawable, style: JsonObject) {

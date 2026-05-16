@@ -161,6 +161,15 @@ class YogaLayoutEngine(
                         op.getAsJsonObject("props") else JsonObject()
                     nodes[id] = Node(id, viewName, props)
                 }
+                "cloneNode" -> cloneNode(op, nodes, keepChildren = true, newProps = null)
+                "cloneNodeWithNewProps" -> cloneNode(op, nodes,
+                    keepChildren = true,
+                    newProps = op.get("newProps")?.takeIf { it.isJsonObject }?.asJsonObject)
+                "cloneNodeWithNewChildren" -> cloneNode(op, nodes,
+                    keepChildren = false, newProps = null)
+                "cloneNodeWithNewChildrenAndProps" -> cloneNode(op, nodes,
+                    keepChildren = false,
+                    newProps = op.get("newProps")?.takeIf { it.isJsonObject }?.asJsonObject)
                 "appendChild" -> {
                     val parent = nodes[op.get("parentNodeId").asInt]
                     parent?.children?.add(op.get("childNodeId").asInt)
@@ -179,6 +188,43 @@ class YogaLayoutEngine(
         }
 
         return nodes to roots
+    }
+
+    /**
+     * Materialise a clone* instruction: create a new node whose viewName
+     * matches the source, with children either copied from the source
+     * (`keepChildren = true`, for `cloneNode` / `cloneNodeWithNewProps`)
+     * or started empty (`keepChildren = false`, for the WithNewChildren
+     * variants — subsequent `appendChild` ops will fill them).
+     *
+     * Props are taken from the source and shallow-merged with `newProps`
+     * when present. `null` values in `newProps` remove the key, matching
+     * `diffAttributePayloads` in the capture stub. Style is treated as a
+     * single top-level attribute and replaced wholesale when emitted.
+     */
+    private fun cloneNode(
+        op: JsonObject,
+        nodes: MutableMap<Int, Node>,
+        keepChildren: Boolean,
+        newProps: JsonObject?,
+    ) {
+        val id = op.get("nodeId").asInt
+        val sourceId = op.get("sourceNodeId").asInt
+        val source = nodes[sourceId] ?: return
+        val mergedProps = mergeProps(source.props, newProps)
+        val children: MutableList<Int> =
+            if (keepChildren) source.children.toMutableList() else mutableListOf()
+        nodes[id] = Node(id, source.viewName, mergedProps, children)
+    }
+
+    private fun mergeProps(base: JsonObject, diff: JsonObject?): JsonObject {
+        if (diff == null) return base
+        val merged = base.deepCopy()
+        for ((key, value) in diff.entrySet()) {
+            if (value.isJsonNull) merged.remove(key)
+            else merged.add(key, value)
+        }
+        return merged
     }
 
     // -----------------------------------------------------------------------

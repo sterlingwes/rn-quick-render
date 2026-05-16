@@ -18,14 +18,22 @@ export interface RenderResult {
 // stream that would cross the JS→native boundary. Each call gets its own
 // surfaceId so successive fixtures in the same process don't overlap.
 export function renderFixture(element: unknown): RenderResult {
+  return renderFrames([element]);
+}
+
+// Render N frames into the same surface in order. The second and later
+// frames produce clone* / appendChild ops as React reconciles against the
+// previous tree. Used to exercise the update path on the translator side.
+export function renderFrames(elements: unknown[]): RenderResult {
   const rt = ensureRuntime();
   const surfaceId = nextSurfaceId++;
 
   rt.capture.reset();
-  // concurrentRoot=false forces a synchronous commit so the instruction
-  // stream is complete by the time render() returns. Concurrent mode
-  // schedules work on the scheduler and would require us to flush manually.
-  rt.ReactFabric.render(element, surfaceId, null, false);
+  // concurrentRoot=false forces a synchronous commit so each frame's
+  // instructions land before the next render call returns.
+  for (const element of elements) {
+    rt.ReactFabric.render(element, surfaceId, null, false);
+  }
   const instructions = rt.capture.instructions.slice();
   rt.ReactFabric.stopSurface(surfaceId);
 
