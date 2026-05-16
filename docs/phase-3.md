@@ -120,6 +120,70 @@ Concretely, what's in the way:
   blocking for v0.
 - HTTP image sources. Snapshot tests should pin assets locally.
 
+## What the developer brings
+
+Our scope is the runtime plumbing: boot `react-native`, intercept the
+mount stream, paint it. Everything *above* the component being rendered
+— the data it consumes, the state it expects to find, the side-effect
+modules it pokes at — is the developer's responsibility, the same way
+Storybook stories or component snapshot tests work today.
+
+In practice this means a Phase 3 capture isn't `captureFromAppKey('App')`
+on a freshly-launched binary. It's a thin per-test wrapper that the
+developer writes around the target component, supplying:
+
+- **Props.** Pass concrete values for everything the component reads.
+  No "let it render whatever the production default is."
+- **Context providers.** Wrap the target in mocked
+  `NavigationContainer`, `Provider` (Redux), `QueryClientProvider`,
+  theming providers, etc., with fixture data. If the component uses
+  hooks like `useNavigation` or `useSelector`, the provider has to
+  supply something usable — we don't synthesize navigation state.
+- **Network and storage.** Mock the HTTP / GraphQL client with the
+  response shape the component expects. The native-module proxy shim
+  no-ops `AsyncStorage` and friends by default; if the component reads
+  from them, the developer overrides with seed values via
+  `captureFromAppKey('...', { nativeModules: { ... } })`.
+- **Animated values.** Reanimated / Animated values resolve to their
+  initial value in our shim. If a component is interesting *only* at
+  some animated mid-state, the developer hoists that to a prop and
+  passes the target value directly.
+- **Children whose rendering we don't support.** If a screen embeds
+  `<MapView>` or a charting library, the developer either swaps it out
+  in the test wrapper for a placeholder, or accepts the labeled-rect
+  fallback the renderer paints.
+
+Concretely, a fixture looks more like:
+
+```ts
+// fixtures/realApp/inboxScreen.ts
+import InboxScreen from "<target>/src/screens/InboxScreen";
+import { withMockProviders } from "./_providers";
+
+export default withMockProviders(
+  <InboxScreen
+    route={{ params: { folderId: "inbox" } }}
+    navigation={mockNav}
+  />,
+  {
+    redux: { inbox: { unread: 3, items: SAMPLE_ITEMS } },
+    query: { "/inbox": SAMPLE_INBOX_RESPONSE },
+  },
+);
+```
+
+…than `import App from '<target>'; captureFromAppKey('App')`.
+
+The first-target screen is chosen with this in mind: it should be a
+component whose props + provider mocks fit in one fixture file the
+reviewer can read end-to-end. Screens that demand a real backend, a
+real navigation graph, or a real animation timeline are deferred.
+
+This boundary is what stops Phase 3 from sliding into "reimplement
+half of React Native and the developer's app on top of it." We render
+what the developer hands us; we don't guess what the developer would
+have wanted.
+
 ## Architecture sketch
 
 ### `rn-harness` changes
