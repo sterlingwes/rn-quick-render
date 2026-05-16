@@ -24,10 +24,13 @@ target_include_directories(yoga PRIVATE ${JNI_INCLUDE_DIRS})
 
 # The JNI method registration tables use string literals as char* (JNI API
 # predates const-correctness). Suppress the warning that -Werror promotes.
+# Also force-include <cstdint>: upstream `java/jni/common.cpp` uses int32_t
+# without including the header, which newer GCC (Ubuntu 24.04 / GCC 13+)
+# refuses to compile.
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
-    target_compile_options(yoga PRIVATE -Wno-writable-strings)
+    target_compile_options(yoga PRIVATE -Wno-writable-strings -include cstdint)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    target_compile_options(yoga PRIVATE -Wno-write-strings)
+    target_compile_options(yoga PRIVATE -Wno-write-strings -include cstdint)
 endif()
 
 # Symbol visibility: only export JNI_OnLoad
