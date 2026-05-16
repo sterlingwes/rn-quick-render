@@ -1,13 +1,14 @@
 package com.example.renderer
 
 import android.graphics.Bitmap
-import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.View
 import android.view.ViewGroup
 import java.awt.image.BufferedImage
+import kotlin.math.max
+import kotlin.math.pow
 
 /**
  * Orchestrates the full snapshot pipeline:
@@ -122,18 +123,54 @@ class SnapshotRenderer(
         val blurPx = spec.blurRadius * density
         val spreadPx = spec.spreadDistance * density
 
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = spec.color
-            if (blurPx > 0f) {
-                maskFilter = BlurMaskFilter(blurPx, BlurMaskFilter.Blur.NORMAL)
-            }
+        val baseLeft = x + offsetXPx - spreadPx
+        val baseTop = y + offsetYPx - spreadPx
+        val baseRight = x + w + offsetXPx + spreadPx
+        val baseBottom = y + h + offsetYPx + spreadPx
+        val color = spec.color
+
+        if (blurPx <= 0f) {
+            // Hard shadow — single rect at the offset+spread position.
+            val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
+            canvas.drawRect(baseLeft, baseTop, baseRight, baseBottom, paint)
+            return
         }
-        canvas.drawRect(
-            x + offsetXPx - spreadPx,
-            y + offsetYPx - spreadPx,
-            x + w + offsetXPx + spreadPx,
-            y + h + offsetYPx + spreadPx,
-            paint,
+
+        // Soft shadow approximation. Layoutlib's software canvas doesn't
+        // implement BlurMaskFilter (Paparazzi hits the same wall), so we
+        // fake the Gaussian falloff with N concentric expanded rects, each
+        // drawn with a small per-ring alpha:
+        //
+        //   final_alpha(d) = 1 - (1 - perRingAlpha) ^ (rings_covering(d))
+        //
+        // Pixels at the original rect's edge are covered by all N rings,
+        // so their combined alpha equals the input alpha. Pixels at the
+        // outer-most ring (distance = blurPx from the edge) are covered
+        // by 1 ring only, so they fade to perRingAlpha. The falloff is
+        // linear-in-coverage rather than true Gaussian, but it produces
+        // a visibly soft, monotonically decreasing shadow that matches
+        // CSS box-shadow well enough for snapshot diffing.
+        val baseAlpha = (Color.alpha(color) / 255f).coerceIn(0f, 1f)
+        if (baseAlpha <= 0f) return
+        val rings = max(1, blurPx.toInt())
+        val perRingAlpha = 1f - (1f - baseAlpha).pow(1f / rings)
+        val ringAlpha255 = (perRingAlpha * 255f).toInt().coerceIn(1, 255)
+        val ringColor = Color.argb(
+            ringAlpha255,
+            Color.red(color),
+            Color.green(color),
+            Color.blue(color),
         )
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = ringColor }
+        for (i in 0 until rings) {
+            val expand = (i.toFloat() / rings.toFloat()) * blurPx
+            canvas.drawRect(
+                baseLeft - expand,
+                baseTop - expand,
+                baseRight + expand,
+                baseBottom + expand,
+                paint,
+            )
+        }
     }
 }
