@@ -7,75 +7,82 @@ device*. Items are roughly ordered by how disruptive they are to the
 existing goldens — fixing the outline anomaly first is cheap; image
 loading and text spans will shift many goldens at once.
 
-## 1. ScrollView row outline anomaly (investigation)
+## 1. ScrollView row outline anomaly (resolved)
 
-### Symptom
+### Original symptom
 
 In `renderer/src/test/snapshots/scrollView.png` each `RCTView` row
-appears to have a 1 px outline and possibly soft corners, even though
-the fixture only sets `backgroundColor` + `height` + `marginBottom`.
-The same faint edge is visible at the bottom of the outer container in
-`conditional.png` and `textAndImage.png`. No fixture sets `borderWidth`,
-`borderColor`, `borderRadius`, or `elevation`.
+*looked* like it had a 1 px outline and soft corners, even though the
+fixture only sets `backgroundColor` + `height` + `marginBottom`. The
+same faint edge appeared at the bottom of the outer container in
+`conditional.png` and `textAndImage.png`.
 
-### Why this matters
+### Outcome
 
-`FabricViewBuilder.applyCommonProps` (renderer/src/main/kotlin/.../FabricViewBuilder.kt:185)
-takes the fast path `view.setBackgroundColor(color)` whenever there is
-no border/corner/border-radius prop. That should produce a plain
-`ColorDrawable` and nothing more. The visible artifact means something
-other than the fixture is influencing the render — probably layoutlib's
-default platform theme or our own bootstrap. Until we understand it,
-every solid-fill view in every snapshot carries a phantom border that
-won't match real-device output.
+`ScrollViewOutlineInvestigationTest` sampled seven pixels around row 1
+of the scrollView fixture on CI. Result:
 
-### Hypotheses
+```
+row1 interior (deep)                  #EEEEEE (a=255)
+row1 top edge    (y = first in-row)   #EEEEEE (a=255)
+row1 top - 1     (in padding)         #000000 (a=0)
+row1 bottom edge (y = last in-row)    #EEEEEE (a=255)
+row1 bottom + 1  (in margin gap)      #000000 (a=0)
+row1 bottom + 3  (deeper into gap)    #000000 (a=0)
+row1 left edge   (x = first in-row)   #EEEEEE (a=255)
+row1 left - 1    (in padding)         #000000 (a=0)
+```
 
-- **A. Default elevation.** Layoutlib's platform theme assigns a
-  non-zero `view.elevation` to `FrameLayout` (or to the `decorView`).
-  `ViewOutlineProvider.BACKGROUND` then queries `ColorDrawable.getOutline`
-  and renders a faint shadow. **Predicts:** edge pixels are
-  background-blended with a darker tint, extending 1–2 px beyond the
-  row's geometric bounds.
-- **B. Edge antialiasing.** No outline at all — the rendered row is a
-  pixel-aligned rectangle, and what we perceive as a stroke is just
-  AA blending where the row's gray meets the white parent. **Predicts:**
-  interior pixels are exactly the fixture's `backgroundColor`, edge
-  pixels are a clean blend of bg ↔ white, no extension beyond bounds.
-- **C. Theme-applied drawable.** `StubLayoutlibCallback` /
-  `ResourceResolverStub` happen to resolve a non-trivial
-  `?attr/colorBackground` or `?attr/selectableItemBackground` that wraps
-  our `ColorDrawable` in an `InsetDrawable` or
-  `RippleDrawable`. **Predicts:** the artifact has structure (insets,
-  press masks) inconsistent with a pure shadow or AA.
+Every in-row pixel is exactly `#EEEEEE` opaque; every pixel outside
+the row is `alpha = 0` (transparent). All three hypotheses (default
+elevation, edge antialiasing, theme drawable) are ruled out — there is
+no outline. What looked like a stroke + rounded corners in the PNG was
+the alpha-0 strip between the row and the next row, perceived as a
+soft edge once the image viewer composited the transparent area
+against its own page background.
 
-### Experiments to run, in order
+### Real gap, and fix
 
-1. **Capture pixel samples.** `ScrollViewOutlineInvestigationTest`
-   (Ignored by default) samples 7 points around row 1 of the scrollView
-   fixture and prints their RGB values. Un-ignore, run, read the test
-   stdout in the surefire report. The shape of the values rules in/out
-   each hypothesis above.
-2. **Force `elevation = 0f` + `outlineProvider = NONE`.** In
-   `FabricViewBuilder.buildFrameLayout`, after constructing the
-   `FrameLayout`, set both. If the artifact disappears in a fresh
-   recording, hypothesis A is the answer and the fix is to bake those
-   defaults into the builder.
-3. **Render with no theme.** `SessionParams` currently uses the default
-   theme implied by layoutlib. Try passing
-   `sessionParams.setRtlSupport(false)` + an explicit
-   `Configuration.Theme_DeviceDefault_Light_NoActionBar` (or a custom
-   minimal theme) and see whether the artifact moves or disappears.
-   Confirms or rules out hypothesis C.
+The renderer was painting only the view tree, leaving the rest of the
+canvas transparent. A real device shows the window's
+`?attr/windowBackground` (white by default) under and around the view
+tree, so PNGs that aim to match real-device output need to do the
+same.
 
-Whichever experiment removes the artifact, the fix is committed and
-goldens are re-recorded via the `phase-2-renderer` workflow's
-`record=true` dispatch.
+Fix (`renderer/src/main/kotlin/.../SnapshotRenderer.kt`):
 
-### Out of scope
+```kotlin
+val bitmap = Bitmap.createBitmap(...)
+val canvas = Canvas(bitmap)
+canvas.drawColor(windowBackgroundColor)   // ← new — defaults to WHITE
+rootView.draw(canvas)
+```
 
-- Pixel-perfect shadow / elevation **support** for views that *do*
-  want it. That is a separate Phase 2.5 item (see §5).
+`windowBackgroundColor` is a constructor parameter on `SnapshotRenderer`
+defaulting to `Color.WHITE`, leaving a seam to wire a real theme/
+configuration in later.
+
+Re-records the Phase 2 goldens: every transparent area in the prior
+PNGs becomes `#FFFFFF`. Visible diff per fixture:
+
+- `simpleView.png` — background outside the indigo rect goes white.
+- `nestedViews.png` — outside the outer `#F5F5F5` card goes white.
+  Inside is unchanged (already opaque).
+- `textAndImage.png` — outside the white card it's already white, no
+  visible change; the bottom edge that used to look like a stroke goes
+  flush with the surrounding white.
+- `scrollView.png` — `marginBottom` gaps between rows fill with white;
+  the rows themselves are unchanged.
+- `conditional.png` — area outside the white card goes white; the
+  bottom edge that used to look stroked goes flush.
+
+### Followups (out of scope here)
+
+- Drive `windowBackgroundColor` from the active theme / `uiMode`
+  instead of hard-coding white. Belongs with §5 (transforms / shadows /
+  theming).
+- Pixel-perfect shadow / elevation support for views that *do* request
+  it. Also §5.
 
 ## 2. Nested text styling
 

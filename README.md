@@ -216,12 +216,14 @@ pixel diff fails the job and uploads the fresh renders for inspection.
 The full plan and per-item experiments live in
 [`docs/phase-2.5.md`](docs/phase-2.5.md). Headlines:
 
-1. **ScrollView row outline anomaly** (investigation). Solid-fill views
-   show a faint 1 px outline / soft edge in the Phase 2 goldens even
-   though no fixture sets a border or radius. Most likely default
-   elevation or a theme-applied drawable. `ScrollViewOutlineInvestigationTest`
-   (Ignored by default) captures pixel samples to discriminate the
-   hypotheses.
+1. ~~**ScrollView row outline anomaly.**~~ Resolved. The apparent
+   outline was the transparent area around the view tree being
+   composited against the image viewer's page background — the rows
+   themselves are pure rectangles. `SnapshotRenderer` now pre-fills the
+   bitmap with `windowBackgroundColor` (default `Color.WHITE`) before
+   drawing, matching what a real device's `?attr/windowBackground`
+   draws. Phase 2 goldens re-recorded. See
+   [`docs/phase-2.5.md`](docs/phase-2.5.md) §1.
 2. **Nested text styling.** `<Text>` weight / colour spans collapse
    into the parent paragraph; needs `SpannableStringBuilder` in
    `buildTextView`.
