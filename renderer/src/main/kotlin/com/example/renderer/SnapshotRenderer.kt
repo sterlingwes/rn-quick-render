@@ -3,12 +3,8 @@ package com.example.renderer
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.view.View
-import android.view.ViewGroup
 import java.awt.image.BufferedImage
-import kotlin.math.max
-import kotlin.math.pow
 
 /**
  * Orchestrates the full snapshot pipeline:
@@ -16,8 +12,11 @@ import kotlin.math.pow
  * 2. Build Android View tree from instructions + layout rects
  * 3. Pre-fill the bitmap with [windowBackgroundColor] (matches what a real
  *    device draws under the view tree via `?attr/windowBackground`), then
- *    paint any registered box-shadows under their owning views, then draw
- *    the view tree on top.
+ *    measure / layout / draw the view tree on top.
+ *
+ * Box-shadows are painted inside the view tree's draw pass by a
+ * [ShadowProxyDrawable] installed on each shadowed view's parent in
+ * [FabricViewBuilder]; this renderer doesn't need to know about them.
  *
  * Views are drawn directly via [Canvas]/[Bitmap] rather than through the
  * render session's `render()` method, matching Paparazzi's approach.
@@ -62,21 +61,12 @@ class SnapshotRenderer(
             rootView.layout(0, 0, rootView.measuredWidth, rootView.measuredHeight)
 
             // Draw to a Bitmap via Canvas (layoutlib provides Android's Canvas impl).
+            // Pre-fill with the window background so transparent areas around the
+            // view tree render the same color a real device would show under
+            // ?attr/windowBackground.
             val bitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
-            // 1. Fill the canvas with the window background so transparent
-            //    areas around the view tree render the same color a real
-            //    device would show under ?attr/windowBackground.
             canvas.drawColor(windowBackgroundColor)
-            // 2. Paint box-shadows from a separate pre-pass. Layoutlib's
-            //    software canvas doesn't render platform elevation shadows,
-            //    so we render box-shadow (RN's modern cross-platform prop)
-            //    ourselves via Paint + BlurMaskFilter before the view tree
-            //    draws on top.
-            if (builder.boxShadows.isNotEmpty()) {
-                paintBoxShadows(rootView, canvas, builder.boxShadows)
-            }
-            // 3. Draw the view tree, which paints on top of the shadows.
             rootView.draw(canvas)
 
             // Convert layoutlib Bitmap to AWT BufferedImage
@@ -85,92 +75,6 @@ class SnapshotRenderer(
             bitmap.getPixels(pixels, 0, screenWidth, 0, 0, screenWidth, screenHeight)
             image.setRGB(0, 0, screenWidth, screenHeight, pixels, 0, screenWidth)
             image
-        }
-    }
-
-    private fun paintBoxShadows(
-        view: View,
-        canvas: Canvas,
-        shadows: Map<View, List<BoxShadowSpec>>,
-        parentLeft: Int = 0,
-        parentTop: Int = 0,
-    ) {
-        val absLeft = parentLeft + view.left
-        val absTop = parentTop + view.top
-        val specs = shadows[view]
-        if (specs != null) {
-            for (spec in specs) {
-                paintOneShadow(canvas, absLeft, absTop, view.width, view.height, spec)
-            }
-        }
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                paintBoxShadows(view.getChildAt(i), canvas, shadows, absLeft, absTop)
-            }
-        }
-    }
-
-    private fun paintOneShadow(
-        canvas: Canvas,
-        x: Int,
-        y: Int,
-        w: Int,
-        h: Int,
-        spec: BoxShadowSpec,
-    ) {
-        val offsetXPx = spec.offsetX * density
-        val offsetYPx = spec.offsetY * density
-        val blurPx = spec.blurRadius * density
-        val spreadPx = spec.spreadDistance * density
-
-        val baseLeft = x + offsetXPx - spreadPx
-        val baseTop = y + offsetYPx - spreadPx
-        val baseRight = x + w + offsetXPx + spreadPx
-        val baseBottom = y + h + offsetYPx + spreadPx
-        val color = spec.color
-
-        if (blurPx <= 0f) {
-            // Hard shadow — single rect at the offset+spread position.
-            val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
-            canvas.drawRect(baseLeft, baseTop, baseRight, baseBottom, paint)
-            return
-        }
-
-        // Soft shadow approximation. Layoutlib's software canvas doesn't
-        // implement BlurMaskFilter (Paparazzi hits the same wall), so we
-        // fake the Gaussian falloff with N concentric expanded rects, each
-        // drawn with a small per-ring alpha:
-        //
-        //   final_alpha(d) = 1 - (1 - perRingAlpha) ^ (rings_covering(d))
-        //
-        // Pixels at the original rect's edge are covered by all N rings,
-        // so their combined alpha equals the input alpha. Pixels at the
-        // outer-most ring (distance = blurPx from the edge) are covered
-        // by 1 ring only, so they fade to perRingAlpha. The falloff is
-        // linear-in-coverage rather than true Gaussian, but it produces
-        // a visibly soft, monotonically decreasing shadow that matches
-        // CSS box-shadow well enough for snapshot diffing.
-        val baseAlpha = (Color.alpha(color) / 255f).coerceIn(0f, 1f)
-        if (baseAlpha <= 0f) return
-        val rings = max(1, blurPx.toInt())
-        val perRingAlpha = 1f - (1f - baseAlpha).pow(1f / rings)
-        val ringAlpha255 = (perRingAlpha * 255f).toInt().coerceIn(1, 255)
-        val ringColor = Color.argb(
-            ringAlpha255,
-            Color.red(color),
-            Color.green(color),
-            Color.blue(color),
-        )
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = ringColor }
-        for (i in 0 until rings) {
-            val expand = (i.toFloat() / rings.toFloat()) * blurPx
-            canvas.drawRect(
-                baseLeft - expand,
-                baseTop - expand,
-                baseRight + expand,
-                baseBottom + expand,
-                paint,
-            )
         }
     }
 }

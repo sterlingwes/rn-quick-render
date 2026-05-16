@@ -91,7 +91,41 @@ class FabricViewBuilder(private val context: Context, private val density: Float
         rootView.layoutParams = FrameLayout.LayoutParams(
             dp(rootRect.width), dp(rootRect.height)
         )
+        installShadowDrawables()
         return rootView
+    }
+
+    /**
+     * Hand registered box-shadow specs to a [ShadowProxyDrawable] on each
+     * shadowed view's parent. Run after the tree is fully assembled (so
+     * `view.parent` is set), but before measure/layout (the drawable
+     * reads child positions lazily at draw time).
+     *
+     * Also clears `clipChildren` on every ancestor of a shadowed view —
+     * Android-side, parent ViewGroups clip child draws to their own
+     * bounds by default, which would chop off any shadow extending past
+     * the parent. RN core does the same on Android when boxShadow is set.
+     */
+    private fun installShadowDrawables() {
+        if (boxShadows.isEmpty()) return
+        val byParent: MutableMap<ViewGroup, MutableList<Pair<View, List<BoxShadowSpec>>>> =
+            mutableMapOf()
+        for ((view, specs) in boxShadows) {
+            val parent = view.parent as? ViewGroup ?: continue
+            byParent.getOrPut(parent) { mutableListOf() }.add(view to specs)
+            var ancestor: android.view.ViewParent? = parent
+            while (ancestor is ViewGroup) {
+                ancestor.clipChildren = false
+                ancestor = ancestor.parent
+            }
+        }
+        for ((parent, list) in byParent) {
+            parent.background = ShadowProxyDrawable(
+                inner = parent.background,
+                children = list,
+                density = density,
+            )
+        }
     }
 
     /**
