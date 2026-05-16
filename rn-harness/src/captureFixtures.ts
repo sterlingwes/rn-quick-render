@@ -9,6 +9,7 @@ const FIXTURES = [
   { name: "scrollView", path: "../fixtures/scrollView" },
   { name: "conditional", path: "../fixtures/conditional" },
   { name: "nestedTextSpans", path: "../fixtures/nestedTextSpans" },
+  { name: "imageResizeModes", path: "../fixtures/imageResizeModes" },
 ] as const;
 
 function main() {

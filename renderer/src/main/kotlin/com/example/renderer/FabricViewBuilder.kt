@@ -1,6 +1,8 @@
 package com.example.renderer
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -13,6 +15,8 @@ import android.widget.TextView
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import java.io.File
+import java.util.Base64
 
 /**
  * Builds an Android View tree from Fabric mount instructions + Yoga layout rects.
@@ -134,11 +138,66 @@ class FabricViewBuilder(private val context: Context, private val density: Float
     private fun buildImageView(node: NodeSpec): ImageView {
         val image = ImageView(context)
         applyCommonProps(image, node.props)
-        if (image.background == null) {
+
+        val bitmap = decodeImage(node.props)
+        if (bitmap != null) {
+            image.setImageBitmap(bitmap)
+            image.scaleType = resolveScaleType(
+                node.props.get("resizeMode")?.takeIf { it.isJsonPrimitive }?.asString
+            )
+        } else if (image.background == null) {
+            // Unsupported scheme or decode failure — render the legacy grey
+            // placeholder so the slot is still visible. http(s):// URIs land
+            // here today; a future fetcher hook can plug them in.
             image.setBackgroundColor(Color.parseColor("#CFD8DC"))
         }
         return image
     }
+
+    private fun decodeImage(props: JsonObject): Bitmap? {
+        val source = props.get("source")?.takeIf { it.isJsonObject }?.asJsonObject ?: return null
+        val uri = source.get("uri")
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }
+            ?.asString ?: return null
+        return when {
+            uri.startsWith("data:image/") -> decodeDataUri(uri)
+            uri.startsWith("file://") -> decodeFile(uri.removePrefix("file://"))
+            else -> null
+        }
+    }
+
+    private fun decodeDataUri(uri: String): Bitmap? {
+        val commaIdx = uri.indexOf(',')
+        if (commaIdx < 0) return null
+        val header = uri.substring(0, commaIdx)
+        if (!header.contains(";base64")) return null
+        val bytes = try {
+            Base64.getDecoder().decode(uri.substring(commaIdx + 1))
+        } catch (_: IllegalArgumentException) {
+            return null
+        }
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    }
+
+    private fun decodeFile(path: String): Bitmap? {
+        val f = File(path)
+        if (!f.isFile) return null
+        return BitmapFactory.decodeFile(f.absolutePath)
+    }
+
+    private fun resolveScaleType(resizeMode: String?): ImageView.ScaleType =
+        when (resizeMode) {
+            "cover" -> ImageView.ScaleType.CENTER_CROP
+            "contain" -> ImageView.ScaleType.FIT_CENTER
+            "stretch" -> ImageView.ScaleType.FIT_XY
+            "center" -> ImageView.ScaleType.CENTER
+            // RN's "repeat" needs a BitmapShader / TileMode.REPEAT setup;
+            // falls back to cover until we wire that. Logged as a 2.5
+            // follow-up.
+            "repeat" -> ImageView.ScaleType.CENTER_CROP
+            // RN's default for <Image> is "cover".
+            else -> ImageView.ScaleType.CENTER_CROP
+        }
 
     private fun buildTextView(node: NodeSpec, all: Map<Int, NodeSpec>): TextView {
         val tv = TextView(context)

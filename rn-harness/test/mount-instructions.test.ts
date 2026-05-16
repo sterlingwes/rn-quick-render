@@ -13,6 +13,7 @@ const FIXTURES = [
   { name: "scrollView", modulePath: "../fixtures/scrollView" },
   { name: "conditional", modulePath: "../fixtures/conditional" },
   { name: "nestedTextSpans", modulePath: "../fixtures/nestedTextSpans" },
+  { name: "imageResizeModes", modulePath: "../fixtures/imageResizeModes" },
 ];
 
 describe("Fabric mount instruction capture", () => {
