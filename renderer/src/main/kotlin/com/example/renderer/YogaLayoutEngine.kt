@@ -26,7 +26,13 @@ class YogaLayoutEngine(
      * with per-span weight/size/colour overrides for nested `<Text>` runs.
      */
     fun interface TextMeasureProvider {
-        fun measure(text: CharSequence, fontSize: Float, fontWeight: String?, availableWidth: Float): Pair<Float, Float>
+        fun measure(
+            text: CharSequence,
+            fontSize: Float,
+            fontWeight: String?,
+            fontFamily: String?,
+            availableWidth: Float,
+        ): Pair<Float, Float>
     }
 
     data class LayoutRect(val left: Float, val top: Float, val width: Float, val height: Float)
@@ -92,13 +98,15 @@ class YogaLayoutEngine(
                 val style = node.props.getAsJsonObject("style")
                 val fontSize = style?.get("fontSize")?.takeIf { it.isJsonPrimitive }?.asFloat ?: 14f
                 val fontWeight = style?.get("fontWeight")?.takeIf { it.isJsonPrimitive }?.asString
+                val fontFamily = style?.get("fontFamily")
+                    ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
                 y.setMeasureFunction(YogaMeasureFunction { _, width, widthMode, _, _ ->
                     val availableWidth = when (widthMode) {
                         YogaMeasureMode.EXACTLY -> width
                         YogaMeasureMode.AT_MOST -> width
                         else -> Float.MAX_VALUE
                     }
-                    val (w, h) = measureParagraph(spanned, fontSize, fontWeight, availableWidth)
+                    val (w, h) = measureParagraph(spanned, fontSize, fontWeight, fontFamily, availableWidth)
                     YogaMeasureOutput.make(w, h)
                 })
             }
@@ -383,12 +391,18 @@ class YogaLayoutEngine(
     private fun isTextLeaf(viewName: String): Boolean =
         viewName == "RCTParagraph"
 
-    private fun measureParagraph(text: CharSequence, fontSize: Float, fontWeight: String?, availableWidth: Float): Pair<Float, Float> {
+    private fun measureParagraph(
+        text: CharSequence,
+        fontSize: Float,
+        fontWeight: String?,
+        fontFamily: String?,
+        availableWidth: Float,
+    ): Pair<Float, Float> {
         if (text.isEmpty()) return 0f to 0f
 
         // Delegate to pluggable measurer if available
         if (textMeasurer != null) {
-            return textMeasurer.measure(text, fontSize, fontWeight, availableWidth)
+            return textMeasurer.measure(text, fontSize, fontWeight, fontFamily, availableWidth)
         }
 
         // Heuristic fallback — matches computeLayout.ts. Ignores spans.

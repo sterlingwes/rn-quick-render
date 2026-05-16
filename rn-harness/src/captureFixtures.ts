@@ -12,6 +12,7 @@ const FIXTURES = [
   { name: "imageResizeModes", path: "../fixtures/imageResizeModes" },
   { name: "transformsAndEffects", path: "../fixtures/transformsAndEffects" },
   { name: "updateBadgeCount", path: "../fixtures/updateBadgeCount" },
+  { name: "customFontText", path: "../fixtures/customFontText" },
 ] as const;
 
 function main() {

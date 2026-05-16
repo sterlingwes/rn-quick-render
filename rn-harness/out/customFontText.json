@@ -1,0 +1,422 @@
+{
+  "fixture": "customFontText",
+  "surfaceId": 20,
+  "instructionCount": 50,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 216,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": "paragraph-level fontFamily"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 218,
+      "viewName": "RCTParagraph",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 2
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 220,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": "monospaced via TestMono"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 4,
+      "tag": 222,
+      "viewName": "RCTParagraph",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "fontSize": 18,
+          "color": "#1A1A1A",
+          "fontFamily": "TestMono"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 3
+    },
+    {
+      "op": "createNode",
+      "nodeId": 5,
+      "tag": 224,
+      "viewName": "RCTView",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 5,
+      "childNodeId": 2
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 5,
+      "childNodeId": 4
+    },
+    {
+      "op": "createNode",
+      "nodeId": 6,
+      "tag": 226,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": "per-span fontFamily on the bold word"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 7,
+      "tag": 228,
+      "viewName": "RCTParagraph",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 2
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 7,
+      "childNodeId": 6
+    },
+    {
+      "op": "createNode",
+      "nodeId": 8,
+      "tag": 230,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": "the "
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 9,
+      "tag": 232,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": "MONO"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 10,
+      "tag": 234,
+      "viewName": "RCTText",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "fontFamily": "TestMono",
+          "fontWeight": "bold"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 10,
+      "childNodeId": 9
+    },
+    {
+      "op": "createNode",
+      "nodeId": 11,
+      "tag": 236,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": " word stands out"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 12,
+      "tag": 238,
+      "viewName": "RCTParagraph",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "fontSize": 18,
+          "color": "#1A1A1A"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 12,
+      "childNodeId": 8
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 12,
+      "childNodeId": 10
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 12,
+      "childNodeId": 11
+    },
+    {
+      "op": "createNode",
+      "nodeId": 13,
+      "tag": 240,
+      "viewName": "RCTView",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 13,
+      "childNodeId": 7
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 13,
+      "childNodeId": 12
+    },
+    {
+      "op": "createNode",
+      "nodeId": 14,
+      "tag": 242,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": "bold weight on registered family"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 15,
+      "tag": 244,
+      "viewName": "RCTParagraph",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 2
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 15,
+      "childNodeId": 14
+    },
+    {
+      "op": "createNode",
+      "nodeId": 16,
+      "tag": 246,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": "bold TestMono via fontWeight"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 17,
+      "tag": 248,
+      "viewName": "RCTParagraph",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "fontSize": 18,
+          "color": "#1A1A1A",
+          "fontFamily": "TestMono",
+          "fontWeight": "bold"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 16
+    },
+    {
+      "op": "createNode",
+      "nodeId": 18,
+      "tag": 250,
+      "viewName": "RCTView",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 18,
+      "childNodeId": 15
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 18,
+      "childNodeId": 17
+    },
+    {
+      "op": "createNode",
+      "nodeId": 19,
+      "tag": 252,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": "unregistered family falls back to default"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 20,
+      "tag": 254,
+      "viewName": "RCTParagraph",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 2
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 20,
+      "childNodeId": 19
+    },
+    {
+      "op": "createNode",
+      "nodeId": 21,
+      "tag": 256,
+      "viewName": "RCTRawText",
+      "surfaceId": 20,
+      "props": {
+        "text": "MissingFont label"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 22,
+      "tag": 258,
+      "viewName": "RCTParagraph",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "fontSize": 18,
+          "color": "#1A1A1A",
+          "fontFamily": "MissingFont"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 22,
+      "childNodeId": 21
+    },
+    {
+      "op": "createNode",
+      "nodeId": 23,
+      "tag": 260,
+      "viewName": "RCTView",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 23,
+      "childNodeId": 20
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 23,
+      "childNodeId": 22
+    },
+    {
+      "op": "createNode",
+      "nodeId": 24,
+      "tag": 262,
+      "viewName": "RCTView",
+      "surfaceId": 20,
+      "props": {
+        "style": {
+          "padding": 16,
+          "backgroundColor": "#FFFFFF"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 24,
+      "childNodeId": 5
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 24,
+      "childNodeId": 13
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 24,
+      "childNodeId": 18
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 24,
+      "childNodeId": 23
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 24
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 20,
+      "childSetId": 1
+    }
+  ]
+}

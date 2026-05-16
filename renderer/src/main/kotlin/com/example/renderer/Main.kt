@@ -9,13 +9,19 @@ import javax.imageio.ImageIO
  * Reads Fabric mount-instruction JSON from stdin, renders to PNG.
  *
  * Usage:
- *   java -jar renderer.jar [--width 1080] [--height 2340] [--density 440] [--output output.png]
+ *   java -jar renderer.jar [--width 1080] [--height 2340] [--density 440]
+ *                          [--output output.png] [--fonts /path/to/fonts]
+ *
+ * `--fonts` points at a directory of `.ttf` / `.otf` files; each is
+ * registered under its filename (without extension) so a `style.fontFamily`
+ * of `"Inter"` resolves to `Inter.ttf` from that directory.
  */
 fun main(args: Array<String>) {
     var width = 1080
     var height = 2340
     var density = 440
     var output = "output.png"
+    var fontsDir: String? = null
 
     val iter = args.iterator()
     while (iter.hasNext()) {
@@ -24,9 +30,13 @@ fun main(args: Array<String>) {
             "--height" -> height = iter.next().toInt()
             "--density" -> density = iter.next().toInt()
             "--output" -> output = iter.next()
+            "--fonts" -> fontsDir = iter.next()
             else -> {
                 System.err.println("Unknown argument: $arg")
-                System.err.println("Usage: renderer [--width W] [--height H] [--density D] [--output FILE]")
+                System.err.println(
+                    "Usage: renderer [--width W] [--height H] [--density D] " +
+                        "[--output FILE] [--fonts DIR]"
+                )
                 System.exit(1)
             }
         }
@@ -38,11 +48,24 @@ fun main(args: Array<String>) {
         System.exit(1)
     }
 
+    val fontRegistry = fontsDir?.let { loadFontsFromDirectory(File(it)) } ?: FontRegistry.EMPTY
+
     val bootstrap = LayoutlibBootstrap.create(width, height, density)
-    val renderer = SnapshotRenderer(bootstrap, width, height, density)
+    val renderer = SnapshotRenderer(bootstrap, width, height, density, fontRegistry = fontRegistry)
     val image = renderer.render(json)
 
     val outputFile = File(output)
     ImageIO.write(image, "png", outputFile)
     println("Rendered ${image.width}×${image.height} → ${outputFile.absolutePath}")
+}
+
+private fun loadFontsFromDirectory(dir: File): FontRegistry {
+    require(dir.isDirectory) { "Fonts path is not a directory: ${dir.absolutePath}" }
+    val registry = FontRegistry()
+    val files = dir.listFiles { f -> f.isFile && (f.extension == "ttf" || f.extension == "otf") }
+        ?: return registry
+    for (f in files) {
+        registry.registerFile(f.nameWithoutExtension, f)
+    }
+    return registry
 }

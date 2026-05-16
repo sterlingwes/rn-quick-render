@@ -7,6 +7,7 @@ import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.text.style.TypefaceSpan
 import com.google.gson.JsonObject
 
 /**
@@ -44,10 +45,11 @@ object ParagraphTextBuilder {
         viewNameOf: (Int) -> String?,
         propsOf: (Int) -> JsonObject?,
         childrenOf: (Int) -> List<Int>,
+        fontRegistry: FontRegistry = FontRegistry.EMPTY,
     ): SpannableStringBuilder {
         val out = SpannableStringBuilder()
         for (childId in paragraphChildIds) {
-            append(childId, out, SpanStyle.EMPTY, density, viewNameOf, propsOf, childrenOf)
+            append(childId, out, SpanStyle.EMPTY, density, fontRegistry, viewNameOf, propsOf, childrenOf)
         }
         return out
     }
@@ -72,6 +74,7 @@ object ParagraphTextBuilder {
         out: SpannableStringBuilder,
         inheritedStyle: SpanStyle,
         density: Float,
+        fontRegistry: FontRegistry,
         viewNameOf: (Int) -> String?,
         propsOf: (Int) -> JsonObject?,
         childrenOf: (Int) -> List<Int>,
@@ -84,12 +87,12 @@ object ParagraphTextBuilder {
                 if (text.isEmpty()) return
                 val start = out.length
                 out.append(text)
-                applySpans(out, start, out.length, inheritedStyle, density)
+                applySpans(out, start, out.length, inheritedStyle, density, fontRegistry)
             }
             "RCTText" -> {
                 val nested = inheritedStyle.mergedWith(props?.getAsJsonObject("style"))
                 for (childId in childrenOf(nodeId)) {
-                    append(childId, out, nested, density, viewNameOf, propsOf, childrenOf)
+                    append(childId, out, nested, density, fontRegistry, viewNameOf, propsOf, childrenOf)
                 }
             }
             else -> {
@@ -105,6 +108,7 @@ object ParagraphTextBuilder {
         end: Int,
         style: SpanStyle,
         density: Float,
+        fontRegistry: FontRegistry,
     ) {
         if (start >= end) return
 
@@ -123,7 +127,17 @@ object ParagraphTextBuilder {
             italic -> Typeface.ITALIC
             else -> Typeface.NORMAL
         }
-        if (typefaceFlag != Typeface.NORMAL) {
+        // Per-span fontFamily — only emit a TypefaceSpan if the family is a
+        // custom registration. System families and the no-fontFamily case
+        // are handled by the paragraph's base typeface on the TextView; we
+        // don't override per-span just to repeat the base.
+        if (fontRegistry.hasCustom(style.fontFamily)) {
+            val tf = fontRegistry.resolve(style.fontFamily, typefaceFlag)
+            out.setSpan(TypefaceSpan(tf), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+        } else if (typefaceFlag != Typeface.NORMAL) {
+            // No custom family — fall back to a plain StyleSpan, which
+            // applies bold/italic on top of whatever Typeface the
+            // TextView is already using.
             out.setSpan(StyleSpan(typefaceFlag), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
         }
     }
@@ -140,6 +154,7 @@ object ParagraphTextBuilder {
         val fontWeight: String? = null,
         val color: Int? = null,
         val fontStyle: String? = null,
+        val fontFamily: String? = null,
     ) {
         fun mergedWith(props: JsonObject?): SpanStyle {
             if (props == null) return this
@@ -155,6 +170,8 @@ object ParagraphTextBuilder {
                 color = props.get("color")?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }
                     ?.asString?.let { parseColor(it) } ?: color,
                 fontStyle = props.get("fontStyle")?.takeIf { it.isJsonPrimitive }?.asString ?: fontStyle,
+                fontFamily = props.get("fontFamily")
+                    ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString ?: fontFamily,
             )
         }
 

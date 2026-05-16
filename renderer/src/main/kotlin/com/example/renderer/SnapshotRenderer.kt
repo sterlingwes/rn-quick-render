@@ -30,13 +30,16 @@ class SnapshotRenderer(
     // and what plain RN apps see by default. Phase 2.5 will wire this to the
     // active theme/Configuration once theming is in.
     private val windowBackgroundColor: Int = Color.WHITE,
+    // Custom font registry. Empty by default — fontFamily lookups fall
+    // through to layoutlib's bundled families (Roboto + Noto).
+    private val fontRegistry: FontRegistry = FontRegistry.EMPTY,
 ) {
     private val density: Float = densityDpi / 160f
     private val viewportWidthDp: Int = (screenWidth / density).toInt()
     private val viewportHeightDp: Int = (screenHeight / density).toInt()
 
     fun render(instructionsJson: String): BufferedImage {
-        val textMeasurer = LayoutlibTextMeasurer(density)
+        val textMeasurer = LayoutlibTextMeasurer(density, fontRegistry)
         val engine = YogaLayoutEngine(textMeasurer, textDensity = density)
         val layoutResult = engine.computeLayout(
             instructionsJson,
@@ -47,7 +50,7 @@ class SnapshotRenderer(
         )
 
         return bootstrap.executeInSession { context ->
-            val builder = FabricViewBuilder(context, density)
+            val builder = FabricViewBuilder(context, density, fontRegistry)
             val rootView = builder.build(instructionsJson, layoutResult)
 
             // Measure and layout using the view's own LayoutParams (set by FabricViewBuilder

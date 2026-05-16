@@ -23,12 +23,14 @@ import android.text.TextPaint
  */
 class LayoutlibTextMeasurer(
     private val density: Float = 2.625f, // xxhdpi default (420dpi / 160)
+    private val fontRegistry: FontRegistry = FontRegistry.EMPTY,
 ) : YogaLayoutEngine.TextMeasureProvider {
 
     override fun measure(
         text: CharSequence,
         fontSize: Float,
         fontWeight: String?,
+        fontFamily: String?,
         availableWidth: Float,
     ): Pair<Float, Float> {
         if (text.isEmpty()) return 0f to 0f
@@ -40,7 +42,7 @@ class LayoutlibTextMeasurer(
         // "bold" or >= 600 → BOLD, else NORMAL. Spans on the input may
         // override per-character (StyleSpan, AbsoluteSizeSpan, etc.).
         val weight = resolveWeight(fontWeight)
-        paint.typeface = Typeface.create(Typeface.DEFAULT, weight)
+        paint.typeface = fontRegistry.resolve(fontFamily, weight)
 
         val widthPx = if (availableWidth.isFinite() && availableWidth > 0) {
             (availableWidth * density).toInt()
