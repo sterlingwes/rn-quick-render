@@ -12,18 +12,22 @@
 // identical asset descriptor.
 
 const { loadAsset } = require("./assetLoader");
+const fs = require("fs");
+
+// Cache key honours filename + size + mtime of both the image and the
+// loader module. Without the loader's mtime, edits to assetLoader.js
+// (e.g. changing data: encoding to file:// or vice versa) wouldn't
+// invalidate Jest's transform cache, leaving stale captures behind.
+const loaderStat = fs.statSync(require.resolve("./assetLoader"));
+const LOADER_VERSION = `${loaderStat.size}|${loaderStat.mtimeMs}`;
 
 module.exports = {
   process(_src, filename) {
     const source = loadAsset(filename);
     return { code: `module.exports = ${JSON.stringify(source)};` };
   },
-  // Cache key honours filename + size + mtime so a re-saved PNG
-  // invalidates the cached transform. Cheap and avoids "old golden
-  // after asset swap" surprises.
   getCacheKey(_src, filename) {
-    const fs = require("fs");
     const stat = fs.statSync(filename);
-    return `${filename}|${stat.size}|${stat.mtimeMs}`;
+    return `${filename}|${stat.size}|${stat.mtimeMs}|loader:${LOADER_VERSION}`;
   },
 };

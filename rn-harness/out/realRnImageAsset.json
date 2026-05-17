@@ -13,7 +13,7 @@
         "src": [
           {
             "__packager_asset": true,
-            "uri": "file:///home/user/rn-quick-render/rn-harness/fixtures/assets/quadrant.png",
+            "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg==",
             "width": 64,
             "height": 64,
             "scale": 1
@@ -22,7 +22,7 @@
         "source": [
           {
             "__packager_asset": true,
-            "uri": "file:///home/user/rn-quick-render/rn-harness/fixtures/assets/quadrant.png",
+            "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg==",
             "width": 64,
             "height": 64,
             "scale": 1

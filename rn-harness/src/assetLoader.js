@@ -8,19 +8,41 @@ const path = require("path");
 
 /**
  * Read an image file from disk and build the source object an RN
- * <Image> would consume. Only the PNG header is parsed today — other
+ * <Image> would consume.
+ *
+ * The bytes are inlined as a `data:` URI rather than referenced as
+ * `file://`. Captured JSON has to be portable across the machine
+ * running the capture and whatever machine renders it (CI's
+ * Linux runner doesn't share filesystems with the developer's
+ * laptop) — a `file:///abs/path/...` URI captured today wouldn't
+ * resolve tomorrow. Embedding the bytes makes the captured stream
+ * self-contained, matching how `_dsl.ts` already bundles its
+ * test PNG, at the cost of larger JSON. Acceptable: snapshot-test
+ * assets are typically icons (a few KB).
+ *
+ * Only the PNG header is parsed today for dimensions — other
  * formats fall back to `width: 0, height: 0`, which the renderer's
  * existing intrinsic-size handling treats the same way Metro does
  * when an asset has no dimension metadata (the consumer's `style`
  * overrides the size).
  */
+const MIME_BY_EXT = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+};
+
 function loadAsset(filename) {
   const abs = path.resolve(filename);
   const buf = fs.readFileSync(abs);
+  const ext = path.extname(abs).toLowerCase().replace(/^\./, "");
+  const mime = MIME_BY_EXT[ext] ?? "application/octet-stream";
   const dims = readImageDimensions(buf, abs);
   return {
     __packager_asset: true,
-    uri: `file://${abs}`,
+    uri: `data:${mime};base64,${buf.toString("base64")}`,
     width: dims.width,
     height: dims.height,
     scale: 1,
