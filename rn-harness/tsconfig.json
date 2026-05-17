@@ -13,5 +13,15 @@
     "types": ["node", "jest"],
     "outDir": "dist"
   },
-  "include": ["src/**/*", "fixtures/**/*", "test/**/*"]
+  "include": ["src/**/*", "fixtures/**/*", "test/**/*"],
+  "ts-node": {
+    // ts-node sits in front of @babel/register in the require chain.
+    // Without an explicit ignore, ts-node tries to compile real-app
+    // submodule sources under third_party/ and fails on path aliases
+    // (`#/alf`) and missing types it doesn't know about. Letting Babel
+    // handle anything under third_party/ keeps each transformer
+    // responsible for the tree it understands — ts-node for our TS,
+    // Babel for vendored RN and submodule sources.
+    "ignore": ["(?:^|/)node_modules/", "(?:^|/)third_party/"]
+  }
 }

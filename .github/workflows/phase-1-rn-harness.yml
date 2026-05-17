@@ -25,6 +25,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Submodules supply the real-app source code that the
+          # `realApp/*` fixtures import (e.g. third_party/bluesky-social-app).
+          # Phase 2's renderer job doesn't need them — it only consumes
+          # the captured JSON.
+          submodules: recursive
 
       - name: Set up Node 22
         uses: actions/setup-node@v4

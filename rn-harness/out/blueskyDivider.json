@@ -1,0 +1,78 @@
+{
+  "fixture": "blueskyDivider",
+  "surfaceId": 25,
+  "instructionCount": 8,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 320,
+      "viewName": "RCTView",
+      "surfaceId": 25,
+      "props": {
+        "style": [
+          {
+            "width": "100%"
+          },
+          {
+            "borderTopWidth": 1
+          },
+          {
+            "borderColor": "#D1D5DB"
+          },
+          null
+        ]
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 322,
+      "viewName": "RCTView",
+      "surfaceId": 25,
+      "props": {
+        "style": {
+          "padding": 24,
+          "backgroundColor": "#F8F8FA"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 324,
+      "viewName": "RCTView",
+      "surfaceId": 25,
+      "props": {
+        "style": {
+          "flex": 1
+        },
+        "pointerEvents": "box-none"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 3,
+      "childNodeId": 2
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 3
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 25,
+      "childSetId": 1
+    }
+  ]
+}
