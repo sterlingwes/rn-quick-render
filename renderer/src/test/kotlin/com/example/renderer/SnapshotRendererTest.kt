@@ -50,6 +50,7 @@ class SnapshotRendererTest {
     @Test fun updateBadgeCount() = runFixture("updateBadgeCount")
     @Test fun imageTintAndAsset() = runFixture("imageTintAndAsset")
     @Test fun realRnHelloWorld() = runFixture("realRnHelloWorld")
+    @Test fun realRnImageAsset() = runFixture("realRnImageAsset")
     @Test fun customFontText() = runFixture(
         "customFontText",
         fontRegistry = FontRegistry().registerFile(

@@ -258,7 +258,24 @@ class FabricViewBuilder(
     }
 
     private fun decodeImage(props: JsonObject): Bitmap? {
-        val source = props.get("source")?.takeIf { it.isJsonObject }?.asJsonObject ?: return null
+        // Real RN normalises `source` to an array for multi-source
+        // responsive support — picks the best entry at native render
+        // time based on display scale. For a headless single-pass
+        // render the first object entry is good enough. The DSL keeps
+        // emitting `source` as a plain object; both shapes flow
+        // through here.
+        val raw = props.get("source") ?: return null
+        val source = when {
+            raw.isJsonObject -> raw.asJsonObject
+            raw.isJsonArray -> {
+                var first: JsonObject? = null
+                for (entry in raw.asJsonArray) {
+                    if (entry.isJsonObject) { first = entry.asJsonObject; break }
+                }
+                first ?: return null
+            }
+            else -> return null
+        }
         val uri = source.get("uri")
             ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }
             ?.asString ?: return null

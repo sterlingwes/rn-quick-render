@@ -32,13 +32,20 @@ export const ReactNativeViewConfigRegistry = {
   customDirectEventTypes: {},
 };
 
-// Real createAttributePayload walks validAttributes to build the wire payload.
-// For capture purposes we short-circuit to a shallow clone — the capture stub
-// records whatever object the renderer hands to createNode / cloneNode*.
+// React internals that never belong on the mount-instruction wire. Real
+// RN's createAttributePayload walks validAttributes from the view
+// config and naturally excludes these because they're React-side
+// concepts. Our stub uses a permissive Proxy (every attribute "valid"),
+// so we explicitly skip the reserved keys to keep the output
+// consistent across runtimes — without this, Jest captures include a
+// `ref: [Function]` on components that use React.forwardRef while
+// plain-Node captures don't, breaking golden parity.
+const REACT_INTERNAL_PROPS = new Set(["children", "ref", "key"]);
+
 function createAttributePayload(nextProps: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const key of Object.keys(nextProps)) {
-    if (key === "children") continue;
+    if (REACT_INTERNAL_PROPS.has(key)) continue;
     out[key] = nextProps[key];
   }
   return out;
