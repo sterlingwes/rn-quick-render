@@ -16,10 +16,10 @@ a screen from a real RN app.
 | Phase | What | Status |
 | --- | --- | --- |
 | 0 | Paparazzi validates layoutlib-on-Linux | ✅ done — retrospective only, module deleted |
-| 1 | Fabric mount-instruction capture in Node | ✅ 7 fixtures, CI green |
+| 1 | Fabric mount-instruction capture in Node | ✅ 13 fixtures, CI green |
 | 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
-| 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; #6 (RTL) still open; the Metro asset *resolver* sits in Phase 3 |
-| 3 | Render a real RN app screen (native-module shim + asset pipeline) | ⏳ design in [`docs/phase-3.md`](docs/phase-3.md) |
+| 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open |
+| 3 | Render a real RN app screen (native-module shim + asset pipeline) | 🟡 steps 1–2 landed (real RN boots; `require('./*.png')` works); steps 3–4 (AppRegistry entry + first-target integration) ahead. Plan: [`docs/phase-3.md`](docs/phase-3.md) |
 | 4 | Device / theme matrix + perf | ⏳ not started |
 | 5 | Packaging (Gradle plugin + npm CLI) | ⏳ not started |
 
@@ -229,3 +229,29 @@ Per-item detail and findings live in
 | 6 | RTL | ⏳ Yoga root still hard-coded `DIRECTION_LTR` |
 | 7 | Custom font loading | ✅ `FontRegistry` + `SnapshotRenderer(fontRegistry=…)` + CLI `--fonts DIR` |
 | – | Concurrent-root capture | ⏳ Phase 1 stream still assumes synchronous commits |
+
+## Phase 3 — render one screen of a real RN app
+
+Boot the real `react-native` package under Node and feed a fixture
+that imports `<View>` / `<Text>` / `<Image>` from `react-native`
+through Fabric to the same mount-instruction stream the renderer
+already understands. Per-item plan and scope decisions live in
+[`docs/phase-3.md`](docs/phase-3.md). Status:
+
+| # | Item | Status |
+| --- | --- | --- |
+| 1 | `loadRealRn` + native-module proxy shim | ✅ `react-native` boots in Node + Jest; `NativeModules` / `TurboModuleRegistry` resolve through a 3-tier proxy (per-fixture overrides → sync defaults → deep no-op). Fixture: `realRnHelloWorld` |
+| 2 | `AssetRegistry` hook + capture-time `require()` interceptor | ✅ `require('./*.png')` produces an inline-`data:` URI source object; renderer decodes via existing `data:` path. Fixture: `realRnImageAsset` |
+| 3 | `captureFromAppKey` (AppRegistry-driven entry) | ⏳ not started |
+| 4 | First-target integration (one screen from a public RN repo) | ⏳ not started — this is the actual exit criterion |
+
+### Developer-responsibility boundary
+
+The harness handles the runtime plumbing (boot RN, intercept the
+mount stream, paint it). Everything *above* the component being
+rendered — props, context providers (navigation / Redux / theme),
+mocked network/storage responses, animated target values,
+placeholder swaps for unsupported children — is the developer's
+test wrapper to write, the same way Storybook stories work. See the
+"What the developer brings" section of
+[`docs/phase-3.md`](docs/phase-3.md) for the contract.
