@@ -31,15 +31,26 @@ import path from "path";
 
 const isJest = typeof process !== "undefined" && process.env.JEST_WORKER_ID !== undefined;
 
+import { realAppResolverPaths, realAppOverrides } from "./realAppResolver";
+
 if (!isJest) {
-  const ROOTS = [
+  const RN_ROOTS = [
     // Real RN under node_modules/react-native/**.
     path.dirname(require.resolve("react-native/package.json")),
     // The @react-native/* siblings ship the same Flow-annotated source.
     path.dirname(path.dirname(require.resolve("react-native/package.json"))),
   ];
   const ANDROID_EXTENSIONS = [".android.ts", ".android.tsx", ".android.js", ".android.jsx"];
-  const RN_PREFIX = ROOTS[0] + path.sep;
+  const RN_PREFIX = RN_ROOTS[0] + path.sep;
+
+  // Roots whose .ts/.tsx/.js source we want Babel to transform —
+  // beyond the RN package itself, this picks up any real-app
+  // submodule under third_party/<target>/ so the target's
+  // unmodified TypeScript sources load under Node.
+  const REAL_APP_ROOTS = realAppResolverPaths();
+  const TRANSFORM_ROOTS = [...RN_ROOTS, ...REAL_APP_ROOTS.map((p) => p.root)];
+
+  const HARNESS_NODE_MODULES = path.resolve(__dirname, "..", "node_modules");
 
   const originalResolve = (Module as any)._resolveFilename as (
     request: string,
@@ -52,6 +63,8 @@ if (!isJest) {
     parent: NodeJS.Module | null,
     ...rest: unknown[]
   ) {
+    // 1. RN's platform-aware resolution — `Foo.android.{ts,tsx,js,jsx}`
+    //    first for relative requires from inside RN.
     if (
       parent &&
       typeof parent.filename === "string" &&
@@ -63,16 +76,33 @@ if (!isJest) {
         try {
           return originalResolve.call(this, stripped + ext, parent, ...rest);
         } catch {
-          // Try the next extension; fall through to default resolution.
+          /* try next ext */
         }
       }
     }
+
+    // 2. Real-app submodule resolution — handles tsconfig paths
+    //    (`#/...`), explicit mocks, and falls back to harness's
+    //    node_modules for npm-style imports.
+    if (parent && typeof parent.filename === "string") {
+      const ra = realAppOverrides(request, parent.filename, HARNESS_NODE_MODULES);
+      if (ra) {
+        try {
+          return originalResolve.call(this, ra, parent, ...rest);
+        } catch {
+          /* fall through to default */
+        }
+      }
+    }
+
     return originalResolve.call(this, request, parent, ...rest);
   };
 
   require("@babel/register")({
     presets: [require.resolve("@react-native/babel-preset")],
-    only: ROOTS.map((root) => new RegExp("^" + root.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))),
+    only: TRANSFORM_ROOTS.map(
+      (root) => new RegExp("^" + root.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+    ),
     extensions: [".js", ".jsx", ".ts", ".tsx"],
     cache: true,
   });

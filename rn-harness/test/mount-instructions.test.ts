@@ -21,6 +21,7 @@ const FIXTURES = [
   { name: "realRnHelloWorld", modulePath: "../fixtures/realRnHelloWorld" },
   { name: "realRnImageAsset", modulePath: "../fixtures/realRnImageAsset" },
   { name: "realRnRegisteredApp", modulePath: "../fixtures/realRnRegisteredApp" },
+  { name: "blueskyDivider", modulePath: "../fixtures/realApp/bluesky-divider" },
 ];
 
 describe("Fabric mount instruction capture", () => {
@@ -34,7 +35,22 @@ describe("Fabric mount instruction capture", () => {
       const goldenPath = path.resolve(__dirname, "..", "out", `${name}.json`);
       const golden = JSON.parse(fs.readFileSync(goldenPath, "utf8"));
 
-      expect({ fixture: name, surfaceId, instructionCount: instructions.length, instructions }).toEqual({
+      // Round-trip the fresh capture through JSON the same way the
+      // golden was serialized: JSON.stringify drops `undefined` and
+      // emits `null` for undefined array entries. Without this, a
+      // captured prop containing `undefined` (e.g. RN's nested
+      // `style: [a, b, c, undefined]` from a spread default) would
+      // deep-equal-fail against the on-disk golden's `null`.
+      const fresh = JSON.parse(
+        JSON.stringify({
+          fixture: name,
+          surfaceId,
+          instructionCount: instructions.length,
+          instructions,
+        }),
+      );
+
+      expect(fresh).toEqual({
         fixture: golden.fixture,
         surfaceId: golden.surfaceId,
         instructionCount: golden.instructionCount,

@@ -20,12 +20,19 @@ module.exports = {
     "^react-native/Libraries/TurboModule/TurboModuleRegistry$": "<rootDir>/src/turboModuleRegistryJestStub.ts",
   },
   transform: {
-    // Our own sources — ts-jest.
-    "^.+\\.tsx?$": ["ts-jest", { diagnostics: false, isolatedModules: true }],
     // Image assets — same shape as the assetRequireHook produces under
     // plain Node, so fixtures importing PNGs via require() get the
     // identical source object in both runtimes.
     "\\.(png|jpe?g|gif|webp)$": "<rootDir>/src/jestAssetTransformer.js",
+    // Real-app submodule sources need babel-jest (with the RN preset,
+    // see babel.config.js) for the same reason RN's own sources do:
+    // ts-jest with `jsx: "react"` emits `React.createElement` without
+    // adding a `React` import, which fails at runtime when the source
+    // file uses the new JSX transform. Matched before the .tsx? rule
+    // below — Jest's transform map picks the first matching pattern.
+    "/third_party/.*\\.(ts|tsx|js|jsx)$": "babel-jest",
+    // Our own sources — ts-jest.
+    "^.+\\.tsx?$": ["ts-jest", { diagnostics: false, isolatedModules: true }],
     // RN's Flow-annotated source — babel-jest with the RN preset (see
     // babel.config.js). Scoped via transformIgnorePatterns below; the
     // entry here is what runs once a file is allowed past the ignore.

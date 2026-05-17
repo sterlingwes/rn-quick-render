@@ -1,3 +1,6 @@
 [submodule "yoga"]
 	path = yoga
 	url = https://github.com/facebook/yoga.git
+[submodule "third_party/bluesky-social-app"]
+	path = third_party/bluesky-social-app
+	url = https://github.com/bluesky-social/social-app
