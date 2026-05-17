@@ -78,14 +78,32 @@ class YogaLayoutEngine(
         val (nodes, roots) = reconstructTree(instructions)
         val viewport = opts.width to opts.height
 
-        // Build Yoga nodes. RCTRawText (text leaves) and RCTText (virtual span
-        // wrappers inside a paragraph) don't get Yoga nodes — they exist only
-        // to carry text + style runs into the parent RCTParagraph's measure.
+        // Parent map — `RCTText` doubles as both top-level paragraph (real
+        // RN's lowering of `<Text>`) and a nested span (the host-element
+        // DSL's `span()` helper). The distinguishing fact is the parent's
+        // viewName, hence the lookup map. RCTVirtualText is unambiguously
+        // a nested span (the real-RN name for inner spans).
+        val parentOf = HashMap<Int, Int>(nodes.size)
+        for (node in nodes.values) {
+            for (childId in node.children) parentOf[childId] = node.nodeId
+        }
+        fun isNestedSpan(n: Node): Boolean = when (n.viewName) {
+            "RCTRawText", "RCTVirtualText" -> true
+            "RCTText" -> {
+                val parent = parentOf[n.nodeId]?.let { nodes[it] }
+                parent != null && (parent.viewName == "RCTParagraph" || parent.viewName == "RCTText")
+            }
+            else -> false
+        }
+
+        // Build Yoga nodes. Text leaves (raw text + spans nested inside a
+        // paragraph) don't get Yoga nodes — they exist only to carry text
+        // + style runs into the parent paragraph's measure function.
         val yogaNodes = mutableMapOf<Int, YogaNode>()
         for (node in nodes.values) {
-            if (node.viewName == "RCTRawText" || node.viewName == "RCTText") continue
+            if (isNestedSpan(node)) continue
             val y = YogaNodeFactory.create()
-            applyStyle(y, node.props.getAsJsonObject("style"))
+            applyStyle(y, flattenedStyle(node))
 
             if (isTextLeaf(node.viewName)) {
                 val spanned = ParagraphTextBuilder.build(
@@ -95,7 +113,7 @@ class YogaLayoutEngine(
                     propsOf = { id -> nodes[id]?.props },
                     childrenOf = { id -> nodes[id]?.children ?: emptyList() },
                 )
-                val style = node.props.getAsJsonObject("style")
+                val style = flattenedStyle(node)
                 val fontSize = style?.get("fontSize")?.takeIf { it.isJsonPrimitive }?.asFloat ?: 14f
                 val fontWeight = style?.get("fontWeight")?.takeIf { it.isJsonPrimitive }?.asString
                 val fontFamily = style?.get("fontFamily")
@@ -389,7 +407,34 @@ class YogaLayoutEngine(
     // Text measurement
     // -----------------------------------------------------------------------
     private fun isTextLeaf(viewName: String): Boolean =
-        viewName == "RCTParagraph"
+        // RCTParagraph is what the host-element DSL fixtures emit;
+        // RCTText is what real `react-native` lowers `<Text>` to via
+        // its TextNativeComponent. Both name a paragraph-level text
+        // host whose children are RCTRawText leaves + RCTText spans.
+        viewName == "RCTParagraph" || viewName == "RCTText"
+
+    /**
+     * Real RN composes user style with internal defaults via
+     * `StyleSheet.compose`, so `props.style` can be either a plain
+     * object or an array (`[{overflow: "hidden"}, userStyle]` for
+     * `<Text>`). Flatten to a single object using last-wins semantics
+     * matching CSS. Mirrors the same helper in [FabricViewBuilder].
+     */
+    private fun flattenedStyle(node: Node): JsonObject? {
+        val raw = node.props.get("style") ?: return null
+        if (raw.isJsonObject) return raw.asJsonObject
+        if (raw.isJsonArray) {
+            val merged = JsonObject()
+            for (entry in raw.asJsonArray) {
+                if (!entry.isJsonObject) continue
+                for ((k, v) in entry.asJsonObject.entrySet()) {
+                    if (v.isJsonNull) merged.remove(k) else merged.add(k, v)
+                }
+            }
+            return if (merged.size() == 0) null else merged
+        }
+        return null
+    }
 
     private fun measureParagraph(
         text: CharSequence,

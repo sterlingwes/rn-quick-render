@@ -14,6 +14,7 @@ const FIXTURES = [
   { name: "updateBadgeCount", path: "../fixtures/updateBadgeCount" },
   { name: "customFontText", path: "../fixtures/customFontText" },
   { name: "imageTintAndAsset", path: "../fixtures/imageTintAndAsset" },
+  { name: "realRnHelloWorld", path: "../fixtures/realRnHelloWorld" },
 ] as const;
 
 function main() {

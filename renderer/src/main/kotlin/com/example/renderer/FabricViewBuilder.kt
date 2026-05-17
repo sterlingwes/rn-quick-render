@@ -171,9 +171,15 @@ class FabricViewBuilder(
             "RCTView", "RCTScrollContentView" -> buildFrameLayout(node, all, rects)
             "RCTScrollView" -> buildScrollView(node, all, rects)
             "RCTImageView" -> buildImageView(node)
-            "RCTParagraph" -> buildTextView(node, all)
-            "RCTRawText" -> error("RCTRawText should be consumed by parent RCTParagraph")
-            "RCTText" -> error("RCTText should be consumed by parent RCTParagraph as a span")
+            // Two paragraph-level host names: RCTParagraph is what the
+            // host-element DSL emits; RCTText is what real RN's
+            // TextNativeComponent lowers `<Text>` to. Both map to the
+            // same TextView path.
+            "RCTParagraph", "RCTText" -> buildTextView(node, all)
+            "RCTRawText" -> error("RCTRawText should be consumed by parent paragraph")
+            // RCTVirtualText is real RN's nested-span name; it's
+            // consumed by ParagraphTextBuilder via the parent paragraph.
+            "RCTVirtualText" -> error("RCTVirtualText should be consumed by parent paragraph as a span")
             else -> buildFrameLayout(node, all, rects)
         }
     }
@@ -187,7 +193,10 @@ class FabricViewBuilder(
         applyCommonProps(group, node.props)
         for (childId in node.children) {
             val child = all[childId] ?: continue
-            if (child.viewName == "RCTRawText") continue
+            // Text leaves only live inside paragraphs; defensive skip
+            // for any that slip through (consumed by RCTParagraph/RCTText
+            // via ParagraphTextBuilder, never built as standalone views).
+            if (child.viewName == "RCTRawText" || child.viewName == "RCTVirtualText") continue
             val childRect = rects[childId] ?: continue
             val childView = buildView(child, all, rects)
             val lp = FrameLayout.LayoutParams(dp(childRect.width), dp(childRect.height))
@@ -507,9 +516,29 @@ class FabricViewBuilder(
         drawable.setStroke(dp(widthRaw ?: 0f), color)
     }
 
-    private fun styleObject(props: JsonObject): JsonObject? =
-        if (props.has("style") && props.get("style").isJsonObject)
-            props.getAsJsonObject("style") else null
+    /**
+     * RN composes user-supplied `style` with internal defaults via
+     * `StyleSheet.compose`, which can leave the prop as an array of
+     * style objects (e.g. `[{overflow: "hidden"}, {fontSize: 16}]` for
+     * Text). Flatten arrays into a single object using last-wins
+     * semantics (matching CSS / RN's runtime flattening). Returns the
+     * underlying object directly when the prop is already flat.
+     */
+    private fun styleObject(props: JsonObject): JsonObject? {
+        val raw = props.get("style") ?: return null
+        if (raw.isJsonObject) return raw.asJsonObject
+        if (raw.isJsonArray) {
+            val merged = JsonObject()
+            for (entry in raw.asJsonArray) {
+                if (!entry.isJsonObject) continue
+                for ((k, v) in entry.asJsonObject.entrySet()) {
+                    if (v.isJsonNull) merged.remove(k) else merged.add(k, v)
+                }
+            }
+            return if (merged.size() == 0) null else merged
+        }
+        return null
+    }
 
     private fun parseColor(raw: String): Int {
         return when {
