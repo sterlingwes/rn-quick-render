@@ -16,6 +16,7 @@ const FIXTURES = [
   { name: "imageTintAndAsset", path: "../fixtures/imageTintAndAsset" },
   { name: "realRnHelloWorld", path: "../fixtures/realRnHelloWorld" },
   { name: "realRnImageAsset", path: "../fixtures/realRnImageAsset" },
+  { name: "realRnRegisteredApp", path: "../fixtures/realRnRegisteredApp" },
 ] as const;
 
 function main() {
