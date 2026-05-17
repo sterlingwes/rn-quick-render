@@ -375,7 +375,9 @@ class FabricViewBuilder(
 
     private fun applyBackground(view: View, style: JsonObject) {
         val hasCornerProp = CORNER_RADIUS_KEYS.any { style.has(it) }
-        val hasBorder = style.has("borderWidth") || style.has("borderColor")
+        val hasUniformBorder = style.has("borderWidth") || style.has("borderColor")
+        val hasPerEdgeBorder = PER_EDGE_BORDER_KEYS.any { style.has(it) }
+        val hasBorder = hasUniformBorder || hasPerEdgeBorder
         val hasBackground = style.has("backgroundColor")
 
         if (!hasCornerProp && !hasBorder && hasBackground) {
@@ -384,15 +386,49 @@ class FabricViewBuilder(
         }
 
         if (hasCornerProp || hasBorder || hasBackground) {
-            val drawable = GradientDrawable()
-            drawable.shape = GradientDrawable.RECTANGLE
-            if (hasBackground) {
-                drawable.setColor(parseColor(style.get("backgroundColor").asString))
-            }
-            applyCornerRadii(drawable, style)
-            applyBorder(drawable, style)
-            view.background = drawable
+            // GradientDrawable owns background + corner radii + uniform
+            // stroke. Per-edge borders need a separate pass because
+            // setStroke is uniform across all four sides.
+            val inner: GradientDrawable? = if (hasCornerProp || hasUniformBorder || hasBackground) {
+                GradientDrawable().also { d ->
+                    d.shape = GradientDrawable.RECTANGLE
+                    if (hasBackground) d.setColor(parseColor(style.get("backgroundColor").asString))
+                    applyCornerRadii(d, style)
+                    if (hasUniformBorder) applyBorder(d, style)
+                }
+            } else null
+
+            view.background = if (hasPerEdgeBorder) buildPerEdgeBorderDrawable(inner, style) else inner
         }
+    }
+
+    private fun buildPerEdgeBorderDrawable(
+        inner: GradientDrawable?,
+        style: JsonObject,
+    ): PerEdgeBorderDrawable {
+        val baseWidth = style.get("borderWidth")
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asFloat ?: 0f
+        val baseColorRaw = style.get("borderColor")
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
+        val baseColor = baseColorRaw?.let { parseColor(it) } ?: Color.BLACK
+
+        fun width(key: String): Float =
+            (style.get(key)?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asFloat ?: baseWidth) * density
+        fun color(key: String): Int =
+            style.get(key)?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }
+                ?.asString?.let { parseColor(it) } ?: baseColor
+
+        return PerEdgeBorderDrawable(
+            inner = inner,
+            topWidth = width("borderTopWidth"),
+            topColor = color("borderTopColor"),
+            rightWidth = width("borderRightWidth"),
+            rightColor = color("borderRightColor"),
+            bottomWidth = width("borderBottomWidth"),
+            bottomColor = color("borderBottomColor"),
+            leftWidth = width("borderLeftWidth"),
+            leftColor = color("borderLeftColor"),
+        )
     }
 
     private fun applyOpacity(view: View, style: JsonObject) {
@@ -601,6 +637,12 @@ class FabricViewBuilder(
             "borderBottomLeftRadius", "borderBottomRightRadius",
             "borderTopStartRadius", "borderTopEndRadius",
             "borderBottomStartRadius", "borderBottomEndRadius",
+        )
+        private val PER_EDGE_BORDER_KEYS = listOf(
+            "borderTopWidth", "borderRightWidth",
+            "borderBottomWidth", "borderLeftWidth",
+            "borderTopColor", "borderRightColor",
+            "borderBottomColor", "borderLeftColor",
         )
     }
 }
