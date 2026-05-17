@@ -15,6 +15,7 @@ const FIXTURES = [
   { name: "customFontText", path: "../fixtures/customFontText" },
   { name: "imageTintAndAsset", path: "../fixtures/imageTintAndAsset" },
   { name: "realRnHelloWorld", path: "../fixtures/realRnHelloWorld" },
+  { name: "realRnImageAsset", path: "../fixtures/realRnImageAsset" },
 ] as const;
 
 function main() {

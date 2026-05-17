@@ -82,7 +82,17 @@ export function createCapture(): Capture {
     },
     createChildSet(surfaceId) {
       const id = nextChildSetId++;
-      instructions.push({ op: "createChildSet", childSetId: id, surfaceId });
+      // React's createChildSet call sites under different React/RN
+      // versions are inconsistent about passing surfaceId (the real
+      // C++ shadow tree doesn't need it because the surface root is
+      // already on the call). Omit when undefined so the captured op
+      // round-trips identically through JSON.stringify (which drops
+      // undefined values) regardless of the caller.
+      const op: MountInstruction =
+        surfaceId === undefined
+          ? { op: "createChildSet", childSetId: id }
+          : { op: "createChildSet", childSetId: id, surfaceId };
+      instructions.push(op);
       return { __childSet: true, id, surfaceId };
     },
     appendChild(parent, child) {

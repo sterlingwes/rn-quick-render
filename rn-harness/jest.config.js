@@ -22,6 +22,10 @@ module.exports = {
   transform: {
     // Our own sources — ts-jest.
     "^.+\\.tsx?$": ["ts-jest", { diagnostics: false, isolatedModules: true }],
+    // Image assets — same shape as the assetRequireHook produces under
+    // plain Node, so fixtures importing PNGs via require() get the
+    // identical source object in both runtimes.
+    "\\.(png|jpe?g|gif|webp)$": "<rootDir>/src/jestAssetTransformer.js",
     // RN's Flow-annotated source — babel-jest with the RN preset (see
     // babel.config.js). Scoped via transformIgnorePatterns below; the
     // entry here is what runs once a file is allowed past the ignore.

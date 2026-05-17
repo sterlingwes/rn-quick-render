@@ -5,6 +5,7 @@ import path from "path";
 // chain that loads our shim modules will try to import RN sources
 // directly and choke on Flow syntax.
 import "./babelRegister";
+import { installAssetRequireHook } from "./assetRequireHook";
 import { loadFabric, type FabricRuntime } from "./loadFabric";
 import {
   createNativeModulesModule,
@@ -70,6 +71,11 @@ function stubRequire(requestedId: string, replacement: unknown): void {
 }
 
 export function loadRealRn(opts: LoadRealRnOptions = {}): RealRnRuntime {
+  // Install the asset require hook so `require('./foo.png')` from a
+  // fixture returns an Image-source object instead of trying to parse
+  // a PNG as JS. No-op under Jest (handled via the transform map).
+  installAssetRequireHook();
+
   // Bootstrap the same Fabric internals loadFabric() does — installs the
   // capture stub on `globalThis.nativeFabricUIManager`, plus the two
   // ReactPrivate replacements. Done first so the modules below find

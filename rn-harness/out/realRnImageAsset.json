@@ -1,0 +1,81 @@
+{
+  "fixture": "realRnImageAsset",
+  "surfaceId": 23,
+  "instructionCount": 6,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 304,
+      "viewName": "RCTImageView",
+      "surfaceId": 23,
+      "props": {
+        "src": [
+          {
+            "__packager_asset": true,
+            "uri": "file:///home/user/rn-quick-render/rn-harness/fixtures/assets/quadrant.png",
+            "width": 64,
+            "height": 64,
+            "scale": 1
+          }
+        ],
+        "source": [
+          {
+            "__packager_asset": true,
+            "uri": "file:///home/user/rn-quick-render/rn-harness/fixtures/assets/quadrant.png",
+            "width": 64,
+            "height": 64,
+            "scale": 1
+          }
+        ],
+        "style": [
+          {
+            "width": 64,
+            "height": 64
+          },
+          {
+            "overflow": "hidden"
+          },
+          {
+            "width": 200,
+            "height": 100,
+            "backgroundColor": "#F0F0F0"
+          }
+        ],
+        "resizeMode": "contain"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 306,
+      "viewName": "RCTView",
+      "surfaceId": 23,
+      "props": {
+        "style": {
+          "padding": 16,
+          "backgroundColor": "#FFFFFF"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 2
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 23,
+      "childSetId": 1
+    }
+  ]
+}

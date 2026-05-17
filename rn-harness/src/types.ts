@@ -7,7 +7,7 @@ export type MountInstruction =
   | { op: "cloneNodeWithNewChildren"; nodeId: number; sourceNodeId: number }
   | { op: "cloneNodeWithNewProps"; nodeId: number; sourceNodeId: number; newProps: unknown }
   | { op: "cloneNodeWithNewChildrenAndProps"; nodeId: number; sourceNodeId: number; newProps: unknown }
-  | { op: "createChildSet"; childSetId: number; surfaceId: number }
+  | { op: "createChildSet"; childSetId: number; surfaceId?: number }
   | { op: "appendChild"; parentNodeId: number; childNodeId: number }
   | { op: "appendChildToSet"; childSetId: number; childNodeId: number }
   | { op: "completeRoot"; surfaceId: number; childSetId: number }
