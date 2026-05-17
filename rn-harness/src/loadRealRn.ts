@@ -98,6 +98,18 @@ export function loadRealRn(opts: LoadRealRnOptions = {}): RealRnRuntime {
   // actually touches.
   const RN = require("react-native");
 
+  // Hook AppRegistry.registerComponent so captureFromAppKey can find
+  // the registered component providers. Idempotent. Done here so
+  // fixtures that import this runtime never have to remember to
+  // install the hook themselves. Touches the AppRegistry lazy export,
+  // which loads AppRegistryImpl up front — acceptable since any
+  // real-RN screen will need AppRegistry anyway.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { installCaptureHook } = require("./captureFromAppKey") as {
+    installCaptureHook: (ar: unknown) => void;
+  };
+  installCaptureHook(RN.AppRegistry);
+
   const runtime: RealRnRuntime = { ...fabric, RN };
   // Hand the runtime to renderFixture so subsequent renderFrames() calls
   // reuse this surface instead of bootstrapping a fresh loadFabric.

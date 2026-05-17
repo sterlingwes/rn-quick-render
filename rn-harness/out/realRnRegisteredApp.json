@@ -1,0 +1,136 @@
+{
+  "fixture": "realRnRegisteredApp",
+  "surfaceId": 24,
+  "instructionCount": 14,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 308,
+      "viewName": "RCTRawText",
+      "surfaceId": 24,
+      "props": {
+        "text": "Hello, AppRegistry"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 310,
+      "viewName": "RCTText",
+      "surfaceId": 24,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          {
+            "fontSize": 22,
+            "color": "#0E0E13",
+            "fontWeight": "bold"
+          }
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 312,
+      "viewName": "RCTRawText",
+      "surfaceId": 24,
+      "props": {
+        "text": "Rendered via AppRegistry.registerComponent + captureFromAppKey"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 4,
+      "tag": 314,
+      "viewName": "RCTText",
+      "surfaceId": 24,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          {
+            "fontSize": 14,
+            "color": "#5A5A66",
+            "marginTop": 8
+          }
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 3
+    },
+    {
+      "op": "createNode",
+      "nodeId": 5,
+      "tag": 316,
+      "viewName": "RCTView",
+      "surfaceId": 24,
+      "props": {
+        "style": {
+          "padding": 24,
+          "backgroundColor": "#F8F8FA"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 5,
+      "childNodeId": 2
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 5,
+      "childNodeId": 4
+    },
+    {
+      "op": "createNode",
+      "nodeId": 6,
+      "tag": 318,
+      "viewName": "RCTView",
+      "surfaceId": 24,
+      "props": {
+        "style": {
+          "flex": 1
+        },
+        "pointerEvents": "box-none"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 6,
+      "childNodeId": 5
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 6
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 24,
+      "childSetId": 1
+    }
+  ]
+}

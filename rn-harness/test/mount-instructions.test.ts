@@ -20,6 +20,7 @@ const FIXTURES = [
   { name: "imageTintAndAsset", modulePath: "../fixtures/imageTintAndAsset" },
   { name: "realRnHelloWorld", modulePath: "../fixtures/realRnHelloWorld" },
   { name: "realRnImageAsset", modulePath: "../fixtures/realRnImageAsset" },
+  { name: "realRnRegisteredApp", modulePath: "../fixtures/realRnRegisteredApp" },
 ];
 
 describe("Fabric mount instruction capture", () => {

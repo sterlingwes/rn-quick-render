@@ -52,6 +52,23 @@ export function loadFabric(): FabricRuntime {
     (globalThis as any).nativeFabricUIManager = capture.manager;
     (globalThis as any).RN$Bridgeless = true;
     (globalThis as any).RN$stopSurface = undefined;
+    // Bridgeless mode routes callable-module registration through this
+    // host-supplied global instead of BatchedBridge. AppRegistry calls
+    // it at module load; without a stub, importing AppRegistry crashes.
+    // Capturing the names is enough for snapshot purposes — we never
+    // invoke them.
+    (globalThis as any).RN$registerCallableModule = (
+      _name: string,
+      _moduleOrFactory: unknown,
+    ) => {
+      /* no-op */
+    };
+    // Some RN dev-mode wrappers (e.g. AppContainer's DebuggingOverlay)
+    // probe `unstable_hasComponent(name)` at module load, which
+    // delegates to this global. Returning false means "not present",
+    // which is correct for our headless harness and bypasses the
+    // RN-side error path that would otherwise abort the import.
+    (globalThis as any).__nativeComponentRegistry__hasComponent = () => false;
 
     stubRequire(
       "react-native/Libraries/ReactPrivate/ReactNativePrivateInitializeCore",
