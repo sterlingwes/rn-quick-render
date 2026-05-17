@@ -16,10 +16,10 @@ a screen from a real RN app.
 | Phase | What | Status |
 | --- | --- | --- |
 | 0 | Paparazzi validates layoutlib-on-Linux | ✅ done — retrospective only, module deleted |
-| 1 | Fabric mount-instruction capture in Node | ✅ 13 fixtures, CI green |
+| 1 | Fabric mount-instruction capture in Node | ✅ 16 fixtures, CI green |
 | 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
 | 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open |
-| 3 | Render a real RN app screen (native-module shim + asset pipeline) | 🟡 steps 1–2 landed (real RN boots; `require('./*.png')` works); steps 3–4 (AppRegistry entry + first-target integration) ahead. Plan: [`docs/phase-3.md`](docs/phase-3.md) |
+| 3 | Render a real RN app screen (native-module shim + asset pipeline) | 🟡 steps 1–3 landed; step 4 in flight — tier-1 (bsky Divider) and tier-2 (bsky Admonition) render from a submodule; tier-3 (full screen) ahead. Plan: [`docs/phase-3.md`](docs/phase-3.md) |
 | 4 | Device / theme matrix + perf | ⏳ not started |
 | 5 | Packaging (Gradle plugin + npm CLI) | ⏳ not started |
 
@@ -242,8 +242,8 @@ already understands. Per-item plan and scope decisions live in
 | --- | --- | --- |
 | 1 | `loadRealRn` + native-module proxy shim | ✅ `react-native` boots in Node + Jest; `NativeModules` / `TurboModuleRegistry` resolve through a 3-tier proxy (per-fixture overrides → sync defaults → deep no-op). Fixture: `realRnHelloWorld` |
 | 2 | `AssetRegistry` hook + capture-time `require()` interceptor | ✅ `require('./*.png')` produces an inline-`data:` URI source object; renderer decodes via existing `data:` path. Fixture: `realRnImageAsset` |
-| 3 | `captureFromAppKey` (AppRegistry-driven entry) | ⏳ not started |
-| 4 | First-target integration (one screen from a public RN repo) | ⏳ not started — this is the actual exit criterion |
+| 3 | `captureFromAppKey` (AppRegistry-driven entry) | ✅ `AppRegistry.registerComponent(key, …)` round-trips through `AppContainer-prod` so captures match what `ReactRootView` mounts on a real device. Fixture: `realRnRegisteredApp` |
+| 4 | First-target integration (one screen from a public RN repo) | 🟡 in progress — ramped leaf → screen across three tiers. **Tier 1 ✅** `bluesky-social-app` is git-submoduled at `third_party/`; per-target resolver (`realAppResolver.ts` + `jestRnResolver.js`) maps `#/...` tsconfig aliases + per-module mocks; `Divider` (11 lines) renders end-to-end with a `#/alf` stub. **Tier 2 ✅** `Admonition` (150 lines — composite icon + content + text card; uses `useBreakpoints` + theme palette + 4 icon modules + a `Typography` Text + a `Button` re-export) renders with extended `alf`/`typography`/`button`/`icons` placeholder mocks. **Tier 3 ⏳** screen-shaped fixture (multi-component, real provider mocks) ahead — this is the exit criterion. |
 
 ### Developer-responsibility boundary
 
