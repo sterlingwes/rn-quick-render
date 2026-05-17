@@ -89,8 +89,11 @@ object ParagraphTextBuilder {
                 out.append(text)
                 applySpans(out, start, out.length, inheritedStyle, density, fontRegistry)
             }
-            "RCTText" -> {
-                val nested = inheritedStyle.mergedWith(props?.getAsJsonObject("style"))
+            // RCTText (host-element DSL) and RCTVirtualText (real RN's
+            // name for inner spans) both behave the same here: open a
+            // nested style scope, walk children, close.
+            "RCTText", "RCTVirtualText" -> {
+                val nested = inheritedStyle.mergedWith(flattenStyle(props?.get("style")))
                 for (childId in childrenOf(nodeId)) {
                     append(childId, out, nested, density, fontRegistry, viewNameOf, propsOf, childrenOf)
                 }
@@ -178,6 +181,30 @@ object ParagraphTextBuilder {
         companion object {
             val EMPTY = SpanStyle()
         }
+    }
+
+    /**
+     * Flattens RN's `style` prop (which may be an object, an array of
+     * objects, or `null`) into a single object with last-wins
+     * semantics. Mirrors the same helper in [FabricViewBuilder] and
+     * [YogaLayoutEngine] — kept local here so this file's only
+     * dependency on the rest of the renderer stays the
+     * `FontRegistry` injected via [build].
+     */
+    private fun flattenStyle(raw: com.google.gson.JsonElement?): JsonObject? {
+        if (raw == null || raw.isJsonNull) return null
+        if (raw.isJsonObject) return raw.asJsonObject
+        if (raw.isJsonArray) {
+            val merged = JsonObject()
+            for (entry in raw.asJsonArray) {
+                if (!entry.isJsonObject) continue
+                for ((k, v) in entry.asJsonObject.entrySet()) {
+                    if (v.isJsonNull) merged.remove(k) else merged.add(k, v)
+                }
+            }
+            return if (merged.size() == 0) null else merged
+        }
+        return null
     }
 
     private fun parseColor(raw: String): Int {

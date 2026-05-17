@@ -5,7 +5,13 @@ let runtime: FabricRuntime | null = null;
 let nextSurfaceId = 11;
 
 function ensureRuntime(): FabricRuntime {
-  if (!runtime) runtime = loadFabric();
+  if (!runtime) {
+    // A fixture using loadRealRn() registers the resulting runtime on
+    // this global before its default export is evaluated; pick it up
+    // so we don't double-bootstrap Fabric.
+    const preloaded = (globalThis as any).__rnHarnessFabric as FabricRuntime | undefined;
+    runtime = preloaded ?? loadFabric();
+  }
   return runtime;
 }
 
