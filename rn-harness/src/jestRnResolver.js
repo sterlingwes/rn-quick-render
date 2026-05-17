@@ -63,6 +63,9 @@ const REAL_APP_TARGETS = [
       "#/components/icons/CircleX": path.join(BSKY_MOCKS, "icons.tsx"),
       "#/components/icons/Warning": path.join(BSKY_MOCKS, "icons.tsx"),
       "./icons/Emoji": path.join(BSKY_MOCKS, "icons.tsx"),
+      "@lingui/core/macro": path.join(BSKY_MOCKS, "linguiCoreMacro.ts"),
+      "@lingui/react": path.join(BSKY_MOCKS, "linguiReact.tsx"),
+      "@lingui/react/macro": path.join(BSKY_MOCKS, "linguiReactMacro.tsx"),
     },
   },
 ];

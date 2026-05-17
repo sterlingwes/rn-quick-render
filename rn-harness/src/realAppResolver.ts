@@ -29,6 +29,7 @@ export interface RealAppTarget {
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const HARNESS_ROOT = path.resolve(__dirname, "..");
+const BSKY_MOCKS = path.join(HARNESS_ROOT, "src", "realApp", "blueskyMocks");
 
 export const REAL_APP_TARGETS: RealAppTarget[] = [
   {
@@ -39,44 +40,42 @@ export const REAL_APP_TARGETS: RealAppTarget[] = [
       // private package) + a few thousand lines of style atoms,
       // themes, and platform helpers. Stub it out so individual
       // components render without standing up the whole stack.
-      "#/alf": path.join(HARNESS_ROOT, "src", "realApp", "blueskyMocks", "alf.ts"),
+      "#/alf": path.join(BSKY_MOCKS, "alf.ts"),
       // Typography wraps react-native-uitextview + an emoji pipeline
       // + #/alf/typography. Mock with a plain RN.Text wrapper.
-      "#/components/Typography": path.join(
-        HARNESS_ROOT,
-        "src",
-        "realApp",
-        "blueskyMocks",
-        "typography.tsx",
-      ),
-      // Button is only re-exported by Admonition.Button — never
-      // mounted by the Admonition tier-2 fixture itself, but the
-      // import is still evaluated at load time and would otherwise
-      // pull in Pressable + a thick alf flatten/select chain.
-      "#/components/Button": path.join(
-        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "button.tsx",
-      ),
+      "#/components/Typography": path.join(BSKY_MOCKS, "typography.tsx"),
+      // Real Button is ~900 lines: variants/colours/shapes,
+      // Pressable backbone, hover/focus contexts, ButtonIcon /
+      // ButtonText sub-components. Mock keeps the structural
+      // wrappers (Button → View, ButtonText → Text) without the
+      // visual variant or pressable machinery.
+      "#/components/Button": path.join(BSKY_MOCKS, "button.tsx"),
       // Icons compile from SVG paths via createSinglePathSVG and
       // render through react-native-svg, which we don't yet have as
       // a renderer host. One mock module exports every icon as a
       // coloured-square placeholder.
-      "#/components/icons/CircleInfo": path.join(
-        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "icons.tsx",
-      ),
-      "#/components/icons/CircleX": path.join(
-        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "icons.tsx",
-      ),
-      "#/components/icons/Warning": path.join(
-        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "icons.tsx",
-      ),
+      "#/components/icons/CircleInfo": path.join(BSKY_MOCKS, "icons.tsx"),
+      "#/components/icons/CircleX": path.join(BSKY_MOCKS, "icons.tsx"),
+      "#/components/icons/Warning": path.join(BSKY_MOCKS, "icons.tsx"),
       // `./icons/Emoji` from inside the components/ dir. Real
       // bsky's Emoji.tsx re-exports through ALF helpers we'd rather
       // not load; redirect the relative path the same way as the
       // alias paths above. Matched before the relative-path
       // passthrough in `realAppOverrides`.
-      "./icons/Emoji": path.join(
-        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "icons.tsx",
-      ),
+      "./icons/Emoji": path.join(BSKY_MOCKS, "icons.tsx"),
+      // Lingui's i18n stack. In a real bsky build the babel preset
+      // erases `@lingui/*/macro` imports at compile time, rewriting
+      // `msg`X`` / `<Trans>X</Trans>` into runtime calls against
+      // `@lingui/react`. The harness doesn't run that transform, so
+      // the imports stay live and need actual JS to resolve to.
+      // Mocks are thin: `msg` is a tagged-template that returns a
+      // MessageDescriptor; `Trans` renders children as a Fragment;
+      // `useLingui()` returns a `_` translator that unwraps message
+      // objects. Enough for a structural snapshot — i18n isn't
+      // what tier-3 is testing.
+      "@lingui/core/macro": path.join(BSKY_MOCKS, "linguiCoreMacro.ts"),
+      "@lingui/react": path.join(BSKY_MOCKS, "linguiReact.tsx"),
+      "@lingui/react/macro": path.join(BSKY_MOCKS, "linguiReactMacro.tsx"),
     },
   },
 ];

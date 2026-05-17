@@ -23,6 +23,7 @@ const FIXTURES = [
   { name: "realRnRegisteredApp", modulePath: "../fixtures/realRnRegisteredApp" },
   { name: "blueskyDivider", modulePath: "../fixtures/realApp/bluesky-divider" },
   { name: "blueskyAdmonition", modulePath: "../fixtures/realApp/bluesky-admonition" },
+  { name: "blueskyPasswordUpdated", modulePath: "../fixtures/realApp/bluesky-password-updated" },
 ];
 
 describe("Fabric mount instruction capture", () => {

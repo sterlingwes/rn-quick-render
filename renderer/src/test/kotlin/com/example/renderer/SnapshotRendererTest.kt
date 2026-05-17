@@ -54,6 +54,7 @@ class SnapshotRendererTest {
     @Test fun realRnRegisteredApp() = runFixture("realRnRegisteredApp")
     @Test fun blueskyDivider() = runFixture("blueskyDivider")
     @Test fun blueskyAdmonition() = runFixture("blueskyAdmonition")
+    @Test fun blueskyPasswordUpdated() = runFixture("blueskyPasswordUpdated")
     @Test fun customFontText() = runFixture(
         "customFontText",
         fontRegistry = FontRegistry().registerFile(

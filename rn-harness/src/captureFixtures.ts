@@ -19,6 +19,7 @@ const FIXTURES = [
   { name: "realRnRegisteredApp", path: "../fixtures/realRnRegisteredApp" },
   { name: "blueskyDivider", path: "../fixtures/realApp/bluesky-divider" },
   { name: "blueskyAdmonition", path: "../fixtures/realApp/bluesky-admonition" },
+  { name: "blueskyPasswordUpdated", path: "../fixtures/realApp/bluesky-password-updated" },
 ] as const;
 
 function main() {
