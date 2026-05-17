@@ -40,6 +40,43 @@ export const REAL_APP_TARGETS: RealAppTarget[] = [
       // themes, and platform helpers. Stub it out so individual
       // components render without standing up the whole stack.
       "#/alf": path.join(HARNESS_ROOT, "src", "realApp", "blueskyMocks", "alf.ts"),
+      // Typography wraps react-native-uitextview + an emoji pipeline
+      // + #/alf/typography. Mock with a plain RN.Text wrapper.
+      "#/components/Typography": path.join(
+        HARNESS_ROOT,
+        "src",
+        "realApp",
+        "blueskyMocks",
+        "typography.tsx",
+      ),
+      // Button is only re-exported by Admonition.Button — never
+      // mounted by the Admonition tier-2 fixture itself, but the
+      // import is still evaluated at load time and would otherwise
+      // pull in Pressable + a thick alf flatten/select chain.
+      "#/components/Button": path.join(
+        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "button.tsx",
+      ),
+      // Icons compile from SVG paths via createSinglePathSVG and
+      // render through react-native-svg, which we don't yet have as
+      // a renderer host. One mock module exports every icon as a
+      // coloured-square placeholder.
+      "#/components/icons/CircleInfo": path.join(
+        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "icons.tsx",
+      ),
+      "#/components/icons/CircleX": path.join(
+        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "icons.tsx",
+      ),
+      "#/components/icons/Warning": path.join(
+        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "icons.tsx",
+      ),
+      // `./icons/Emoji` from inside the components/ dir. Real
+      // bsky's Emoji.tsx re-exports through ALF helpers we'd rather
+      // not load; redirect the relative path the same way as the
+      // alias paths above. Matched before the relative-path
+      // passthrough in `realAppOverrides`.
+      "./icons/Emoji": path.join(
+        HARNESS_ROOT, "src", "realApp", "blueskyMocks", "icons.tsx",
+      ),
     },
   },
 ];

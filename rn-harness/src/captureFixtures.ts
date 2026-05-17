@@ -18,6 +18,7 @@ const FIXTURES = [
   { name: "realRnImageAsset", path: "../fixtures/realRnImageAsset" },
   { name: "realRnRegisteredApp", path: "../fixtures/realRnRegisteredApp" },
   { name: "blueskyDivider", path: "../fixtures/realApp/bluesky-divider" },
+  { name: "blueskyAdmonition", path: "../fixtures/realApp/bluesky-admonition" },
 ] as const;
 
 function main() {

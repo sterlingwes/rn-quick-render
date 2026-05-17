@@ -22,6 +22,7 @@ const FIXTURES = [
   { name: "realRnImageAsset", modulePath: "../fixtures/realRnImageAsset" },
   { name: "realRnRegisteredApp", modulePath: "../fixtures/realRnRegisteredApp" },
   { name: "blueskyDivider", modulePath: "../fixtures/realApp/bluesky-divider" },
+  { name: "blueskyAdmonition", modulePath: "../fixtures/realApp/bluesky-admonition" },
 ];
 
 describe("Fabric mount instruction capture", () => {

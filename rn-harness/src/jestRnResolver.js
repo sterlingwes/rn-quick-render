@@ -50,12 +50,19 @@ const HARNESS_NODE_MODULES = path.resolve(__dirname, "..", "node_modules");
 // in sync with src/realAppResolver.ts; if this grows, hoist to a
 // JSON file consumed by both.
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
+const BSKY_MOCKS = path.join(__dirname, "realApp", "blueskyMocks");
 const REAL_APP_TARGETS = [
   {
     root: path.join(REPO_ROOT, "third_party", "bluesky-social-app"),
     srcRoot: path.join(REPO_ROOT, "third_party", "bluesky-social-app", "src"),
     mocks: {
-      "#/alf": path.join(__dirname, "realApp", "blueskyMocks", "alf.ts"),
+      "#/alf": path.join(BSKY_MOCKS, "alf.ts"),
+      "#/components/Typography": path.join(BSKY_MOCKS, "typography.tsx"),
+      "#/components/Button": path.join(BSKY_MOCKS, "button.tsx"),
+      "#/components/icons/CircleInfo": path.join(BSKY_MOCKS, "icons.tsx"),
+      "#/components/icons/CircleX": path.join(BSKY_MOCKS, "icons.tsx"),
+      "#/components/icons/Warning": path.join(BSKY_MOCKS, "icons.tsx"),
+      "./icons/Emoji": path.join(BSKY_MOCKS, "icons.tsx"),
     },
   },
 ];
