@@ -183,29 +183,8 @@ object ParagraphTextBuilder {
         }
     }
 
-    /**
-     * Flattens RN's `style` prop (which may be an object, an array of
-     * objects, or `null`) into a single object with last-wins
-     * semantics. Mirrors the same helper in [FabricViewBuilder] and
-     * [YogaLayoutEngine] — kept local here so this file's only
-     * dependency on the rest of the renderer stays the
-     * `FontRegistry` injected via [build].
-     */
-    private fun flattenStyle(raw: com.google.gson.JsonElement?): JsonObject? {
-        if (raw == null || raw.isJsonNull) return null
-        if (raw.isJsonObject) return raw.asJsonObject
-        if (raw.isJsonArray) {
-            val merged = JsonObject()
-            for (entry in raw.asJsonArray) {
-                if (!entry.isJsonObject) continue
-                for ((k, v) in entry.asJsonObject.entrySet()) {
-                    if (v.isJsonNull) merged.remove(k) else merged.add(k, v)
-                }
-            }
-            return if (merged.size() == 0) null else merged
-        }
-        return null
-    }
+    private fun flattenStyle(raw: com.google.gson.JsonElement?): JsonObject? =
+        StyleFlattener.flatten(raw)
 
     private fun parseColor(raw: String): Int {
         return when {

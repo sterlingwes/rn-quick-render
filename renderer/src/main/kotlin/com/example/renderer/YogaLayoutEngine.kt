@@ -124,8 +124,19 @@ class YogaLayoutEngine(
                         YogaMeasureMode.AT_MOST -> width
                         else -> Float.MAX_VALUE
                     }
-                    val (w, h) = measureParagraph(spanned, fontSize, fontWeight, fontFamily, availableWidth)
-                    YogaMeasureOutput.make(w, h)
+                    val (naturalW, h) = measureParagraph(
+                        spanned, fontSize, fontWeight, fontFamily, availableWidth,
+                    )
+                    // EXACTLY mode means Yoga has already decided the width
+                    // (typically because the parent's alignItems='stretch'
+                    // gave us its cross-axis); honour that so the resulting
+                    // TextView is parent-cross-axis wide and `textAlign`
+                    // gravity actually has slack to centre / right-align
+                    // within. AT_MOST returns natural width capped to the
+                    // budget so single-line text doesn't take more room
+                    // than it needs.
+                    val reportedW = if (widthMode == YogaMeasureMode.EXACTLY) width else naturalW
+                    YogaMeasureOutput.make(reportedW, h)
                 })
             }
 
@@ -322,6 +333,7 @@ class YogaLayoutEngine(
         applyEdgePropsPercent(node, style, "margin", MARGIN_KEYS) { edge, value ->
             node.setMarginPercent(edge, value)
         }
+        applyEdgeAuto(style, MARGIN_KEYS) { edge -> node.setMarginAuto(edge) }
         applyEdgeProps(node, style, "border", BORDER_KEYS) { edge, value ->
             node.setBorder(edge, value)
         }
@@ -403,6 +415,26 @@ class YogaLayoutEngine(
         }
     }
 
+    /**
+     * For each edge whose style value is the literal string "auto", invoke
+     * [setter]. Only meaningful for margins — Yoga's auto-margin distributes
+     * remaining flex slack along the relevant axis (e.g. `marginLeft: auto`
+     * + `marginRight: auto` pushes a narrower-than-parent item to the
+     * cross-axis centre).
+     */
+    private fun applyEdgeAuto(
+        style: JsonObject,
+        keys: List<Pair<String, YogaEdge>>,
+        setter: (YogaEdge) -> Unit,
+    ) {
+        for ((key, edge) in keys) {
+            val raw = style.get(key) ?: continue
+            if (raw.isJsonPrimitive && raw.asJsonPrimitive.isString && raw.asString == "auto") {
+                setter(edge)
+            }
+        }
+    }
+
     // -----------------------------------------------------------------------
     // Text measurement
     // -----------------------------------------------------------------------
@@ -416,25 +448,12 @@ class YogaLayoutEngine(
     /**
      * Real RN composes user style with internal defaults via
      * `StyleSheet.compose`, so `props.style` can be either a plain
-     * object or an array (`[{overflow: "hidden"}, userStyle]` for
-     * `<Text>`). Flatten to a single object using last-wins semantics
-     * matching CSS. Mirrors the same helper in [FabricViewBuilder].
+     * object or an arbitrarily nested array. Delegates to the shared
+     * [StyleFlattener] so Yoga layout, view building, and paragraph
+     * text all agree on what an array-of-arrays collapses to.
      */
-    private fun flattenedStyle(node: Node): JsonObject? {
-        val raw = node.props.get("style") ?: return null
-        if (raw.isJsonObject) return raw.asJsonObject
-        if (raw.isJsonArray) {
-            val merged = JsonObject()
-            for (entry in raw.asJsonArray) {
-                if (!entry.isJsonObject) continue
-                for ((k, v) in entry.asJsonObject.entrySet()) {
-                    if (v.isJsonNull) merged.remove(k) else merged.add(k, v)
-                }
-            }
-            return if (merged.size() == 0) null else merged
-        }
-        return null
-    }
+    private fun flattenedStyle(node: Node): JsonObject? =
+        StyleFlattener.flatten(node.props.get("style"))
 
     private fun measureParagraph(
         text: CharSequence,

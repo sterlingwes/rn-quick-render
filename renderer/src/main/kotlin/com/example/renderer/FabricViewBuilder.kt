@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -349,8 +350,36 @@ class FabricViewBuilder(
         style?.let { s ->
             if (s.has("fontSize")) tv.textSize = s.get("fontSize").asFloat
             if (s.has("color")) tv.setTextColor(parseColor(s.get("color").asString))
+            applyTextAlign(tv, s)
         }
         return tv
+    }
+
+    private fun applyTextAlign(tv: TextView, style: JsonObject) {
+        // RN's `textAlign` maps to the horizontal half of Android's gravity.
+        // Yoga's alignItems='stretch' default means the TextView fills the
+        // parent's cross-axis width (so the gravity has room to take effect);
+        // for a text node that's exactly the natural text width, gravity is
+        // a no-op which is also the correct visual result.
+        val raw = style.get("textAlign")
+            ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
+            ?: return
+        val horizontal = when (raw) {
+            "left" -> Gravity.START
+            "right" -> Gravity.END
+            "center" -> Gravity.CENTER_HORIZONTAL
+            "justify" -> Gravity.FILL_HORIZONTAL
+            // "auto" matches RN's default; leave gravity at its initial value.
+            "auto" -> return
+            else -> return
+        }
+        // Preserve any vertical gravity bits Android picked up for us; only
+        // overwrite the horizontal axis. Clear *both* absolute (LEFT/RIGHT)
+        // and relative (START/END) horizontal bits — TextView's default is
+        // Gravity.START which would otherwise OR with our new horizontal
+        // value and defeat the centring.
+        val verticalOnly = tv.gravity and Gravity.VERTICAL_GRAVITY_MASK
+        tv.gravity = verticalOnly or horizontal
     }
 
     private fun paragraphWeight(style: JsonObject?): Int {
@@ -570,28 +599,13 @@ class FabricViewBuilder(
     }
 
     /**
-     * RN composes user-supplied `style` with internal defaults via
-     * `StyleSheet.compose`, which can leave the prop as an array of
-     * style objects (e.g. `[{overflow: "hidden"}, {fontSize: 16}]` for
-     * Text). Flatten arrays into a single object using last-wins
-     * semantics (matching CSS / RN's runtime flattening). Returns the
-     * underlying object directly when the prop is already flat.
+     * Delegates to [StyleFlattener] so view, paragraph, and yoga
+     * style handling all share the same recursive-array semantics.
+     * RN's `StyleSheet.compose` can leave the prop as an arbitrarily
+     * nested array; flattening last-wins is the runtime contract.
      */
-    private fun styleObject(props: JsonObject): JsonObject? {
-        val raw = props.get("style") ?: return null
-        if (raw.isJsonObject) return raw.asJsonObject
-        if (raw.isJsonArray) {
-            val merged = JsonObject()
-            for (entry in raw.asJsonArray) {
-                if (!entry.isJsonObject) continue
-                for ((k, v) in entry.asJsonObject.entrySet()) {
-                    if (v.isJsonNull) merged.remove(k) else merged.add(k, v)
-                }
-            }
-            return if (merged.size() == 0) null else merged
-        }
-        return null
-    }
+    private fun styleObject(props: JsonObject): JsonObject? =
+        StyleFlattener.flatten(props.get("style"))
 
     private fun parseColor(raw: String): Int {
         return when {
