@@ -12,7 +12,7 @@
 // re-implementation.
 
 import { useMemo } from "react";
-import type { TextStyle, ViewStyle } from "react-native";
+import { useColorScheme, type TextStyle, type ViewStyle } from "react-native";
 
 // Spacing tokens roughly aligned with @bsky.app/alf's t-shirt scale.
 // Hand-tuned values — the upstream package isn't published so we
@@ -98,10 +98,10 @@ export const atoms = {
 // of raw color tokens. Values pulled from a hand-eyeballed light
 // theme — close enough that tier fixtures read as the right component
 // without requiring an exact palette match.
-const STATIC_THEME = {
-  // Real theme objects carry a `name` discriminant ('light' |
-  // 'dark' | 'dim') that InterestButton branches on. Hardcode
-  // 'light' here — the surface is always white in headless render.
+// Light theme — the existing palette, unchanged. `name: "light"`
+// remains a discriminant a few components (InterestButton, the
+// mock Button) branch on.
+const STATIC_THEME_LIGHT = {
   name: "light" as const,
   atoms: {
     bg: { backgroundColor: "#FFFFFF" } as ViewStyle,
@@ -114,14 +114,12 @@ const STATIC_THEME = {
     border_contrast_high: { borderColor: "#79808E" } as ViewStyle,
   },
   palette: {
-    // Primary (bsky blue) scale.
     primary_50: "#E6F3FF",
     primary_100: "#CCE7FF",
     primary_200: "#99CFFF",
     primary_500: "#0085FF",
     primary_600: "#0064D1",
     yellow: "#FFD400",
-    // Negative (red) scale.
     negative_50: "#FCEBEB",
     negative_100: "#F9D5D5",
     negative_200: "#F3ABAB",
@@ -130,14 +128,6 @@ const STATIC_THEME = {
     negative_500: "#E61D1D",
     negative_600: "#C71717",
     negative_700: "#9F1212",
-    // Contrast scale — light theme. Used by InterestButton's
-    // pill backgrounds (unselected = contrast_100 grey, selected
-    // = contrast_900 near-black) and its text color
-    // (contrast_900 unselected / contrast_100 selected), plus
-    // the Button mock's secondary/inverted variants. Hand-set
-    // to match how the bsky light theme reads at a glance; if a
-    // future fixture needs exact parity these can be re-keyed to
-    // the real palette.
     contrast_50: "#F4F5F8",
     contrast_100: "#E7E9EE",
     contrast_200: "#D1D5DD",
@@ -146,14 +136,76 @@ const STATIC_THEME = {
     contrast_800: "#1A2030",
     contrast_900: "#0B0F19",
     contrast_975: "#040610",
-    // Solid neutrals — `white` shows up as the text color for
-    // solid+primary buttons.
     white: "#FFFFFF",
   },
 };
 
+// Dark theme — bsky-flavoured inversion. Mirrors the role each
+// token plays in light theme: bg flips to near-black; text flips
+// to near-white; the contrast scale flips end-to-end so an
+// `InterestButton`'s unselected pill (`contrast_100`) becomes a
+// dark slab while its selected pill (`contrast_900`) becomes
+// near-white. Primary/negative scales nudge brighter to
+// stay legible on a dark surface (matches the bsky dark
+// palette qualitatively; exact tokens live in `@bsky.app/alf`,
+// a private package we can't import).
+const STATIC_THEME_DARK = {
+  name: "dark" as const,
+  atoms: {
+    bg: { backgroundColor: "#0B0F19" } as ViewStyle,
+    bg_contrast_50: { backgroundColor: "#16202F" } as ViewStyle,
+    bg_contrast_100: { backgroundColor: "#1F2A3D" } as ViewStyle,
+    text: { color: "#F4F5F8" } as TextStyle,
+    text_inverted: { color: "#0B0F19" } as TextStyle,
+    text_contrast_medium: { color: "#9AA5B8" } as TextStyle,
+    border_contrast_low: { borderColor: "#1F2A3D" } as ViewStyle,
+    border_contrast_high: { borderColor: "#3A465A" } as ViewStyle,
+  },
+  palette: {
+    primary_50: "#0B1A2B",
+    primary_100: "#0F2A4A",
+    primary_200: "#1E4C82",
+    primary_500: "#3D9BFF",
+    primary_600: "#66B0FF",
+    yellow: "#FFD400",
+    negative_50: "#2A1414",
+    negative_100: "#3D1717",
+    negative_200: "#5C1F1F",
+    negative_300: "#8E2C2C",
+    negative_400: "#C73737",
+    negative_500: "#E64545",
+    negative_600: "#EF6868",
+    negative_700: "#F58A8A",
+    // Contrast scale inverted: contrast_50 is darkest, contrast_900 is lightest.
+    contrast_50: "#0B0F19",
+    contrast_100: "#16202F",
+    contrast_200: "#1F2A3D",
+    contrast_300: "#2A3851",
+    contrast_600: "#9AA5B8",
+    contrast_800: "#D9DEE7",
+    contrast_900: "#F4F5F8",
+    contrast_975: "#FFFFFF",
+    white: "#FFFFFF",
+  },
+};
+
+// Backwards-compat name retained until callers migrate to the
+// scheme-aware `useTheme()`. Reads from the active theme by
+// effectively pinning to light — only direct module-level
+// references hit this, hook-driven reads use the live theme.
+const STATIC_THEME = STATIC_THEME_LIGHT;
+
+// Real bsky derives the active theme from the platform-level
+// `useColorScheme()` hook (see `#/alf/util/useColorModeTheme`).
+// Mirror that path here — call the platform hook the harness has
+// overridden (via `setColorScheme()` in `loadRealRn`), then
+// return the matching theme object. Anything other than `"dark"`
+// (incl. `null` for "system has no preference") falls through to
+// light, matching bsky's `colorMode === 'system' && scheme === 'light'`
+// branch behaviour.
 export function useTheme() {
-  return STATIC_THEME;
+  const scheme = useColorScheme();
+  return scheme === "dark" ? STATIC_THEME_DARK : STATIC_THEME_LIGHT;
 }
 
 // Real bsky `useBreakpoints()` reads window size and returns the

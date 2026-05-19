@@ -11,7 +11,7 @@
 import * as React from "react";
 import { Text as RNText, type StyleProp, type TextStyle } from "react-native";
 
-import { atoms as a } from "./alf";
+import { atoms as a, useTheme } from "./alf";
 
 export type TextProps = {
   children?: React.ReactNode;
@@ -28,11 +28,14 @@ export type TextProps = {
   [key: string]: unknown;
 };
 
-// Real bsky Typography.Text applies `a.text_md` + `a.leading_relaxed`
-// as a base before the caller's `style` override (Typography.tsx:95).
-// Mirror that here — without it, every Typography-wrapped span
-// (incl. all the InterestButton pill labels) renders at RN's
-// 14sp default instead of bsky's 16pt body size.
+// Real bsky Typography.Text applies `t.atoms.text` (theme text
+// color) + `a.text_md` + `a.leading_relaxed` as a base before the
+// caller's `style` override (Typography.tsx:32-33, :95). Without
+// `t.atoms.text` every span inherits the TextView default (black)
+// regardless of color scheme — dark-mode renders would still show
+// black headlines on a near-black background. Without `text_md` /
+// `leading_relaxed` every span renders at RN's 14sp default instead
+// of bsky's 16pt body size.
 export function Text({
   children,
   style,
@@ -41,8 +44,9 @@ export function Text({
   title: _title,
   ...rest
 }: TextProps) {
+  const t = useTheme();
   return (
-    <RNText style={[a.text_md, a.leading_relaxed, style]} {...rest}>
+    <RNText style={[a.text_md, a.leading_relaxed, t.atoms.text, style]} {...rest}>
       {children}
     </RNText>
   );

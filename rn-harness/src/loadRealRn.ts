@@ -116,3 +116,23 @@ export function loadRealRn(opts: LoadRealRnOptions = {}): RealRnRuntime {
   (globalThis as any).__rnHarnessFabric = runtime;
   return runtime;
 }
+
+// `react-native`'s `useColorScheme` is exported via a lazy getter that
+// resolves to the platform hook. The hook drives every well-behaved
+// app's theme machinery (incl. bsky's `useColorModeTheme`, which
+// branches the active palette on it). Override it here so the harness
+// can flip the rendered theme without monkey-patching app-level mocks.
+//
+// Replace the getter with a fixed-value descriptor — direct assignment
+// (`RN.useColorScheme = ...`) wouldn't work because the original
+// descriptor is getter-only. Call before `ReactFabric.render()` for
+// the fixture; subsequent renders in the same process pick up the
+// most recent value (set back to 'light' to reset).
+export function setColorScheme(scheme: "light" | "dark" | null): void {
+  const RN = require("react-native");
+  Object.defineProperty(RN, "useColorScheme", {
+    value: () => scheme,
+    configurable: true,
+    writable: true,
+  });
+}

@@ -1,14 +1,14 @@
 {
-  "fixture": "blueskyOnboardingInterests",
-  "surfaceId": 28,
+  "fixture": "blueskyOnboardingInterests__dark",
+  "surfaceId": 29,
   "instructionCount": 226,
   "instructions": [
     {
       "op": "createNode",
       "nodeId": 1,
-      "tag": 364,
+      "tag": 588,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Step 2 of 4"
       }
@@ -16,9 +16,9 @@
     {
       "op": "createNode",
       "nodeId": 2,
-      "tag": 366,
+      "tag": 590,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -33,7 +33,7 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
@@ -44,7 +44,7 @@
                 "fontWeight": "500"
               },
               {
-                "color": "#42576C"
+                "color": "#9AA5B8"
               }
             ]
           ]
@@ -62,9 +62,9 @@
     {
       "op": "createNode",
       "nodeId": 3,
-      "tag": 368,
+      "tag": 592,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "What are your interests?"
       }
@@ -72,9 +72,9 @@
     {
       "op": "createNode",
       "nodeId": 4,
-      "tag": 370,
+      "tag": 594,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -89,7 +89,7 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
@@ -119,9 +119,9 @@
     {
       "op": "createNode",
       "nodeId": 5,
-      "tag": 372,
+      "tag": 596,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "We'll use this to help customize your experience."
       }
@@ -129,9 +129,9 @@
     {
       "op": "createNode",
       "nodeId": 6,
-      "tag": 374,
+      "tag": 598,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -146,7 +146,7 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
@@ -157,7 +157,7 @@
                 "lineHeight": 18
               },
               {
-                "color": "#42576C"
+                "color": "#9AA5B8"
               },
               null
             ]
@@ -176,9 +176,9 @@
     {
       "op": "createNode",
       "nodeId": 7,
-      "tag": 376,
+      "tag": 600,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Animals"
       }
@@ -186,9 +186,9 @@
     {
       "op": "createNode",
       "nodeId": 8,
-      "tag": 378,
+      "tag": 602,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -203,11 +203,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -232,13 +232,13 @@
     {
       "op": "createNode",
       "nodeId": 9,
-      "tag": 380,
+      "tag": 604,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -264,9 +264,9 @@
     {
       "op": "createNode",
       "nodeId": 10,
-      "tag": 382,
+      "tag": 606,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -277,9 +277,9 @@
     {
       "op": "createNode",
       "nodeId": 11,
-      "tag": 384,
+      "tag": 608,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Art"
       }
@@ -287,9 +287,9 @@
     {
       "op": "createNode",
       "nodeId": 12,
-      "tag": 386,
+      "tag": 610,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -304,11 +304,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -318,7 +318,7 @@
               },
               [
                 {
-                  "color": "#E7E9EE"
+                  "color": "#16202F"
                 }
               ]
             ]
@@ -337,13 +337,13 @@
     {
       "op": "createNode",
       "nodeId": 13,
-      "tag": 388,
+      "tag": 612,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -358,7 +358,7 @@
           {},
           [
             {
-              "backgroundColor": "#0B0F19"
+              "backgroundColor": "#F4F5F8"
             }
           ],
           {}
@@ -373,9 +373,9 @@
     {
       "op": "createNode",
       "nodeId": 14,
-      "tag": 390,
+      "tag": 614,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -386,9 +386,9 @@
     {
       "op": "createNode",
       "nodeId": 15,
-      "tag": 392,
+      "tag": 616,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Books"
       }
@@ -396,9 +396,9 @@
     {
       "op": "createNode",
       "nodeId": 16,
-      "tag": 394,
+      "tag": 618,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -413,11 +413,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -442,13 +442,13 @@
     {
       "op": "createNode",
       "nodeId": 17,
-      "tag": 396,
+      "tag": 620,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -474,9 +474,9 @@
     {
       "op": "createNode",
       "nodeId": 18,
-      "tag": 398,
+      "tag": 622,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -487,9 +487,9 @@
     {
       "op": "createNode",
       "nodeId": 19,
-      "tag": 400,
+      "tag": 624,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Comedy"
       }
@@ -497,9 +497,9 @@
     {
       "op": "createNode",
       "nodeId": 20,
-      "tag": 402,
+      "tag": 626,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -514,11 +514,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -543,13 +543,13 @@
     {
       "op": "createNode",
       "nodeId": 21,
-      "tag": 404,
+      "tag": 628,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -575,9 +575,9 @@
     {
       "op": "createNode",
       "nodeId": 22,
-      "tag": 406,
+      "tag": 630,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -588,9 +588,9 @@
     {
       "op": "createNode",
       "nodeId": 23,
-      "tag": 408,
+      "tag": 632,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Comics"
       }
@@ -598,9 +598,9 @@
     {
       "op": "createNode",
       "nodeId": 24,
-      "tag": 410,
+      "tag": 634,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -615,11 +615,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -644,13 +644,13 @@
     {
       "op": "createNode",
       "nodeId": 25,
-      "tag": 412,
+      "tag": 636,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -676,9 +676,9 @@
     {
       "op": "createNode",
       "nodeId": 26,
-      "tag": 414,
+      "tag": 638,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -689,9 +689,9 @@
     {
       "op": "createNode",
       "nodeId": 27,
-      "tag": 416,
+      "tag": 640,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Culture"
       }
@@ -699,9 +699,9 @@
     {
       "op": "createNode",
       "nodeId": 28,
-      "tag": 418,
+      "tag": 642,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -716,11 +716,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -745,13 +745,13 @@
     {
       "op": "createNode",
       "nodeId": 29,
-      "tag": 420,
+      "tag": 644,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -777,9 +777,9 @@
     {
       "op": "createNode",
       "nodeId": 30,
-      "tag": 422,
+      "tag": 646,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -790,9 +790,9 @@
     {
       "op": "createNode",
       "nodeId": 31,
-      "tag": 424,
+      "tag": 648,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Software Dev"
       }
@@ -800,9 +800,9 @@
     {
       "op": "createNode",
       "nodeId": 32,
-      "tag": 426,
+      "tag": 650,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -817,11 +817,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -846,13 +846,13 @@
     {
       "op": "createNode",
       "nodeId": 33,
-      "tag": 428,
+      "tag": 652,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -878,9 +878,9 @@
     {
       "op": "createNode",
       "nodeId": 34,
-      "tag": 430,
+      "tag": 654,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -891,9 +891,9 @@
     {
       "op": "createNode",
       "nodeId": 35,
-      "tag": 432,
+      "tag": 656,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Education"
       }
@@ -901,9 +901,9 @@
     {
       "op": "createNode",
       "nodeId": 36,
-      "tag": 434,
+      "tag": 658,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -918,11 +918,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -947,13 +947,13 @@
     {
       "op": "createNode",
       "nodeId": 37,
-      "tag": 436,
+      "tag": 660,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -979,9 +979,9 @@
     {
       "op": "createNode",
       "nodeId": 38,
-      "tag": 438,
+      "tag": 662,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -992,9 +992,9 @@
     {
       "op": "createNode",
       "nodeId": 39,
-      "tag": 440,
+      "tag": 664,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Finance"
       }
@@ -1002,9 +1002,9 @@
     {
       "op": "createNode",
       "nodeId": 40,
-      "tag": 442,
+      "tag": 666,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1019,11 +1019,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1048,13 +1048,13 @@
     {
       "op": "createNode",
       "nodeId": 41,
-      "tag": 444,
+      "tag": 668,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1080,9 +1080,9 @@
     {
       "op": "createNode",
       "nodeId": 42,
-      "tag": 446,
+      "tag": 670,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -1093,9 +1093,9 @@
     {
       "op": "createNode",
       "nodeId": 43,
-      "tag": 448,
+      "tag": 672,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Food"
       }
@@ -1103,9 +1103,9 @@
     {
       "op": "createNode",
       "nodeId": 44,
-      "tag": 450,
+      "tag": 674,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1120,11 +1120,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1149,13 +1149,13 @@
     {
       "op": "createNode",
       "nodeId": 45,
-      "tag": 452,
+      "tag": 676,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1181,9 +1181,9 @@
     {
       "op": "createNode",
       "nodeId": 46,
-      "tag": 454,
+      "tag": 678,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -1194,9 +1194,9 @@
     {
       "op": "createNode",
       "nodeId": 47,
-      "tag": 456,
+      "tag": 680,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Video Games"
       }
@@ -1204,9 +1204,9 @@
     {
       "op": "createNode",
       "nodeId": 48,
-      "tag": 458,
+      "tag": 682,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1221,11 +1221,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1250,13 +1250,13 @@
     {
       "op": "createNode",
       "nodeId": 49,
-      "tag": 460,
+      "tag": 684,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1282,9 +1282,9 @@
     {
       "op": "createNode",
       "nodeId": 50,
-      "tag": 462,
+      "tag": 686,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -1295,9 +1295,9 @@
     {
       "op": "createNode",
       "nodeId": 51,
-      "tag": 464,
+      "tag": 688,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Journalism"
       }
@@ -1305,9 +1305,9 @@
     {
       "op": "createNode",
       "nodeId": 52,
-      "tag": 466,
+      "tag": 690,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1322,11 +1322,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1351,13 +1351,13 @@
     {
       "op": "createNode",
       "nodeId": 53,
-      "tag": 468,
+      "tag": 692,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1383,9 +1383,9 @@
     {
       "op": "createNode",
       "nodeId": 54,
-      "tag": 470,
+      "tag": 694,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -1396,9 +1396,9 @@
     {
       "op": "createNode",
       "nodeId": 55,
-      "tag": 472,
+      "tag": 696,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Movies"
       }
@@ -1406,9 +1406,9 @@
     {
       "op": "createNode",
       "nodeId": 56,
-      "tag": 474,
+      "tag": 698,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1423,11 +1423,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1452,13 +1452,13 @@
     {
       "op": "createNode",
       "nodeId": 57,
-      "tag": 476,
+      "tag": 700,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1484,9 +1484,9 @@
     {
       "op": "createNode",
       "nodeId": 58,
-      "tag": 478,
+      "tag": 702,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -1497,9 +1497,9 @@
     {
       "op": "createNode",
       "nodeId": 59,
-      "tag": 480,
+      "tag": 704,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Music"
       }
@@ -1507,9 +1507,9 @@
     {
       "op": "createNode",
       "nodeId": 60,
-      "tag": 482,
+      "tag": 706,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1524,11 +1524,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1538,7 +1538,7 @@
               },
               [
                 {
-                  "color": "#E7E9EE"
+                  "color": "#16202F"
                 }
               ]
             ]
@@ -1557,13 +1557,13 @@
     {
       "op": "createNode",
       "nodeId": 61,
-      "tag": 484,
+      "tag": 708,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1578,7 +1578,7 @@
           {},
           [
             {
-              "backgroundColor": "#0B0F19"
+              "backgroundColor": "#F4F5F8"
             }
           ],
           {}
@@ -1593,9 +1593,9 @@
     {
       "op": "createNode",
       "nodeId": 62,
-      "tag": 486,
+      "tag": 710,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -1606,9 +1606,9 @@
     {
       "op": "createNode",
       "nodeId": 63,
-      "tag": 488,
+      "tag": 712,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Nature"
       }
@@ -1616,9 +1616,9 @@
     {
       "op": "createNode",
       "nodeId": 64,
-      "tag": 490,
+      "tag": 714,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1633,11 +1633,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1662,13 +1662,13 @@
     {
       "op": "createNode",
       "nodeId": 65,
-      "tag": 492,
+      "tag": 716,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1694,9 +1694,9 @@
     {
       "op": "createNode",
       "nodeId": 66,
-      "tag": 494,
+      "tag": 718,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -1707,9 +1707,9 @@
     {
       "op": "createNode",
       "nodeId": 67,
-      "tag": 496,
+      "tag": 720,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "News"
       }
@@ -1717,9 +1717,9 @@
     {
       "op": "createNode",
       "nodeId": 68,
-      "tag": 498,
+      "tag": 722,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1734,11 +1734,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1763,13 +1763,13 @@
     {
       "op": "createNode",
       "nodeId": 69,
-      "tag": 500,
+      "tag": 724,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1795,9 +1795,9 @@
     {
       "op": "createNode",
       "nodeId": 70,
-      "tag": 502,
+      "tag": 726,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -1808,9 +1808,9 @@
     {
       "op": "createNode",
       "nodeId": 71,
-      "tag": 504,
+      "tag": 728,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Pets"
       }
@@ -1818,9 +1818,9 @@
     {
       "op": "createNode",
       "nodeId": 72,
-      "tag": 506,
+      "tag": 730,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1835,11 +1835,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1864,13 +1864,13 @@
     {
       "op": "createNode",
       "nodeId": 73,
-      "tag": 508,
+      "tag": 732,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1896,9 +1896,9 @@
     {
       "op": "createNode",
       "nodeId": 74,
-      "tag": 510,
+      "tag": 734,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -1909,9 +1909,9 @@
     {
       "op": "createNode",
       "nodeId": 75,
-      "tag": 512,
+      "tag": 736,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Photography"
       }
@@ -1919,9 +1919,9 @@
     {
       "op": "createNode",
       "nodeId": 76,
-      "tag": 514,
+      "tag": 738,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -1936,11 +1936,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -1950,7 +1950,7 @@
               },
               [
                 {
-                  "color": "#E7E9EE"
+                  "color": "#16202F"
                 }
               ]
             ]
@@ -1969,13 +1969,13 @@
     {
       "op": "createNode",
       "nodeId": 77,
-      "tag": 516,
+      "tag": 740,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -1990,7 +1990,7 @@
           {},
           [
             {
-              "backgroundColor": "#0B0F19"
+              "backgroundColor": "#F4F5F8"
             }
           ],
           {}
@@ -2005,9 +2005,9 @@
     {
       "op": "createNode",
       "nodeId": 78,
-      "tag": 518,
+      "tag": 742,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -2018,9 +2018,9 @@
     {
       "op": "createNode",
       "nodeId": 79,
-      "tag": 520,
+      "tag": 744,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Politics"
       }
@@ -2028,9 +2028,9 @@
     {
       "op": "createNode",
       "nodeId": 80,
-      "tag": 522,
+      "tag": 746,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2045,11 +2045,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -2074,13 +2074,13 @@
     {
       "op": "createNode",
       "nodeId": 81,
-      "tag": 524,
+      "tag": 748,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -2106,9 +2106,9 @@
     {
       "op": "createNode",
       "nodeId": 82,
-      "tag": 526,
+      "tag": 750,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -2119,9 +2119,9 @@
     {
       "op": "createNode",
       "nodeId": 83,
-      "tag": 528,
+      "tag": 752,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Science"
       }
@@ -2129,9 +2129,9 @@
     {
       "op": "createNode",
       "nodeId": 84,
-      "tag": 530,
+      "tag": 754,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2146,11 +2146,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -2175,13 +2175,13 @@
     {
       "op": "createNode",
       "nodeId": 85,
-      "tag": 532,
+      "tag": 756,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -2207,9 +2207,9 @@
     {
       "op": "createNode",
       "nodeId": 86,
-      "tag": 534,
+      "tag": 758,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -2220,9 +2220,9 @@
     {
       "op": "createNode",
       "nodeId": 87,
-      "tag": 536,
+      "tag": 760,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Sports"
       }
@@ -2230,9 +2230,9 @@
     {
       "op": "createNode",
       "nodeId": 88,
-      "tag": 538,
+      "tag": 762,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2247,11 +2247,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -2276,13 +2276,13 @@
     {
       "op": "createNode",
       "nodeId": 89,
-      "tag": 540,
+      "tag": 764,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -2308,9 +2308,9 @@
     {
       "op": "createNode",
       "nodeId": 90,
-      "tag": 542,
+      "tag": 766,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -2321,9 +2321,9 @@
     {
       "op": "createNode",
       "nodeId": 91,
-      "tag": 544,
+      "tag": 768,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Tech"
       }
@@ -2331,9 +2331,9 @@
     {
       "op": "createNode",
       "nodeId": 92,
-      "tag": 546,
+      "tag": 770,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2348,11 +2348,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -2362,7 +2362,7 @@
               },
               [
                 {
-                  "color": "#E7E9EE"
+                  "color": "#16202F"
                 }
               ]
             ]
@@ -2381,13 +2381,13 @@
     {
       "op": "createNode",
       "nodeId": 93,
-      "tag": 548,
+      "tag": 772,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -2402,7 +2402,7 @@
           {},
           [
             {
-              "backgroundColor": "#0B0F19"
+              "backgroundColor": "#F4F5F8"
             }
           ],
           {}
@@ -2417,9 +2417,9 @@
     {
       "op": "createNode",
       "nodeId": 94,
-      "tag": 550,
+      "tag": 774,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -2430,9 +2430,9 @@
     {
       "op": "createNode",
       "nodeId": 95,
-      "tag": 552,
+      "tag": 776,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "TV"
       }
@@ -2440,9 +2440,9 @@
     {
       "op": "createNode",
       "nodeId": 96,
-      "tag": 554,
+      "tag": 778,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2457,11 +2457,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -2486,13 +2486,13 @@
     {
       "op": "createNode",
       "nodeId": 97,
-      "tag": 556,
+      "tag": 780,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -2518,9 +2518,9 @@
     {
       "op": "createNode",
       "nodeId": 98,
-      "tag": 558,
+      "tag": 782,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -2531,9 +2531,9 @@
     {
       "op": "createNode",
       "nodeId": 99,
-      "tag": 560,
+      "tag": 784,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Writers"
       }
@@ -2541,9 +2541,9 @@
     {
       "op": "createNode",
       "nodeId": 100,
-      "tag": 562,
+      "tag": 786,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2558,11 +2558,11 @@
               "lineHeight": 24
             },
             {
-              "color": "#0B0F19"
+              "color": "#F4F5F8"
             },
             [
               {
-                "color": "#0B0F19"
+                "color": "#F4F5F8"
               },
               {
                 "fontWeight": "600"
@@ -2587,13 +2587,13 @@
     {
       "op": "createNode",
       "nodeId": 101,
-      "tag": 564,
+      "tag": 788,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
-            "backgroundColor": "#E7E9EE",
+            "backgroundColor": "#16202F",
             "paddingVertical": 15
           },
           {
@@ -2619,9 +2619,9 @@
     {
       "op": "createNode",
       "nodeId": 102,
-      "tag": 566,
+      "tag": 790,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -2632,9 +2632,9 @@
     {
       "op": "createNode",
       "nodeId": 103,
-      "tag": 568,
+      "tag": 792,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2772,9 +2772,9 @@
     {
       "op": "createNode",
       "nodeId": 104,
-      "tag": 570,
+      "tag": 794,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2792,9 +2792,9 @@
     {
       "op": "createNode",
       "nodeId": 105,
-      "tag": 572,
+      "tag": 796,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2814,9 +2814,9 @@
     {
       "op": "createNode",
       "nodeId": 106,
-      "tag": 574,
+      "tag": 798,
       "viewName": "RCTRawText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "text": "Continue"
       }
@@ -2824,9 +2824,9 @@
     {
       "op": "createNode",
       "nodeId": 107,
-      "tag": 576,
+      "tag": 800,
       "viewName": "RCTText",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2865,9 +2865,9 @@
     {
       "op": "createNode",
       "nodeId": 108,
-      "tag": 578,
+      "tag": 802,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2880,7 +2880,7 @@
             "justifyContent": "center"
           },
           {
-            "backgroundColor": "#0085FF"
+            "backgroundColor": "#3D9BFF"
           },
           {
             "borderRadius": 999
@@ -2902,9 +2902,9 @@
     {
       "op": "createNode",
       "nodeId": 109,
-      "tag": 580,
+      "tag": 804,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {}
     },
     {
@@ -2915,9 +2915,9 @@
     {
       "op": "createNode",
       "nodeId": 110,
-      "tag": 582,
+      "tag": 806,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": [
           {
@@ -2958,13 +2958,13 @@
     {
       "op": "createNode",
       "nodeId": 111,
-      "tag": 584,
+      "tag": 808,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": {
           "flex": 1,
-          "backgroundColor": "#FFFFFF",
+          "backgroundColor": "#0B0F19",
           "paddingTop": 56,
           "paddingHorizontal": 20,
           "paddingBottom": 40
@@ -2979,9 +2979,9 @@
     {
       "op": "createNode",
       "nodeId": 112,
-      "tag": 586,
+      "tag": 810,
       "viewName": "RCTView",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "props": {
         "style": {
           "flex": 1
@@ -3005,7 +3005,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 28,
+      "surfaceId": 29,
       "childSetId": 1
     }
   ]

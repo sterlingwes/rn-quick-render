@@ -126,19 +126,72 @@ and Android's "Font size" system setting:
   Yoga flex-wrap intrinsic-width issue rather than a wide-canvas
   edge case.
 
-## Step 3 — theme matrix (⏳)
+## Step 3 — theme matrix (✅ landed)
 
-Add a `theme` parameter that flows into bsky's `useTheme()` mock
-(currently hard-coded to `'light'`). Re-render the matrix in
-light + dark (+ possibly `'dim'`) and golden each per-theme PNG.
+Renders the screen-sized fixture on a single device (Pixel 5) at
+two color schemes (light + dark), driven by the platform
+[`useColorScheme()`](https://reactnative.dev/docs/usecolorscheme)
+hook rather than an app-level abstraction. That's the same API
+real RN apps derive their theme from (bsky's
+`useColorModeTheme` reads it directly), so the mock contract
+matches what a real device color-scheme change would do.
 
-Scope this needs:
+Unlike the device + font matrices, theme actually changes the
+*captured* mount-instruction stream — different palette colors
+land in props at render time. So the harness captures the
+fixture twice: once at `useColorScheme()='light'`
+(`out/<fixture>.json`, no suffix), once at `'dark'`
+(`out/<fixture>__dark.json`). The renderer test just picks the
+matching JSON; no renderer-side theme parameter exists.
 
-- Extend `STATIC_THEME` in `rn-harness/src/realApp/blueskyMocks/alf.ts`
-  to ship parallel light + dark palettes and a way to switch.
-- Either pass theme through a context or a global the mock reads,
-  so swapping it doesn't require recompiling the harness.
-- Bake a per-theme golden into `matrix/<fixture>_<device>_<theme>.png`.
+### What's in place
+
+| Path | Purpose |
+| --- | --- |
+| `rn-harness/src/loadRealRn.ts` | New `setColorScheme(scheme)` helper. Replaces RN's `useColorScheme` lazy-getter with a fixed-value descriptor — the hook is overridden in place rather than at any app-level mock boundary. |
+| `rn-harness/src/realApp/blueskyMocks/alf.ts` | Parallel `STATIC_THEME_LIGHT` + `STATIC_THEME_DARK` palettes; `useTheme()` calls `useColorScheme()` from `react-native` and switches. Mirrors bsky's real `useColorModeTheme` path. |
+| `rn-harness/src/realApp/blueskyMocks/typography.tsx` | `Text` now applies `t.atoms.text` color as a base (matches real `Typography.tsx:32-33`). Without this every span inherited the TextView default (black) regardless of theme. |
+| `rn-harness/fixtures/realApp/bluesky-onboarding-interests.ts` | Wrapper container's `backgroundColor` now reads from `useTheme().atoms.bg` instead of hard-coding white. |
+| `rn-harness/src/captureFixtures.ts` | Loop now writes per-theme captures for matrix-targeted fixtures (`THEMED_FIXTURES` set). Default light capture keeps the unsuffixed filename so existing tests are unaffected. |
+| `rn-harness/test/mount-instructions.test.ts` | Re-renders each variant under its captured color scheme so capture stability is enforced for both. |
+| `renderer/src/main/kotlin/.../ColorScheme.kt` | `data class ColorScheme(name, captureSuffix)`. Kotlin doesn't read this for rendering — it's a discriminator for which input JSON / golden filename to pick. |
+| `renderer/src/test/kotlin/.../ThemeMatrixSnapshotTest.kt` | One `@Test` per scheme; goldens at `matrix/<fixture>_<device>_theme_<scheme>.png`. |
+
+### Why platform API not app abstraction
+
+Pinning the mock to `useColorScheme()` rather than e.g. `useTheme()`:
+
+- Works for *any* RN app the harness might target later — bsky,
+  another submodule, a homegrown app — without per-target theme
+  plumbing.
+- Mirrors the path a real device color-scheme change would take
+  through the app, so the test surfaces theme-related bugs at the
+  same boundary they'd manifest in production.
+- Keeps the renderer entirely theme-agnostic. Unlike `fontScale`
+  (multiplier applied at render time), theme is "just data in the
+  mount stream" — the renderer never needs to know about it.
+
+### Skipped scope
+
+- **`'dim'` theme.** Real bsky has light / dark / dim. Dim is a
+  subtle dark variant — adding it would mostly produce a
+  near-duplicate golden. Easy to add when a fixture actually
+  exercises it.
+- **Cross-product with device / font matrices.** 2 themes × 4
+  devices × 5 font scales = 40 PNGs of largely-redundant data.
+  Theme runs on one device at default font; device + font axes
+  run at the light theme.
+
+### Findings
+
+- Capture stability holds across both schemes — re-running
+  `npm run capture` produces byte-identical JSON.
+- Surfacing the typography `t.atoms.text` gap was the bug the
+  theme matrix caught. Before the fix, dark-mode bodies still
+  showed black headlines on a near-black background because the
+  `OnboardingTitleText` mock relied on TextView's default text
+  color. After: every Typography span picks up the active
+  theme's text color via the same path real bsky uses.
 
 ## Step 3b — locale / RTL (⏳)
 

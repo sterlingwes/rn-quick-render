@@ -57,16 +57,27 @@ const { StepInterests } =
     StepInterests: React.ComponentType;
   };
 
+// Read the bg from the alf mock so the wrapper picks up whatever
+// theme `useColorScheme()` resolved to (light by default, dark when
+// the harness has called `setColorScheme('dark')` before render).
+// Previously this was hard-coded white, which left every dark-mode
+// capture rendering the page background as light even though the
+// pill / text palette had flipped.
+const { useTheme } = require("../../src/realApp/blueskyMocks/alf") as {
+  useTheme: () => { atoms: { bg: { backgroundColor: string } } };
+};
+
 function BlueskyOnboardingInterestsHarness() {
+  const t = useTheme();
   return React.createElement(
     View,
     {
       style: {
         // Phone-screen surface — the capture canvas is already
         // 393×851 dp (Pixel 5 at 440dpi), so we just need to
-        // fill it. White matches the real bsky light theme bg.
+        // fill it.
         flex: 1,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: t.atoms.bg.backgroundColor,
         // Pad in from the edges to mimic the safe-area + nav
         // header chrome the real Layout component would draw.
         // Side padding is gentler than the screen-edge padding
