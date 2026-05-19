@@ -16,10 +16,10 @@ a screen from a real RN app.
 | Phase | What | Status |
 | --- | --- | --- |
 | 0 | Paparazzi validates layoutlib-on-Linux | ✅ done — retrospective only, module deleted |
-| 1 | Fabric mount-instruction capture in Node | ✅ 16 fixtures, CI green |
+| 1 | Fabric mount-instruction capture in Node | ✅ 18 fixtures, CI green |
 | 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
-| 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open |
-| 3 | Render a real RN app screen (native-module shim + asset pipeline) | 🟡 steps 1–3 landed; step 4 in flight — tier-1 (bsky Divider) and tier-2 (bsky Admonition) render from a submodule; tier-3 (full screen) ahead. Plan: [`docs/phase-3.md`](docs/phase-3.md) |
+| 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open. Latest fidelity fixes: Yoga `gap` / `rowGap` / `columnGap` plumbing, `textAlign` `TextView.gravity`, `marginLeft/Right: 'auto'`, `EXACTLY` measure-mode honor, shared `StyleFlattener` |
+| 3 | Render a real RN app screen (native-module shim + asset pipeline) | ✅ all 4 steps landed — four bsky-social-app fixtures ladder from primitive (Divider) → composite card (Admonition) → small form (PasswordUpdatedForm) → screen-sized onboarding step (StepInterests). Plan: [`docs/phase-3.md`](docs/phase-3.md) |
 | 4 | Device / theme matrix + perf | ⏳ not started |
 | 5 | Packaging (Gradle plugin + npm CLI) | ⏳ not started |
 
@@ -243,7 +243,7 @@ already understands. Per-item plan and scope decisions live in
 | 1 | `loadRealRn` + native-module proxy shim | ✅ `react-native` boots in Node + Jest; `NativeModules` / `TurboModuleRegistry` resolve through a 3-tier proxy (per-fixture overrides → sync defaults → deep no-op). Fixture: `realRnHelloWorld` |
 | 2 | `AssetRegistry` hook + capture-time `require()` interceptor | ✅ `require('./*.png')` produces an inline-`data:` URI source object; renderer decodes via existing `data:` path. Fixture: `realRnImageAsset` |
 | 3 | `captureFromAppKey` (AppRegistry-driven entry) | ✅ `AppRegistry.registerComponent(key, …)` round-trips through `AppContainer-prod` so captures match what `ReactRootView` mounts on a real device. Fixture: `realRnRegisteredApp` |
-| 4 | First-target integration (one screen from a public RN repo) | 🟡 in progress — ramped leaf → screen across three tiers. **Tier 1 ✅** `bluesky-social-app` is git-submoduled at `third_party/`; per-target resolver (`realAppResolver.ts` + `jestRnResolver.js`) maps `#/...` tsconfig aliases + per-module mocks; `Divider` (11 lines) renders end-to-end with a `#/alf` stub. **Tier 2 ✅** `Admonition` (150 lines — composite icon + content + text card; uses `useBreakpoints` + theme palette + 4 icon modules + a `Typography` Text + a `Button` re-export) renders with extended `alf`/`typography`/`button`/`icons` placeholder mocks. **Tier 3 ⏳** screen-shaped fixture (multi-component, real provider mocks) ahead — this is the exit criterion. |
+| 4 | First-target integration (one screen from a public RN repo) | ✅ ramped leaf → screen across four tiers against `bluesky-social-app` (git-submoduled at `third_party/`; per-target resolver in `realAppResolver.ts` + `jestRnResolver.js` maps `#/...` tsconfig aliases + per-module mocks). **Tier 1** `Divider` (11 lines) end-to-end with one `#/alf` stub. **Tier 2** `Admonition` (150-line composite card; needed `alf`/`typography`/`button`/`icons` placeholder mocks). **Tier 3** `PasswordUpdatedForm` (43-line success page; added the `@lingui/*` macro stack — `msg` / `<Trans>` / `useLingui` — at runtime since the harness skips bsky's babel-plugin-macros). **Tier 4** `StepInterests` (~100-line onboarding screen rendered into a Pixel-5 viewport; added `Toggle` form context, `Onboarding` state + Layout pass-throughs, no-op `analytics` / `logger` / `Loader` stubs, plus a faithful resting-state slice of the real ~900-line `Button` so primary CTAs paint as solid pills with white text). |
 
 ### Developer-responsibility boundary
 
