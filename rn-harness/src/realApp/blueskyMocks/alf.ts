@@ -45,7 +45,9 @@ export const atoms = {
   w_full: { width: "100%" } as ViewStyle,
   flex_1: { flex: 1 } as ViewStyle,
   flex_row: { flexDirection: "row" } as ViewStyle,
+  flex_wrap: { flexWrap: "wrap" } as ViewStyle,
   align_start: { alignItems: "flex-start" } as ViewStyle,
+  align_center: { alignItems: "center" } as ViewStyle,
   justify_center: { justifyContent: "center" } as ViewStyle,
   mx_auto: { marginLeft: "auto", marginRight: "auto" } as ViewStyle,
 
@@ -58,6 +60,8 @@ export const atoms = {
   p_sm: { padding: SPACING.sm } as ViewStyle,
   p_md: { padding: SPACING.md } as ViewStyle,
   pr_md: { paddingRight: SPACING.md } as ViewStyle,
+  pt_lg: { paddingTop: SPACING.lg } as ViewStyle,
+  px_2xl: { paddingLeft: SPACING["2xl"], paddingRight: SPACING["2xl"] } as ViewStyle,
 
   // Margin
   mt_5xl: { marginTop: SPACING["5xl"] } as ViewStyle,
@@ -66,16 +70,27 @@ export const atoms = {
   border: { borderWidth: 1 } as ViewStyle,
   border_t: { borderTopWidth: 1 } as ViewStyle,
   rounded_sm: { borderRadius: RADIUS.sm } as ViewStyle,
+  rounded_full: { borderRadius: RADIUS.full } as ViewStyle,
 
   // Text
+  text_xs: { fontSize: 12, letterSpacing: 0 } as TextStyle,
   text_sm: { fontSize: 14, letterSpacing: 0 } as TextStyle,
+  // Real alf's `text_md` is the body default — 16pt.
+  text_md: { fontSize: 16, letterSpacing: 0 } as TextStyle,
   // Real alf's `text_3xl` is ~26pt with a wider tracking. Hand-set.
   text_3xl: { fontSize: 26, letterSpacing: 0 } as TextStyle,
   font_bold: { fontWeight: "700" } as TextStyle,
+  font_semi_bold: { fontWeight: "600" } as TextStyle,
+  font_medium: { fontWeight: "500" } as TextStyle,
   text_center: { textAlign: "center" } as TextStyle,
   // Real alf computes lineHeight from fontSize × ratio; "snug" is
   // roughly 1.3. 14 × 1.3 ≈ 18.
   leading_snug: { lineHeight: 18 } as TextStyle,
+  // "relaxed" is roughly 1.5×. 16 × 1.5 = 24 — sized for text_md
+  // which is the Typography default. Other text sizes that combine
+  // this atom get a slightly-off lineHeight as a known tradeoff of
+  // the mock's per-atom hardcoding vs real alf's per-size compute.
+  leading_relaxed: { lineHeight: 24 } as TextStyle,
 };
 
 // Themes carry style objects under `atoms.<name>` for components that
@@ -84,17 +99,56 @@ export const atoms = {
 // theme — close enough that tier fixtures read as the right component
 // without requiring an exact palette match.
 const STATIC_THEME = {
+  // Real theme objects carry a `name` discriminant ('light' |
+  // 'dark' | 'dim') that InterestButton branches on. Hardcode
+  // 'light' here — the surface is always white in headless render.
+  name: "light" as const,
   atoms: {
     bg: { backgroundColor: "#FFFFFF" } as ViewStyle,
+    bg_contrast_50: { backgroundColor: "#F4F5F8" } as ViewStyle,
+    bg_contrast_100: { backgroundColor: "#E7E9EE" } as ViewStyle,
     text: { color: "#0B0F19" } as TextStyle,
+    text_inverted: { color: "#FFFFFF" } as TextStyle,
     text_contrast_medium: { color: "#42576C" } as TextStyle,
     border_contrast_low: { borderColor: "#D1D5DB" } as ViewStyle,
     border_contrast_high: { borderColor: "#79808E" } as ViewStyle,
   },
   palette: {
+    // Primary (bsky blue) scale.
+    primary_50: "#E6F3FF",
+    primary_100: "#CCE7FF",
+    primary_200: "#99CFFF",
     primary_500: "#0085FF",
+    primary_600: "#0064D1",
     yellow: "#FFD400",
+    // Negative (red) scale.
+    negative_50: "#FCEBEB",
+    negative_100: "#F9D5D5",
+    negative_200: "#F3ABAB",
+    negative_300: "#ED8181",
+    negative_400: "#E64C4C",
     negative_500: "#E61D1D",
+    negative_600: "#C71717",
+    negative_700: "#9F1212",
+    // Contrast scale — light theme. Used by InterestButton's
+    // pill backgrounds (unselected = contrast_100 grey, selected
+    // = contrast_900 near-black) and its text color
+    // (contrast_900 unselected / contrast_100 selected), plus
+    // the Button mock's secondary/inverted variants. Hand-set
+    // to match how the bsky light theme reads at a glance; if a
+    // future fixture needs exact parity these can be re-keyed to
+    // the real palette.
+    contrast_50: "#F4F5F8",
+    contrast_100: "#E7E9EE",
+    contrast_200: "#D1D5DD",
+    contrast_300: "#B7BCC9",
+    contrast_600: "#5C667A",
+    contrast_800: "#1A2030",
+    contrast_900: "#0B0F19",
+    contrast_975: "#040610",
+    // Solid neutrals — `white` shows up as the text color for
+    // solid+primary buttons.
+    white: "#FFFFFF",
   },
 };
 

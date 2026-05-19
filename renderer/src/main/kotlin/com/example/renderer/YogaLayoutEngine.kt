@@ -300,6 +300,21 @@ class YogaLayoutEngine(
         style.get("flexWrap")?.takeIf { it.isJsonPrimitive }?.asString?.let {
             FLEX_WRAP_MAP[it]?.let { fw -> node.setWrap(fw) }
         }
+
+        // `gap` / `rowGap` / `columnGap` — without this, RN's `gap: N`
+        // (and the alf `gap_*` atoms that compile to it) is silently
+        // dropped on the floor and wrapped flex children stack with
+        // zero space between rows. Yoga maps `gap` to YogaGutter.ALL
+        // and the axis-specific props to ROW / COLUMN.
+        style.get("gap")?.takeIf { it.isJsonPrimitive }?.asFloat?.let {
+            node.setGap(YogaGutter.ALL, it)
+        }
+        style.get("rowGap")?.takeIf { it.isJsonPrimitive }?.asFloat?.let {
+            node.setGap(YogaGutter.ROW, it)
+        }
+        style.get("columnGap")?.takeIf { it.isJsonPrimitive }?.asFloat?.let {
+            node.setGap(YogaGutter.COLUMN, it)
+        }
         style.get("alignItems")?.takeIf { it.isJsonPrimitive }?.asString?.let {
             ALIGN_MAP[it]?.let { a -> node.setAlignItems(a) }
         }

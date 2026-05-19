@@ -66,6 +66,12 @@ const REAL_APP_TARGETS = [
       "@lingui/core/macro": path.join(BSKY_MOCKS, "linguiCoreMacro.ts"),
       "@lingui/react": path.join(BSKY_MOCKS, "linguiReact.tsx"),
       "@lingui/react/macro": path.join(BSKY_MOCKS, "linguiReactMacro.tsx"),
+      "#/components/forms/Toggle": path.join(BSKY_MOCKS, "toggle.tsx"),
+      "#/components/Loader": path.join(BSKY_MOCKS, "loader.tsx"),
+      "#/analytics": path.join(BSKY_MOCKS, "analytics.ts"),
+      "#/screens/Onboarding/state": path.join(BSKY_MOCKS, "onboardingState.tsx"),
+      "#/screens/Onboarding/Layout": path.join(BSKY_MOCKS, "onboardingLayout.tsx"),
+      "#/logger": path.join(BSKY_MOCKS, "logger.ts"),
     },
   },
 ];

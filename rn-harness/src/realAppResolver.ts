@@ -76,6 +76,33 @@ export const REAL_APP_TARGETS: RealAppTarget[] = [
       "@lingui/core/macro": path.join(BSKY_MOCKS, "linguiCoreMacro.ts"),
       "@lingui/react": path.join(BSKY_MOCKS, "linguiReact.tsx"),
       "@lingui/react/macro": path.join(BSKY_MOCKS, "linguiReactMacro.tsx"),
+      // Tier-4 (screen-sized) Onboarding/StepInterests deps. The
+      // real Toggle drags in reanimated + haptics + an SVG check
+      // icon; the mock just publishes the per-item context that
+      // InterestButton reads via `Toggle.useItemContext()`.
+      "#/components/forms/Toggle": path.join(BSKY_MOCKS, "toggle.tsx"),
+      // Loader = rotating SVG icon under reanimated. The snapshot
+      // is the resting state (no spinner), so a static placeholder
+      // is enough.
+      "#/components/Loader": path.join(BSKY_MOCKS, "loader.tsx"),
+      // `useAnalytics()` throws if not under AnalyticsFeaturesContext.
+      // The mock returns a no-op metric()/logger so the screen
+      // renders without standing up GrowthBook + the metric chain.
+      "#/analytics": path.join(BSKY_MOCKS, "analytics.ts"),
+      // `useOnboardingInternalState` throws without OnboardingContext.
+      // The mock returns a snapshot-shaped state with a few
+      // pre-selected interests so the grid shows both pill variants.
+      "#/screens/Onboarding/state": path.join(BSKY_MOCKS, "onboardingState.tsx"),
+      // Real Layout pulls in safe-area-context + ScrollView + a
+      // portal pair; we replace it with thin Text-wrapper exports
+      // for the three Title/Description/Position helpers and a
+      // pass-through OnboardingControls.Portal so the Continue
+      // button renders inline.
+      "#/screens/Onboarding/Layout": path.join(BSKY_MOCKS, "onboardingLayout.tsx"),
+      // `#/logger` drags in nanoid + env + sentry/console transports.
+      // Mock is a no-op logger object + a Logger class with empty
+      // Context/Level enums.
+      "#/logger": path.join(BSKY_MOCKS, "logger.ts"),
     },
   },
 ];

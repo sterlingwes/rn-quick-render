@@ -45,16 +45,25 @@
           },
           [
             {
-              "fontSize": 14,
+              "fontSize": 16,
               "letterSpacing": 0
             },
             {
-              "lineHeight": 18
+              "lineHeight": 24
             },
-            {
-              "paddingRight": 12
-            },
-            null
+            [
+              {
+                "fontSize": 14,
+                "letterSpacing": 0
+              },
+              {
+                "lineHeight": 18
+              },
+              {
+                "paddingRight": 12
+              },
+              null
+            ]
           ]
         ],
         "accessible": false,

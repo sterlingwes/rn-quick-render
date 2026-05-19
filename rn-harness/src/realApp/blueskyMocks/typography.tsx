@@ -11,6 +11,8 @@
 import * as React from "react";
 import { Text as RNText, type StyleProp, type TextStyle } from "react-native";
 
+import { atoms as a } from "./alf";
+
 export type TextProps = {
   children?: React.ReactNode;
   style?: StyleProp<TextStyle>;
@@ -26,6 +28,11 @@ export type TextProps = {
   [key: string]: unknown;
 };
 
+// Real bsky Typography.Text applies `a.text_md` + `a.leading_relaxed`
+// as a base before the caller's `style` override (Typography.tsx:95).
+// Mirror that here — without it, every Typography-wrapped span
+// (incl. all the InterestButton pill labels) renders at RN's
+// 14sp default instead of bsky's 16pt body size.
 export function Text({
   children,
   style,
@@ -35,7 +42,7 @@ export function Text({
   ...rest
 }: TextProps) {
   return (
-    <RNText style={style} {...rest}>
+    <RNText style={[a.text_md, a.leading_relaxed, style]} {...rest}>
       {children}
     </RNText>
   );
