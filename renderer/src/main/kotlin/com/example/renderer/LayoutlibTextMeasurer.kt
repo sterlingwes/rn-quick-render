@@ -24,6 +24,12 @@ import android.text.TextPaint
 class LayoutlibTextMeasurer(
     private val density: Float = 2.625f, // xxhdpi default (420dpi / 160)
     private val fontRegistry: FontRegistry = FontRegistry.EMPTY,
+    // System-level text scale multiplier. iOS Dynamic Type and
+    // Android Settings → Display → Font size both expose this; RN
+    // surfaces it via `PixelRatio.getFontScale()` and applies it to
+    // text fontSize values. Defaults to 1.0 (no scaling). See
+    // [FontScale] for the curated bucket list used by the matrix.
+    private val fontScale: Float = 1.0f,
 ) : YogaLayoutEngine.TextMeasureProvider {
 
     override fun measure(
@@ -36,7 +42,7 @@ class LayoutlibTextMeasurer(
         if (text.isEmpty()) return 0f to 0f
 
         val paint = TextPaint(Paint.ANTI_ALIAS_FLAG)
-        paint.textSize = fontSize * density
+        paint.textSize = fontSize * density * fontScale
 
         // Weight bucketing matching RN Android's Typeface resolution:
         // "bold" or >= 600 → BOLD, else NORMAL. Spans on the input may

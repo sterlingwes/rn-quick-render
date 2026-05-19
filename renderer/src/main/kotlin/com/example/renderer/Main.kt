@@ -22,6 +22,7 @@ fun main(args: Array<String>) {
     var density = 440
     var output = "output.png"
     var fontsDir: String? = null
+    var fontScale = 1.0f
 
     val iter = args.iterator()
     while (iter.hasNext()) {
@@ -31,11 +32,12 @@ fun main(args: Array<String>) {
             "--density" -> density = iter.next().toInt()
             "--output" -> output = iter.next()
             "--fonts" -> fontsDir = iter.next()
+            "--fontScale" -> fontScale = iter.next().toFloat()
             else -> {
                 System.err.println("Unknown argument: $arg")
                 System.err.println(
                     "Usage: renderer [--width W] [--height H] [--density D] " +
-                        "[--output FILE] [--fonts DIR]"
+                        "[--output FILE] [--fonts DIR] [--fontScale N]"
                 )
                 System.exit(1)
             }
@@ -51,7 +53,11 @@ fun main(args: Array<String>) {
     val fontRegistry = fontsDir?.let { loadFontsFromDirectory(File(it)) } ?: FontRegistry.EMPTY
 
     val bootstrap = LayoutlibBootstrap.create(width, height, density)
-    val renderer = SnapshotRenderer(bootstrap, width, height, density, fontRegistry = fontRegistry)
+    val renderer = SnapshotRenderer(
+        bootstrap, width, height, density,
+        fontRegistry = fontRegistry,
+        fontScale = fontScale,
+    )
     val image = renderer.render(json)
 
     val outputFile = File(output)

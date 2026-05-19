@@ -46,10 +46,16 @@ object ParagraphTextBuilder {
         propsOf: (Int) -> JsonObject?,
         childrenOf: (Int) -> List<Int>,
         fontRegistry: FontRegistry = FontRegistry.EMPTY,
+        // System text scale multiplier — matches the param on
+        // [LayoutlibTextMeasurer] / [FabricViewBuilder]. Scales every
+        // per-span `AbsoluteSizeSpan` so a paragraph with nested
+        // `<Text>` runs of varying fontSize all grow together under
+        // the same system setting.
+        fontScale: Float = 1.0f,
     ): SpannableStringBuilder {
         val out = SpannableStringBuilder()
         for (childId in paragraphChildIds) {
-            append(childId, out, SpanStyle.EMPTY, density, fontRegistry, viewNameOf, propsOf, childrenOf)
+            append(childId, out, SpanStyle.EMPTY, density, fontScale, fontRegistry, viewNameOf, propsOf, childrenOf)
         }
         return out
     }
@@ -74,6 +80,7 @@ object ParagraphTextBuilder {
         out: SpannableStringBuilder,
         inheritedStyle: SpanStyle,
         density: Float,
+        fontScale: Float,
         fontRegistry: FontRegistry,
         viewNameOf: (Int) -> String?,
         propsOf: (Int) -> JsonObject?,
@@ -87,7 +94,7 @@ object ParagraphTextBuilder {
                 if (text.isEmpty()) return
                 val start = out.length
                 out.append(text)
-                applySpans(out, start, out.length, inheritedStyle, density, fontRegistry)
+                applySpans(out, start, out.length, inheritedStyle, density, fontScale, fontRegistry)
             }
             // RCTText (host-element DSL) and RCTVirtualText (real RN's
             // name for inner spans) both behave the same here: open a
@@ -95,7 +102,7 @@ object ParagraphTextBuilder {
             "RCTText", "RCTVirtualText" -> {
                 val nested = inheritedStyle.mergedWith(flattenStyle(props?.get("style")))
                 for (childId in childrenOf(nodeId)) {
-                    append(childId, out, nested, density, fontRegistry, viewNameOf, propsOf, childrenOf)
+                    append(childId, out, nested, density, fontScale, fontRegistry, viewNameOf, propsOf, childrenOf)
                 }
             }
             else -> {
@@ -111,12 +118,13 @@ object ParagraphTextBuilder {
         end: Int,
         style: SpanStyle,
         density: Float,
+        fontScale: Float,
         fontRegistry: FontRegistry,
     ) {
         if (start >= end) return
 
         style.fontSize?.let {
-            val px = (it * density).toInt()
+            val px = (it * density * fontScale).toInt()
             out.setSpan(AbsoluteSizeSpan(px), start, end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
         }
         style.color?.let {

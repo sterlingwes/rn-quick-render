@@ -21,7 +21,7 @@ for the device / theme / perf matrix.
 | 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
 | 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open. Latest fidelity fixes: Yoga `gap` / `rowGap` / `columnGap` plumbing, `textAlign` `TextView.gravity`, `marginLeft/Right: 'auto'`, `EXACTLY` measure-mode honor, shared `StyleFlattener` |
 | 3 | Render a real RN app screen (native-module shim + asset pipeline) | ✅ all 4 steps landed — four bsky-social-app fixtures ladder from primitive (Divider) → composite card (Admonition) → small form (PasswordUpdatedForm) → screen-sized onboarding step (StepInterests). Plan: [`docs/phase-3.md`](docs/phase-3.md) |
-| 4 | Device / theme matrix + perf | 🟡 step 1 landed — device matrix renders `blueskyOnboardingInterests` across 4 Android profiles (smallPhone / pixel5 / pixel7Pro / tablet) with per-config PNG goldens. Theme matrix + perf benchmark + parallelization ahead. Plan: [`docs/phase-4.md`](docs/phase-4.md) |
+| 4 | Device / theme matrix + perf | 🟡 steps 1 + 2b landed — device matrix renders `blueskyOnboardingInterests` across 4 Android profiles (smallPhone / pixel5 / pixel7Pro / tablet); font-scale matrix renders the same fixture across 5 system-text-size buckets (compact 0.85x → a11yMax 3.10x) bracketing iOS Dynamic Type + Android Font Size. Theme + RTL + perf + parallelization ahead. Plan: [`docs/phase-4.md`](docs/phase-4.md) |
 | 5 | Packaging (Gradle plugin + npm CLI) | ⏳ not started |
 
 ## Phase 0 — layoutlib validation (retrospective)
@@ -267,7 +267,8 @@ status.
 | # | Item | Status |
 | --- | --- | --- |
 | 1 | Device matrix | ✅ `DeviceProfile` + `DeviceMatrixSnapshotTest` render `blueskyOnboardingInterests` across 4 Android profiles (smallPhone / pixel5 / pixel7Pro / tablet), each with its own bootstrap-cached layoutlib session and per-config PNG golden under `src/test/snapshots/matrix/` |
-| 2 | Theme matrix (light / dark / dim) | ⏳ needs a `theme` parameter that flows into bsky's `useTheme()` mock |
-| 3 | Font scale + locale | ⏳ not started — locale ties to Phase 2.5 #6 (RTL) |
+| 2b | Font-scale matrix | ✅ `FontScale` + `FontScaleMatrixSnapshotTest` render the same fixture at 5 buckets (compact 0.85x, default 1.0x, large 1.30x, a11y 2.0x, a11yMax 3.10x) bracketing iOS Dynamic Type + Android Font Size. `--fontScale` CLI flag exposed for one-off renders. |
+| 3 | Theme matrix (light / dark / dim) | ⏳ needs a `theme` parameter that flows into bsky's `useTheme()` mock |
+| 3b | RTL / locale | ⏳ couples to Phase 2.5 #6 |
 | 4 | Perf benchmark vs emulator baseline | ⏳ not started |
 | 5 | Parallel matrix execution | ⏳ not started — currently sequential per JUnit method |

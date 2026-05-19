@@ -69,18 +69,83 @@ Scope this needs:
   so swapping it doesn't require recompiling the harness.
 - Bake a per-theme golden into `matrix/<fixture>_<device>_<theme>.png`.
 
-## Step 3 — font scale + locale (⏳)
+## Step 2b — font-scale matrix (✅ landed)
 
-Two largely independent knobs:
+Re-ordered ahead of the original step 2 (theme matrix) because
+font scale is a more common source of real-world layout breakage
+than theming.
 
-- **Font scale.** RN exposes `PixelRatio.getFontScale()`; layoutlib
-  reads font scale from the `Configuration`. Wire `DeviceProfile`
-  to optionally carry a font scale factor; render each fixture at
-  100 % + 130 % (the OS accessibility default) and golden-diff.
-- **Locale.** Couples to Phase 2.5 #6 (RTL) — `Configuration.locale`
-  + Yoga `setDirection(YogaDirection.RTL)`. RTL is the higher-value
-  test because it surfaces edge-aware style atoms (`marginStart` /
-  `marginEnd` vs `marginLeft` / `marginRight`).
+Renders the screen-sized fixture on a single device (Pixel 5) at
+five curated [FontScale] buckets that bracket iOS Dynamic Type
+and Android's "Font size" system setting:
+
+| Bucket            | Scale | Matches |
+| ---               | ---   | --- |
+| COMPACT           | 0.85  | Android "Small" / iOS xSmall–Small bracket |
+| DEFAULT           | 1.00  | Both OSes' factory default |
+| LARGE             | 1.30  | Android "Largest" / iOS xxxLarge — top of stock range |
+| ACCESSIBILITY     | 2.00  | iOS Dynamic Type Accessibility mid-range (AX2–AX3) |
+| ACCESSIBILITY_MAX | 3.10  | iOS AX5 — extreme stress test |
+
+### What's in place
+
+| Path | Purpose |
+| --- | --- |
+| `renderer/src/main/kotlin/.../FontScale.kt` | `data class FontScale(name, scale)` + the curated 5-entry `ALL` list. |
+| `SnapshotRenderer` / `LayoutlibTextMeasurer` / `FabricViewBuilder` / `ParagraphTextBuilder` | New `fontScale: Float = 1.0f` plumbed through; multiplies `fontSize` everywhere it lands on a TextView or per-span `AbsoluteSizeSpan`. |
+| `renderer/src/test/kotlin/.../FontScaleMatrixSnapshotTest.kt` | One `@Test` per bucket on `blueskyOnboardingInterests` at the default device; goldens under `matrix/<fixture>_<device>_fs_<bucket>.png`. |
+| `Main.kt` `--fontScale N` flag | CLI surface for one-off renders at a specific scale. |
+
+### Scope decisions
+
+- **Device × fontScale cross product skipped.** Font scale and
+  device size are largely orthogonal; 5 × 4 would mostly produce
+  redundant goldens. Matrix runs scales on one device, devices
+  on one scale. Add cross-product entries only when a specific
+  fixture surfaces a device-scale interaction.
+- **Container dimensions unchanged.** Pills retain their
+  `paddingVertical: 15` and `paddingHorizontal: 24` regardless of
+  font scale — text grows, container chrome doesn't. Matches how
+  real RN apps behave by default; flex_wrap pushes overflowing
+  rows down. Surfacing that breakage *is* the matrix's job.
+- **No lineHeight scaling.** Per-atom `leading_relaxed: 24` etc.
+  stay fixed. Real iOS scales lineHeight with fontSize via font
+  metrics; we don't. Text at 3.10x can therefore visibly overlap
+  at extreme scales — captured in the a11yMax golden.
+
+### Findings
+
+- The renderer correctly applies scale end-to-end. At 3.10x the
+  StepInterests headline ("What are your interests?") wraps every
+  word onto its own line; the description paragraph triples in
+  height; the first interest pill only starts to appear at the
+  bottom of the canvas.
+- Same "Software Dev" truncation bug surfaces at COMPACT (0.85x)
+  on Pixel 5 — repro that's independent of the tablet device
+  width seen in step 1, which strengthens the case that it's a
+  Yoga flex-wrap intrinsic-width issue rather than a wide-canvas
+  edge case.
+
+## Step 3 — theme matrix (⏳)
+
+Add a `theme` parameter that flows into bsky's `useTheme()` mock
+(currently hard-coded to `'light'`). Re-render the matrix in
+light + dark (+ possibly `'dim'`) and golden each per-theme PNG.
+
+Scope this needs:
+
+- Extend `STATIC_THEME` in `rn-harness/src/realApp/blueskyMocks/alf.ts`
+  to ship parallel light + dark palettes and a way to switch.
+- Either pass theme through a context or a global the mock reads,
+  so swapping it doesn't require recompiling the harness.
+- Bake a per-theme golden into `matrix/<fixture>_<device>_<theme>.png`.
+
+## Step 3b — locale / RTL (⏳)
+
+Couples to Phase 2.5 #6 (RTL) — `Configuration.locale` + Yoga
+`setDirection(YogaDirection.RTL)`. RTL is the higher-value test
+because it surfaces edge-aware style atoms (`marginStart` /
+`marginEnd` vs `marginLeft` / `marginRight`).
 
 ## Step 4 — perf benchmark vs. emulator baseline (⏳)
 

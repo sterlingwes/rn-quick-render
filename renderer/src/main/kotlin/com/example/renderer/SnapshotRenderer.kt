@@ -33,13 +33,17 @@ class SnapshotRenderer(
     // Custom font registry. Empty by default — fontFamily lookups fall
     // through to layoutlib's bundled families (Roboto + Noto).
     private val fontRegistry: FontRegistry = FontRegistry.EMPTY,
+    // System text scale multiplier (iOS Dynamic Type / Android
+    // "Font size" setting). 1.0 = no scaling. See [FontScale] for
+    // the curated bucket list used by the matrix test.
+    private val fontScale: Float = 1.0f,
 ) {
     private val density: Float = densityDpi / 160f
     private val viewportWidthDp: Int = (screenWidth / density).toInt()
     private val viewportHeightDp: Int = (screenHeight / density).toInt()
 
     fun render(instructionsJson: String): BufferedImage {
-        val textMeasurer = LayoutlibTextMeasurer(density, fontRegistry)
+        val textMeasurer = LayoutlibTextMeasurer(density, fontRegistry, fontScale)
         val engine = YogaLayoutEngine(textMeasurer, textDensity = density)
         val layoutResult = engine.computeLayout(
             instructionsJson,
@@ -50,7 +54,7 @@ class SnapshotRenderer(
         )
 
         return bootstrap.executeInSession { context ->
-            val builder = FabricViewBuilder(context, density, fontRegistry)
+            val builder = FabricViewBuilder(context, density, fontRegistry, fontScale)
             val rootView = builder.build(instructionsJson, layoutResult)
 
             // Measure and layout using the view's own LayoutParams (set by FabricViewBuilder

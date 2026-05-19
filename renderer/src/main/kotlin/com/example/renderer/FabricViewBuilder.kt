@@ -30,6 +30,11 @@ class FabricViewBuilder(
     private val context: Context,
     private val density: Float,
     private val fontRegistry: FontRegistry = FontRegistry.EMPTY,
+    // System-level text scale multiplier (1.0 = no scaling). Applied
+    // to `fontSize` everywhere it lands on a TextView or per-span
+    // AbsoluteSizeSpan, so a tier-4 fixture at fontScale=2.0 renders
+    // every label twice as large without recapturing the mount stream.
+    private val fontScale: Float = 1.0f,
 ) {
 
     private data class NodeSpec(
@@ -332,6 +337,7 @@ class FabricViewBuilder(
             paragraphChildIds = node.children,
             density = density,
             fontRegistry = fontRegistry,
+            fontScale = fontScale,
             viewNameOf = { id -> all[id]?.viewName },
             propsOf = { id -> all[id]?.props },
             childrenOf = { id -> all[id]?.children ?: emptyList() },
@@ -348,7 +354,7 @@ class FabricViewBuilder(
             ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
         tv.typeface = fontRegistry.resolve(baseFamily, baseWeight)
         style?.let { s ->
-            if (s.has("fontSize")) tv.textSize = s.get("fontSize").asFloat
+            if (s.has("fontSize")) tv.textSize = s.get("fontSize").asFloat * fontScale
             if (s.has("color")) tv.setTextColor(parseColor(s.get("color").asString))
             applyTextAlign(tv, s)
         }
