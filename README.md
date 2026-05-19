@@ -8,8 +8,9 @@ See [`docs/explore-plan.md`](docs/explore-plan.md) for the full
 exploration plan, [`docs/phase-2-translator.md`](docs/phase-2-translator.md)
 for the current renderer design,
 [`docs/phase-2.5.md`](docs/phase-2.5.md) for per-item fidelity status,
-and [`docs/phase-3.md`](docs/phase-3.md) for what it'll take to render
-a screen from a real RN app.
+[`docs/phase-3.md`](docs/phase-3.md) for what it'll take to render
+a screen from a real RN app, and [`docs/phase-4.md`](docs/phase-4.md)
+for the device / theme / perf matrix.
 
 ## Status at a glance
 
@@ -20,7 +21,7 @@ a screen from a real RN app.
 | 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
 | 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open. Latest fidelity fixes: Yoga `gap` / `rowGap` / `columnGap` plumbing, `textAlign` `TextView.gravity`, `marginLeft/Right: 'auto'`, `EXACTLY` measure-mode honor, shared `StyleFlattener` |
 | 3 | Render a real RN app screen (native-module shim + asset pipeline) | ✅ all 4 steps landed — four bsky-social-app fixtures ladder from primitive (Divider) → composite card (Admonition) → small form (PasswordUpdatedForm) → screen-sized onboarding step (StepInterests). Plan: [`docs/phase-3.md`](docs/phase-3.md) |
-| 4 | Device / theme matrix + perf | ⏳ not started |
+| 4 | Device / theme matrix + perf | 🟡 step 1 landed — device matrix renders `blueskyOnboardingInterests` across 4 Android profiles (smallPhone / pixel5 / pixel7Pro / tablet) with per-config PNG goldens. Theme matrix + perf benchmark + parallelization ahead. Plan: [`docs/phase-4.md`](docs/phase-4.md) |
 | 5 | Packaging (Gradle plugin + npm CLI) | ⏳ not started |
 
 ## Phase 0 — layoutlib validation (retrospective)
@@ -255,3 +256,18 @@ placeholder swaps for unsupported children — is the developer's
 test wrapper to write, the same way Storybook stories work. See the
 "What the developer brings" section of
 [`docs/phase-3.md`](docs/phase-3.md) for the contract.
+
+## Phase 4 — device / theme matrix + perf
+
+**Goal:** prove the "render one component across N configs in
+parallel, faster than an emulator" value prop. See
+[`docs/phase-4.md`](docs/phase-4.md) for the plan and per-step
+status.
+
+| # | Item | Status |
+| --- | --- | --- |
+| 1 | Device matrix | ✅ `DeviceProfile` + `DeviceMatrixSnapshotTest` render `blueskyOnboardingInterests` across 4 Android profiles (smallPhone / pixel5 / pixel7Pro / tablet), each with its own bootstrap-cached layoutlib session and per-config PNG golden under `src/test/snapshots/matrix/` |
+| 2 | Theme matrix (light / dark / dim) | ⏳ needs a `theme` parameter that flows into bsky's `useTheme()` mock |
+| 3 | Font scale + locale | ⏳ not started — locale ties to Phase 2.5 #6 (RTL) |
+| 4 | Perf benchmark vs emulator baseline | ⏳ not started |
+| 5 | Parallel matrix execution | ⏳ not started — currently sequential per JUnit method |
