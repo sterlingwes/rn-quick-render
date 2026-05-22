@@ -2,19 +2,39 @@ package com.example.renderer
 
 import java.io.File
 import javax.imageio.ImageIO
+import kotlin.system.exitProcess
 
 /**
  * CLI entry point for the snapshot renderer.
  *
- * Reads Fabric mount-instruction JSON from stdin, renders to PNG.
+ * Two modes:
  *
- * Usage:
- *   java -jar renderer.jar [--width 1080] [--height 2340] [--density 440]
- *                          [--output output.png] [--fonts /path/to/fonts]
+ *   1. **One-shot** (default): reads Fabric mount-instruction
+ *      JSON from stdin, renders one PNG to `--output`. Pays the
+ *      ~4 s `Bridge.init()` cost per invocation; best for an
+ *      ad-hoc single render.
  *
- * `--fonts` points at a directory of `.ttf` / `.otf` files; each is
- * registered under its filename (without extension) so a `style.fontFamily`
- * of `"Inter"` resolves to `Inter.ttf` from that directory.
+ *      ```
+ *      cat fixture.json | java -jar renderer.jar [--width W] [--height H]
+ *                            [--density D] [--output FILE] [--fonts DIR]
+ *                            [--fontScale N]
+ *      ```
+ *
+ *   2. **Batch** (`--batch <manifest.json>`): reads a manifest of
+ *      N entries and renders all of them inside one JVM,
+ *      amortising init across the run. Bootstraps are cached per
+ *      device profile so a matrix run pays init at most once per
+ *      device class. See [BatchManifest] for the format.
+ *
+ *      ```
+ *      java -jar renderer.jar --batch manifest.json
+ *      ```
+ *
+ * `--fonts` points at a directory of `.ttf` / `.otf` files; each
+ * is registered under its filename (without extension) so a
+ * `style.fontFamily` of `"Inter"` resolves to `Inter.ttf`. In
+ * batch mode, `fonts` may be set in the manifest at top level
+ * (default for every entry) or per-entry (override).
  */
 fun main(args: Array<String>) {
     var width = 1080
@@ -23,6 +43,7 @@ fun main(args: Array<String>) {
     var output = "output.png"
     var fontsDir: String? = null
     var fontScale = 1.0f
+    var batchManifest: String? = null
 
     val iter = args.iterator()
     while (iter.hasNext()) {
@@ -33,21 +54,30 @@ fun main(args: Array<String>) {
             "--output" -> output = iter.next()
             "--fonts" -> fontsDir = iter.next()
             "--fontScale" -> fontScale = iter.next().toFloat()
+            "--batch" -> batchManifest = iter.next()
             else -> {
                 System.err.println("Unknown argument: $arg")
                 System.err.println(
-                    "Usage: renderer [--width W] [--height H] [--density D] " +
-                        "[--output FILE] [--fonts DIR] [--fontScale N]"
+                    "Usage:\n" +
+                        "  one-shot: renderer [--width W] [--height H] [--density D] " +
+                            "[--output FILE] [--fonts DIR] [--fontScale N]\n" +
+                        "  batch:    renderer --batch MANIFEST.json"
                 )
-                System.exit(1)
+                exitProcess(1)
             }
         }
+    }
+
+    if (batchManifest != null) {
+        val manifest = BatchManifestParser.parse(File(batchManifest))
+        val result = BatchRunner.run(manifest)
+        exitProcess(if (result.failed == 0) 0 else 1)
     }
 
     val json = System.`in`.bufferedReader().readText()
     if (json.isBlank()) {
         System.err.println("Error: no JSON received on stdin")
-        System.exit(1)
+        exitProcess(1)
     }
 
     val fontRegistry = fontsDir?.let { loadFontsFromDirectory(File(it)) } ?: FontRegistry.EMPTY
@@ -63,15 +93,4 @@ fun main(args: Array<String>) {
     val outputFile = File(output)
     ImageIO.write(image, "png", outputFile)
     println("Rendered ${image.width}×${image.height} → ${outputFile.absolutePath}")
-}
-
-private fun loadFontsFromDirectory(dir: File): FontRegistry {
-    require(dir.isDirectory) { "Fonts path is not a directory: ${dir.absolutePath}" }
-    val registry = FontRegistry()
-    val files = dir.listFiles { f -> f.isFile && (f.extension == "ttf" || f.extension == "otf") }
-        ?: return registry
-    for (f in files) {
-        registry.registerFile(f.nameWithoutExtension, f)
-    }
-    return registry
 }

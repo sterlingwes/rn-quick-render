@@ -9,8 +9,10 @@ exploration plan, [`docs/phase-2-translator.md`](docs/phase-2-translator.md)
 for the current renderer design,
 [`docs/phase-2.5.md`](docs/phase-2.5.md) for per-item fidelity status,
 [`docs/phase-3.md`](docs/phase-3.md) for what it'll take to render
-a screen from a real RN app, and [`docs/phase-4.md`](docs/phase-4.md)
-for the device / theme / perf matrix.
+a screen from a real RN app, [`docs/phase-4.md`](docs/phase-4.md)
+for the device / theme / perf matrix, and
+[`docs/phase-5.md`](docs/phase-5.md) for the packaging /
+distribution plan.
 
 ## Status at a glance
 
@@ -22,7 +24,7 @@ for the device / theme / perf matrix.
 | 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open. Latest fidelity fixes: Yoga `gap` / `rowGap` / `columnGap` plumbing, `textAlign` `TextView.gravity`, `marginLeft/Right: 'auto'`, `EXACTLY` measure-mode honor, shared `StyleFlattener` |
 | 3 | Render a real RN app screen (native-module shim + asset pipeline) | ✅ all 4 steps landed — four bsky-social-app fixtures ladder from primitive (Divider) → composite card (Admonition) → small form (PasswordUpdatedForm) → screen-sized onboarding step (StepInterests). Plan: [`docs/phase-3.md`](docs/phase-3.md) |
 | 4 | Device / theme matrix + perf | 🟡 steps 1 + 2b + 3 landed — device matrix (4 Android profiles); font-scale matrix (5 buckets bracketing iOS Dynamic Type + Android Font Size); theme matrix (light + dark driven by the platform `useColorScheme()` hook). RTL + perf + parallelization ahead. Plan: [`docs/phase-4.md`](docs/phase-4.md) |
-| 5 | Packaging (Gradle plugin + npm CLI) | ⏳ not started |
+| 5 | Packaging (Gradle plugin + npm CLI) | 🟡 first slice landed — `--batch <manifest.json>` runs N renders in one warmed JVM with per-device-profile bootstrap caching; demonstrated ~9× wall-clock speedup over per-entry one-shot. Daemon mode + Gradle plugin + npm CLI wrapping ahead. Plan: [`docs/phase-5.md`](docs/phase-5.md) |
 
 ## Phase 0 — layoutlib validation (retrospective)
 
@@ -270,5 +272,24 @@ status.
 | 2b | Font-scale matrix | ✅ `FontScale` + `FontScaleMatrixSnapshotTest` render the same fixture at 5 buckets (compact 0.85x, default 1.0x, large 1.30x, a11y 2.0x, a11yMax 3.10x) bracketing iOS Dynamic Type + Android Font Size. `--fontScale` CLI flag exposed for one-off renders. |
 | 3 | Theme matrix (light / dark) | ✅ Driven at the platform-API boundary — `setColorScheme()` patches RN's `useColorScheme` hook; bsky's alf mock's `useTheme()` calls that hook directly (mirroring real `useColorModeTheme`); capture pipeline writes per-scheme JSONs (`out/<fixture>__dark.json`); `ThemeMatrixSnapshotTest` picks the right input and emits per-scheme PNGs. |
 | 3b | RTL / locale | ⏳ couples to Phase 2.5 #6 |
-| 4 | Perf benchmark vs emulator baseline | ⏳ not started |
+| 4 | Perf benchmark vs emulator baseline | ⏳ baseline numbers ahead; see Phase 5 step 1 for the amortisation foundation |
 | 5 | Parallel matrix execution | ⏳ not started — currently sequential per JUnit method |
+
+## Phase 5 — packaging / distribution
+
+**Goal:** turn the renderer into something usable from outside
+this repo, and amortise the `Bridge.init()` cost across many
+renders. Compilation-form options (Wasm, Kotlin/Native, GraalVM
+native-image) are all blocked by layoutlib being JVM Android
+bytecode — the perf wins live in **how the JVM is reused**, not
+in eliminating it. See [`docs/phase-5.md`](docs/phase-5.md) for
+the full plan and the blocked-options reasoning.
+
+| # | Item | Status |
+| --- | --- | --- |
+| 1 | `--batch <manifest.json>` CLI mode | ✅ one JVM, N renders, bootstrap cached per `DeviceProfile`. 3-entry × 2-device sanity check: 1.7 s wall vs ~15 s for separate invocations (~9× speedup). Default stays one-shot. |
+| 2 | Gradle plugin | ⏳ separate `renderer-plugin` module, declarative matrix DSL, depends on a capture task that runs the JS harness |
+| 3 | npm CLI wrapper | ⏳ thin Node CLI; JVM bundling (jlink vs system Java 17+) + platform-specific native lib distribution open |
+| 4 | Persistent daemon (`serve` mode) | ⏳ deferred — `--batch` covers the matrix / CI case without daemon machinery. Build when a single-fixture rapid-iteration workflow demands it. |
+| 5 | Snapshot-diff tooling integration | ⏳ pixel-diff + side-by-side HTML, or wire into existing tools (Reg-suit / Percy / Chromatic) |
+| 6 | Adoption docs + failure modes | ⏳ once steps 1–5 stabilise |

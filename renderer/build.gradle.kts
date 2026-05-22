@@ -171,6 +171,20 @@ tasks.test {
     System.getProperty("renderer.record")?.let { systemProperty("renderer.record", it) }
 }
 
+// Same native-lib + layoutlib-data plumbing as `tasks.test`, but for
+// `gradle :renderer:run` — without these the CLI fails on `Bridge.init()`
+// with "System property 'layoutlib.data' not set". Tests historically
+// went first so this gap was invisible; surfaced when wiring up
+// `--batch` for one-shot / matrix CLI runs outside the test harness.
+tasks.named<JavaExec>("run") {
+    dependsOn(extractLayoutlib)
+    val layoutlibNativeDir = layoutlibDataDir.resolve("data/$nativeLibSubdir/lib64")
+    systemProperty("java.library.path",
+        listOf(yogaBuildDir, layoutlibNativeDir).joinToString(File.pathSeparator))
+    systemProperty("layoutlib.data", layoutlibDataDir.resolve("data").absolutePath)
+    systemProperty("layoutlib.resources", layoutlibDataDir.resolve("layoutlib-resources").absolutePath)
+}
+
 dependencies {
     implementation(libs.gson)
     implementation(libs.layoutlib.api)
