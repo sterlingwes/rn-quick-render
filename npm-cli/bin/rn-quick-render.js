@@ -24,30 +24,24 @@ const os = require("os");
 const path = require("path");
 
 const PKG_ROOT = path.resolve(__dirname, "..");
-const DIST = path.join(PKG_ROOT, "dist");
-const LIB_DIR = path.join(DIST, "lib");
-const LAYOUTLIB_DATA = path.join(DIST, "layoutlib-data", "data");
-const LAYOUTLIB_RESOURCES = path.join(DIST, "layoutlib-resources");
-const NATIVE_DIR = path.join(DIST, "native");
-const BUILD_INFO = path.join(DIST, "build-info.json");
 const MAIN_CLASS = "com.example.renderer.MainKt";
 const MIN_JAVA_MAJOR = 17;
 
 main();
 
 function main() {
-  ensureDistStaged();
+  const dist = resolveDist();
   const java = resolveJava();
   ensureJavaMajor(java, MIN_JAVA_MAJOR);
   const platformSubdir = pickPlatformSubdir();
-  const libPath = composeLibraryPath(platformSubdir);
-  const classpath = composeClasspath();
+  const libPath = composeLibraryPath(dist, platformSubdir);
+  const classpath = composeClasspath(dist);
 
   const jvmArgs = [
     "-cp", classpath,
     `-Djava.library.path=${libPath}`,
-    `-Dlayoutlib.data=${LAYOUTLIB_DATA}`,
-    `-Dlayoutlib.resources=${LAYOUTLIB_RESOURCES}`,
+    `-Dlayoutlib.data=${path.join(dist, "layoutlib-data", "data")}`,
+    `-Dlayoutlib.resources=${path.join(dist, "layoutlib-resources")}`,
     MAIN_CLASS,
     ...process.argv.slice(2),
   ];
@@ -63,15 +57,25 @@ function main() {
   });
 }
 
-function ensureDistStaged() {
-  if (!fs.existsSync(BUILD_INFO)) {
-    console.error(
-      "rn-quick-render: package is missing its staged runtime " +
-        `(${BUILD_INFO} not found). If you're running from a development ` +
-        "checkout, run `./gradlew :renderer:packageForNpm` first.",
-    );
-    process.exit(1);
-  }
+// Find the staged dist directory. Production npm packages publish
+// `dist/`; dev builds emit `dist-<platform>/` so multiple cross-target
+// builds can coexist. Look at the runtime host's per-target dir first;
+// fall back to a plain `dist/` (the published layout).
+function resolveDist() {
+  const host = pickPlatformSubdir();
+  const perTarget = path.join(PKG_ROOT, `dist-${host}`);
+  if (fs.existsSync(path.join(perTarget, "build-info.json"))) return perTarget;
+
+  const generic = path.join(PKG_ROOT, "dist");
+  if (fs.existsSync(path.join(generic, "build-info.json"))) return generic;
+
+  console.error(
+    "rn-quick-render: package is missing its staged runtime. " +
+      `Looked for ${perTarget} and ${generic}. If you're running from a ` +
+      "development checkout, run `./gradlew :renderer:packageForNpm` " +
+      `(or \`-Ptarget=linux\` etc. for a cross-target stage).`,
+  );
+  process.exit(1);
 }
 
 function resolveJava() {
@@ -128,38 +132,41 @@ function pickPlatformSubdir() {
   return "linux";
 }
 
-function composeLibraryPath(platformSubdir) {
-  const layoutlibNative = path.join(LAYOUTLIB_DATA, platformSubdir, "lib64");
+function composeLibraryPath(dist, platformSubdir) {
+  const layoutlibNative = path.join(dist, "layoutlib-data", "data", platformSubdir, "lib64");
   if (!fs.existsSync(layoutlibNative)) {
-    // Single-platform package staged for a different host. Surface a
-    // clear error rather than letting JVM produce "library not found".
-    const buildInfo = readBuildInfo();
+    // Staged package's native libs don't match the runtime host.
+    // Surface clearly rather than letting JVM produce "library not found".
+    const buildInfo = readBuildInfo(dist);
     console.error(
       `rn-quick-render: this package was staged for "${buildInfo.platform}" ` +
         `but the current host is "${platformSubdir}". Re-run ` +
-        "`./gradlew :renderer:packageForNpm` on a matching host, or " +
-        "wait for the multi-platform package layout (phase 5).",
+        "`./gradlew :renderer:packageForNpm` (or `-Ptarget=<platform>`) " +
+        "for a matching host, or wait for the multi-platform package " +
+        "layout (phase 5 step 3b).",
     );
     process.exit(127);
   }
-  return [NATIVE_DIR, layoutlibNative].join(path.delimiter);
+  const nativeDir = path.join(dist, "native");
+  return [nativeDir, layoutlibNative].join(path.delimiter);
 }
 
-function composeClasspath() {
+function composeClasspath(dist) {
+  const libDir = path.join(dist, "lib");
   const jars = fs
-    .readdirSync(LIB_DIR)
+    .readdirSync(libDir)
     .filter((f) => f.endsWith(".jar"))
-    .map((j) => path.join(LIB_DIR, j));
+    .map((j) => path.join(libDir, j));
   if (jars.length === 0) {
-    console.error(`rn-quick-render: no jars found in ${LIB_DIR}. Re-stage with packageForNpm.`);
+    console.error(`rn-quick-render: no jars found in ${libDir}. Re-stage with packageForNpm.`);
     process.exit(1);
   }
   return jars.join(path.delimiter);
 }
 
-function readBuildInfo() {
+function readBuildInfo(dist) {
   try {
-    return JSON.parse(fs.readFileSync(BUILD_INFO, "utf8"));
+    return JSON.parse(fs.readFileSync(path.join(dist, "build-info.json"), "utf8"));
   } catch {
     return { platform: "unknown" };
   }

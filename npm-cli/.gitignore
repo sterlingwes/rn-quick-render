@@ -1,5 +1,7 @@
 # Gradle-populated runtime bundle. Not checked in — re-stage with
-# `./gradlew :renderer:packageForNpm`. When the package is published
-# to npm, `dist/` is included via the `files` array in package.json.
+# `./gradlew :renderer:packageForNpm` (host target) or `-Ptarget=linux`
+# (cross-target). When the package is published to npm, `dist*/` is
+# included via the `files` array in package.json.
 dist/
+dist-*/
 node_modules/

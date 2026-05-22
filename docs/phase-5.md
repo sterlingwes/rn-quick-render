@@ -158,12 +158,66 @@ constraint surfaces.
 - Java < 17 detection: spoofed `JAVA_HOME` pointing at a JDK 8 install → errors with "requires Java 17+, found 1.8.0_…".
 - Missing staged `dist/`: deleted the directory → wrapper errors with "package is missing its staged runtime" + the `gradle` command to fix.
 
+### Step 3a — Linux cross-target (✅ landed)
+
+Mac-arm hosts can now stage a linux-x64 npm bundle without
+needing a Linux machine. Pipeline:
+
+- `./gradlew :renderer:packageForNpm -Ptarget=linux` triggers
+  the `linux` target spec (a per-target `PackageTargetSpec`
+  selects the right Yoga build task, layoutlib extract task,
+  and output dir).
+- `layoutlibRuntimeLinux` configuration carries the
+  `org.gradle.native.operatingSystem=linux` /
+  `architecture=x86-64` attributes that resolve to the linux
+  variant of the per-OS `layoutlib-runtime` artefact, regardless
+  of build host.
+- `cmakeBuildLinux` task runs `docker run --platform linux/amd64`
+  against `rn-quick-render/yoga-linux:cmake-ubuntu22` — a small
+  Ubuntu 22.04 image with `cmake`, `g++`, and `openjdk-17-jdk`
+  baked in. The yoga source + project's CMakeLists are mounted
+  read-only at `/work` so the existing relative `../../yoga`
+  reference resolves; `libyoga.so` lands back on the host.
+- Output stages to `npm-cli/dist-linux/` (per-target dir so
+  cross-target builds don't stomp each other). The Node wrapper
+  detects the runtime host and looks for `dist-<host>/` first,
+  falling back to `dist/` for the published-package layout.
+
+Smoke test: built `dist-linux/` on mac-arm, then mounted it into
+a `node:20-bookworm-slim` + `openjdk-17-jre-headless` container
+and ran the wrapper against `blueskyOnboardingInterests.json`.
+PNG rendered cleanly, pixel-identical to the mac-arm render at
+the same fixture.
+
+Sizes (`dist-linux/`): 376 MB total, same shape as `dist-mac-arm/`.
+
+Gotchas captured along the way:
+
+- `openjdk-17-jdk-headless` strips AWT, but CMake's `FindJNI`
+  module insists on `JAVA_AWT_LIBRARY`. Costs ~80 MB image bloat
+  to use the full JDK — bypassing the FindJNI check would
+  require patching Yoga's CMakeLists and drifting from upstream.
+- The mounted yoga source path matters: `renderer/cmake/CMakeLists.txt`
+  uses `${CMAKE_CURRENT_SOURCE_DIR}/../../yoga`, so the container
+  needs the full repo root mounted at a single point (`/work`)
+  rather than `cmake/` and `yoga/` mounted separately.
+- Stale CMake build dirs blow up with "source does not match
+  the source used to generate cache" when the mount layout
+  changes. `packageForNpm` doesn't auto-clean its yoga build
+  dir — manual `rm -rf renderer/build/yoga-native-linux/` if
+  the layout shifts.
+
 ### Open
 
-- Multi-platform layout (3b)
-- Publish to npm (3c) — needs CI matrix that builds `dist/` on
-  mac-arm + mac-x64 + linux-x64 + win-x64 hosts and uploads each
-  as a per-platform package
+- Multi-platform layout (3b) — per-platform sub-packages with
+  `optionalDependencies`. Linux-x64 (just landed) + mac-arm +
+  mac-x64 + win-x64.
+- Publish to npm (3c) — needs CI matrix that runs
+  `packageForNpm -Ptarget=<each>` and uploads each as a
+  per-platform package.
+- linux-arm64 — layoutlib-runtime only ships x86_64 for linux,
+  so this would need a different layoutlib build entirely (out
+  of scope for now).
 
 ## Step 4 — daemon mode (⏳, deferred)
 

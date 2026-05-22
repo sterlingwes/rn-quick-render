@@ -24,7 +24,7 @@ distribution plan.
 | 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open. Latest fidelity fixes: Yoga `gap` / `rowGap` / `columnGap` plumbing, `textAlign` `TextView.gravity`, `marginLeft/Right: 'auto'`, `EXACTLY` measure-mode honor, shared `StyleFlattener` |
 | 3 | Render a real RN app screen (native-module shim + asset pipeline) | ✅ all 4 steps landed — four bsky-social-app fixtures ladder from primitive (Divider) → composite card (Admonition) → small form (PasswordUpdatedForm) → screen-sized onboarding step (StepInterests). Plan: [`docs/phase-3.md`](docs/phase-3.md) |
 | 4 | Device / theme matrix + perf | 🟡 steps 1 + 2b + 3 landed — device matrix (4 Android profiles); font-scale matrix (5 buckets bracketing iOS Dynamic Type + Android Font Size); theme matrix (light + dark driven by the platform `useColorScheme()` hook). RTL + perf + parallelization ahead. Plan: [`docs/phase-4.md`](docs/phase-4.md) |
-| 5 | Packaging (Gradle plugin + npm CLI) | 🟡 steps 1 + 3 landed — `--batch <manifest.json>` runs N renders in one warmed JVM (~9× wall-clock speedup); `npm-cli/` Node wrapper packages the JVM renderer for `npm install` consumption (single-platform, requires system Java 17+). Gradle plugin + daemon mode + multi-platform npm layout ahead. Plan: [`docs/phase-5.md`](docs/phase-5.md) |
+| 5 | Packaging (Gradle plugin + npm CLI) | 🟡 steps 1 + 3 + 3a landed — `--batch <manifest.json>` runs N renders in one warmed JVM (~9× wall-clock speedup); `npm-cli/` Node wrapper packages the JVM renderer for `npm install` consumption; Linux cross-target via Docker (`-Ptarget=linux`) builds linux-x64 bundles from any host. Gradle plugin + daemon mode + per-platform npm sub-packages ahead. Plan: [`docs/phase-5.md`](docs/phase-5.md) |
 
 ## Phase 0 — layoutlib validation (retrospective)
 
@@ -289,7 +289,8 @@ the full plan and the blocked-options reasoning.
 | --- | --- | --- |
 | 1 | `--batch <manifest.json>` CLI mode | ✅ one JVM, N renders, bootstrap cached per `DeviceProfile`. 3-entry × 2-device sanity check: 1.7 s wall vs ~15 s for separate invocations (~9× speedup). Default stays one-shot. |
 | 2 | Gradle plugin | ⏳ separate `renderer-plugin` module, declarative matrix DSL, depends on a capture task that runs the JS harness |
-| 3 | npm CLI wrapper | ✅ `npm-cli/` ships a thin Node wrapper that locates the staged runtime (jars + native libs + layoutlib data ~375 MB), validates JDK 17+, and execs Java. `./gradlew :renderer:packageForNpm` stages `npm-cli/dist/`. Single-platform per package; multi-platform via `optionalDependencies` is step 3b. |
+| 3 | npm CLI wrapper | ✅ `npm-cli/` ships a thin Node wrapper that locates the staged runtime (jars + native libs + layoutlib data ~375 MB), validates JDK 17+, and execs Java. `./gradlew :renderer:packageForNpm` stages `npm-cli/dist-<host>/`. |
+| 3a | Linux cross-target | ✅ `packageForNpm -Ptarget=linux` produces `dist-linux/` from any host via a Docker-based Yoga cross-build (`docker/yoga-linux.Dockerfile`) + the linux variant of layoutlib-runtime. Smoke-tested by running the wrapper inside a `node:20` + JDK 17 container; PNG renders pixel-identical to the mac-arm output. |
 | 4 | Persistent daemon (`serve` mode) | ⏳ deferred — `--batch` covers the matrix / CI case without daemon machinery. Build when a single-fixture rapid-iteration workflow demands it. |
 | 5 | Snapshot-diff tooling integration | ⏳ pixel-diff + side-by-side HTML, or wire into existing tools (Reg-suit / Percy / Chromatic) |
 | 6 | Adoption docs + failure modes | ⏳ once steps 1–5 stabilise |
