@@ -185,6 +185,71 @@ tasks.named<JavaExec>("run") {
     systemProperty("layoutlib.resources", layoutlibDataDir.resolve("layoutlib-resources").absolutePath)
 }
 
+// ---------------------------------------------------------------------------
+// npm-cli packaging (Phase 5 step 3)
+// ---------------------------------------------------------------------------
+// Populates `npm-cli/dist/` with everything the Node CLI wrapper needs
+// to spawn a working JVM:
+//   - dist/lib/*.jar       — fat-classpath dump (renderer + all deps)
+//   - dist/layoutlib-data/ — fonts, icu, keyboards, $platform/lib64/
+//   - dist/layoutlib-resources/ — framework XML resources
+//   - dist/native/         — built libyoga.{dylib|so|dll}
+//
+// Single-platform for now (whichever the build host is). Multi-platform
+// packaging will hook into npm's optionalDependencies pattern later —
+// one base package + per-platform sub-packages that ship only their
+// own native libs.
+val npmCliDir = rootProject.file("npm-cli/dist")
+
+val packageForNpm by tasks.registering(Copy::class) {
+    description = "Stage the renderer jars + native libs + layoutlib data for the npm CLI wrapper"
+    group = "distribution"
+    dependsOn(tasks.named("installDist"), extractLayoutlib, cmakeBuild)
+
+    val installRoot = layout.buildDirectory.dir("install/renderer").get().asFile
+
+    into(npmCliDir)
+
+    // 1. All classpath jars from installDist into dist/lib/
+    from(installRoot.resolve("lib")) {
+        into("lib")
+    }
+
+    // 2. layoutlib data (fonts/icu/keyboards + this-platform native libs)
+    from(layoutlibDataDir.resolve("data")) {
+        into("layoutlib-data/data")
+    }
+
+    // 3. layoutlib framework resources
+    from(layoutlibDataDir.resolve("layoutlib-resources")) {
+        into("layoutlib-resources")
+    }
+
+    // 4. Yoga native lib for the current platform
+    from(yogaBuildDir.resolve(libName)) {
+        into("native")
+    }
+
+    doFirst {
+        npmCliDir.deleteRecursively()
+    }
+
+    doLast {
+        // Stamp the package with build metadata so the CLI can surface
+        // it via `--version` / `--diagnostics` (TBD).
+        npmCliDir.resolve("build-info.json").writeText(
+            buildString {
+                append("{\n")
+                append("  \"platform\": \"${nativeLibSubdir}\",\n")
+                append("  \"yogaLib\": \"${libName}\",\n")
+                append("  \"buildTimeMs\": ${System.currentTimeMillis()}\n")
+                append("}\n")
+            }
+        )
+        println("[packageForNpm] staged → ${npmCliDir.absolutePath}")
+    }
+}
+
 dependencies {
     implementation(libs.gson)
     implementation(libs.layoutlib.api)

@@ -102,26 +102,68 @@ Open questions:
   task that runs the JS harness against the consumer's
   fixtures, with the snapshot task depending on it.
 
-## Step 3 — npm CLI wrapper (⏳)
+## Step 3 — npm CLI wrapper (🟡 first slice landed)
 
-The natural distribution target for React Native dev workflows.
-Ships a thin Node CLI that:
+Lives in [`npm-cli/`](../npm-cli/). A thin Node CLI that:
 
-- Locates or downloads a packaged JVM + the renderer jar
-- Forwards args to the same `Main.kt` entry point
-- Optionally manages a long-running JVM in step 4 (daemon mode)
+- Locates the staged jars + native libs + layoutlib data under
+  `dist/` (populated by `./gradlew :renderer:packageForNpm`)
+- Validates a JDK 17+ runtime is available (prefers `$JAVA_HOME`,
+  falls back to PATH), errors clearly if missing or too old
+- Composes the right `java.library.path` for the current
+  platform's native lib subdir
+- Forwards every CLI arg verbatim to the existing `Main.kt`
+  entry point (so `--batch`, `--fontScale`, etc. just work
+  through the wrapper)
 
-Open questions:
+### Decisions
 
-- JVM bundling strategy — `jlink` to ship a minimal JDK, or
-  require system Java 17+?
-- Native lib distribution — layoutlib's native libs are
-  platform-specific (mac-arm / mac / linux / win); pick at
-  install time or download lazily?
-- npm package layout — single `rn-quick-render` with platform
-  binaries inside, or platform sub-packages
-  (`@rn-quick-render/darwin-arm64` etc) the main package depends
-  on?
+- **System Java 17+, not bundled JDK.** A bundled JDK via `jlink`
+  would add ~30–50 MB on top of the already-large layoutlib
+  bundle; most RN devs targeting Android already have a JDK. The
+  CLI fails fast with a clear actionable error when missing
+  rather than silently degrading.
+- **Single-platform package for now.** `packageForNpm` stages
+  whichever native libs the build host has (currently `mac-arm`).
+  The wrapper detects the running host and errors clearly if
+  staged-platform ≠ host-platform. Multi-platform via npm's
+  `optionalDependencies` pattern (`@rn-quick-render/darwin-arm64`,
+  etc.) is a step 3b follow-up — esbuild / swc / esm follow this
+  layout and it scales cleanly.
+- **CLI args proxied unchanged.** Wrapping `--help` / `--version`
+  at the Node layer (so they don't pay JVM startup) is a future
+  ergonomic — the current path is "Node → java spawn" with zero
+  arg massaging, which keeps the contract tight.
+
+### Sizes
+
+| Component | Size |
+| --- | --- |
+| Total staged `dist/` | ~375 MB |
+| layoutlib-resources (framework XML) | ~113 MB |
+| Bundled fonts (Noto + Roboto family) | ~86 MB |
+| ICU data | ~27 MB |
+| Per-platform layoutlib native libs | ~15 MB |
+| Renderer + dep jars | ~25 MB |
+
+Future trimming candidates: subsetting Noto to common scripts
+saves ~70 MB; the framework resources XML is mostly drawables we
+don't render and could be pruned. Defer until a real distribution
+constraint surfaces.
+
+### Smoke tests (single host, mac-arm)
+
+- One-shot via wrapper: `cat fixture.json | rn-quick-render.js --output foo.png` → PNG written, ~5 s cold.
+- Batch via wrapper: 3 entries × 2 device profiles → 1.2 s wall (689 ms init + 242 ms render), same arithmetic as `:renderer:run` minus Gradle daemon overhead.
+- Java < 17 detection: spoofed `JAVA_HOME` pointing at a JDK 8 install → errors with "requires Java 17+, found 1.8.0_…".
+- Missing staged `dist/`: deleted the directory → wrapper errors with "package is missing its staged runtime" + the `gradle` command to fix.
+
+### Open
+
+- Multi-platform layout (3b)
+- Publish to npm (3c) — needs CI matrix that builds `dist/` on
+  mac-arm + mac-x64 + linux-x64 + win-x64 hosts and uploads each
+  as a per-platform package
 
 ## Step 4 — daemon mode (⏳, deferred)
 

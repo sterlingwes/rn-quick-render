@@ -1,0 +1,28 @@
+{
+  "name": "rn-quick-render",
+  "version": "0.1.0-prealpha.0",
+  "description": "Headless React Native snapshot rendering on the JVM, exposed as a Node CLI.",
+  "bin": {
+    "rn-quick-render": "bin/rn-quick-render.js"
+  },
+  "files": [
+    "bin/",
+    "dist/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "stage": "cd .. && ./gradlew :renderer:packageForNpm",
+    "smoke": "node bin/rn-quick-render.js --help || true"
+  },
+  "keywords": [
+    "react-native",
+    "snapshot",
+    "headless",
+    "layoutlib",
+    "yoga"
+  ],
+  "private": true
+}
