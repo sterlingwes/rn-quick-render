@@ -52,6 +52,11 @@ export function loadFabric(): FabricRuntime {
     (globalThis as any).nativeFabricUIManager = capture.manager;
     (globalThis as any).RN$Bridgeless = true;
     (globalThis as any).RN$stopSurface = undefined;
+    // React 19 gates `act()` on this flag. Concurrent-root fixtures call
+    // React.act to flush the scheduler between Suspense fallback and the
+    // resolved commit; synchronous fixtures don't touch act and are
+    // unaffected.
+    (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
     // Bridgeless mode routes callable-module registration through this
     // host-supplied global instead of BatchedBridge. AppRegistry calls
     // it at module load; without a stub, importing AppRegistry crashes.

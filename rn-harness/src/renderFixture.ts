@@ -1,3 +1,4 @@
+import { act } from "react";
 import { loadFabric, type FabricRuntime } from "./loadFabric";
 import type { MountInstruction } from "./types";
 
@@ -42,6 +43,61 @@ export function renderFrames(elements: unknown[]): RenderResult {
   }
   const instructions = rt.capture.instructions.slice();
   rt.ReactFabric.stopSurface(surfaceId);
+
+  return {
+    surfaceId,
+    instructions,
+  };
+}
+
+// Opt-in fixture shape for concurrent-root capture. `settle` is invoked
+// between the fallback commit and the resolved commit; it should resolve
+// any promises a Suspense-throwing hook is waiting on. React.act() pumps
+// the scheduler around both phases so the second completeRoot lands
+// inside the captured stream.
+export interface ConcurrentFixture {
+  type: "concurrent";
+  element: unknown;
+  settle?: () => Promise<void> | void;
+}
+
+export function isConcurrentFixture(x: unknown): x is ConcurrentFixture {
+  return (
+    typeof x === "object" &&
+    x !== null &&
+    (x as { type?: unknown }).type === "concurrent"
+  );
+}
+
+export async function renderConcurrent(
+  fixture: ConcurrentFixture,
+): Promise<RenderResult> {
+  const rt = ensureRuntime();
+  const surfaceId = nextSurfaceId++;
+
+  rt.capture.reset();
+  // Two-phase flush. The fallback commit needs to fully land (so React
+  // wires up the Suspense ping handler) before settle() resolves the
+  // suspended promise — otherwise the resolved commit is dropped. The
+  // trailing setImmediate inside the second act drains the
+  // MessageChannel-scheduled re-renders triggered by the ping so they
+  // don't leak past the act() boundary and warn.
+  await act(async () => {
+    rt.ReactFabric.render(fixture.element, surfaceId, null, true);
+  });
+  if (fixture.settle) {
+    await act(async () => {
+      await fixture.settle?.();
+      await new Promise<void>((resolve) => setImmediate(resolve));
+    });
+  }
+
+  const instructions = rt.capture.instructions.slice();
+  // stopSurface schedules an unmount; wrap it so the teardown work
+  // doesn't trip React's "update outside act" warning.
+  await act(async () => {
+    rt.ReactFabric.stopSurface(surfaceId);
+  });
 
   return {
     surfaceId,

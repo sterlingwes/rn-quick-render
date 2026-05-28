@@ -78,14 +78,26 @@ class YogaLayoutEngine(
         val (nodes, roots) = reconstructTree(instructions)
         val viewport = opts.width to opts.height
 
+        // Concurrent / Suspense streams emit multiple `completeRoot`s in a
+        // single capture, and earlier commits can leave stale parent→child
+        // edges that no longer reflect the final tree (e.g. a paragraph
+        // node referenced by both its original View and a later cloned
+        // View). Restrict every subsequent step to nodes reachable from
+        // the final-commit roots so those stale edges are ignored. Per the
+        // capture contract, last `completeRoot` wins.
+        val reachable = collectReachable(roots, nodes)
+
         // Parent map — `RCTText` doubles as both top-level paragraph (real
         // RN's lowering of `<Text>`) and a nested span (the host-element
         // DSL's `span()` helper). The distinguishing fact is the parent's
         // viewName, hence the lookup map. RCTVirtualText is unambiguously
         // a nested span (the real-RN name for inner spans).
-        val parentOf = HashMap<Int, Int>(nodes.size)
-        for (node in nodes.values) {
-            for (childId in node.children) parentOf[childId] = node.nodeId
+        val parentOf = HashMap<Int, Int>(reachable.size)
+        for (id in reachable) {
+            val node = nodes[id] ?: continue
+            for (childId in node.children) {
+                if (childId in reachable) parentOf[childId] = node.nodeId
+            }
         }
         fun isNestedSpan(n: Node): Boolean = when (n.viewName) {
             "RCTRawText", "RCTVirtualText" -> true
@@ -101,6 +113,7 @@ class YogaLayoutEngine(
         // + style runs into the parent paragraph's measure function.
         val yogaNodes = mutableMapOf<Int, YogaNode>()
         for (node in nodes.values) {
+            if (node.nodeId !in reachable) continue
             if (isNestedSpan(node)) continue
             val y = YogaNodeFactory.create()
             applyStyle(y, flattenedStyle(node))
@@ -145,6 +158,7 @@ class YogaLayoutEngine(
 
         // Wire parent→child relationships (skip text leaves — they own their layout via measureFunc).
         for (node in nodes.values) {
+            if (node.nodeId !in reachable) continue
             val y = yogaNodes[node.nodeId] ?: continue
             if (isTextLeaf(node.viewName)) continue
             node.children.forEachIndexed { idx, childId ->
@@ -252,6 +266,24 @@ class YogaLayoutEngine(
         val children: MutableList<Int> =
             if (keepChildren) source.children.toMutableList() else mutableListOf()
         nodes[id] = Node(id, source.viewName, mergedProps, children)
+    }
+
+    /**
+     * Walk children from the final-commit roots and return the set of
+     * reachable node ids. Stale parent→child edges from earlier commits
+     * (e.g. a node still referenced as a child of a pre-clone parent
+     * after a `cloneNodeWithNewChildren`) are excluded so they don't
+     * surface as bogus double-parenting at Yoga wire-up time.
+     */
+    private fun collectReachable(roots: List<Int>, nodes: Map<Int, Node>): Set<Int> {
+        val visited = HashSet<Int>(nodes.size)
+        val stack = ArrayDeque<Int>().also { it.addAll(roots) }
+        while (stack.isNotEmpty()) {
+            val id = stack.removeLast()
+            if (!visited.add(id)) continue
+            nodes[id]?.children?.let { stack.addAll(it) }
+        }
+        return visited
     }
 
     private fun mergeProps(base: JsonObject, diff: JsonObject?): JsonObject {

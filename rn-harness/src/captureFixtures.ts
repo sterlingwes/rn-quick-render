@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { loadRealRn, setColorScheme } from "./loadRealRn";
-import { renderFixture, renderFrames } from "./renderFixture";
+import { isConcurrentFixture, renderConcurrent, renderFixture, renderFrames } from "./renderFixture";
 
 const FIXTURES = [
   { name: "simpleView", path: "../fixtures/simpleView" },
@@ -22,6 +22,7 @@ const FIXTURES = [
   { name: "blueskyAdmonition", path: "../fixtures/realApp/bluesky-admonition" },
   { name: "blueskyPasswordUpdated", path: "../fixtures/realApp/bluesky-password-updated" },
   { name: "blueskyOnboardingInterests", path: "../fixtures/realApp/bluesky-onboarding-interests" },
+  { name: "suspendedText", path: "../fixtures/suspendedText" },
 ] as const;
 
 // Fixtures we also capture under non-default platform settings, so
@@ -38,7 +39,7 @@ const EXTRA_THEME_VARIANTS = [
   { suffix: "__dark", scheme: "dark" as const },
 ];
 
-function main() {
+async function main() {
   const outDir = path.resolve(__dirname, "..", "out");
   fs.mkdirSync(outDir, { recursive: true });
 
@@ -51,20 +52,20 @@ function main() {
   for (const { name, path: modulePath } of FIXTURES) {
     // Default light capture — every fixture, no suffix.
     setColorScheme("light");
-    captureOnce(name, "", modulePath, outDir);
+    await captureOnce(name, "", modulePath, outDir);
 
     // Extra per-theme captures for matrix-targeted fixtures.
     if (THEMED_FIXTURES.has(name)) {
       for (const variant of EXTRA_THEME_VARIANTS) {
         setColorScheme(variant.scheme);
-        captureOnce(name, variant.suffix, modulePath, outDir);
+        await captureOnce(name, variant.suffix, modulePath, outDir);
       }
       setColorScheme("light");
     }
   }
 }
 
-function captureOnce(name: string, suffix: string, modulePath: string, outDir: string) {
+async function captureOnce(name: string, suffix: string, modulePath: string, outDir: string) {
   // `require` caches the fixture's element on first call; subsequent
   // calls within the same process return the cached value. Theme
   // variants re-render that cached element under a different
@@ -72,12 +73,14 @@ function captureOnce(name: string, suffix: string, modulePath: string, outDir: s
   // `useTheme()` during render.
   const element = require(modulePath).default;
   const started = Date.now();
-  // An array default export means a multi-frame fixture: each frame
-  // is rendered into the same surface so the second and later
-  // produce clone* update ops.
-  const { surfaceId, instructions } = Array.isArray(element)
-    ? renderFrames(element)
-    : renderFixture(element);
+  // Dispatch by fixture shape: concurrent marker → renderConcurrent
+  // (async, pumps the scheduler); plain array → multi-frame
+  // renderFrames; single element → renderFixture.
+  const { surfaceId, instructions } = isConcurrentFixture(element)
+    ? await renderConcurrent(element)
+    : Array.isArray(element)
+      ? renderFrames(element)
+      : renderFixture(element);
   const elapsedMs = Date.now() - started;
 
   const outPath = path.join(outDir, `${name}${suffix}.json`);
@@ -86,4 +89,7 @@ function captureOnce(name: string, suffix: string, modulePath: string, outDir: s
   console.log(`[rn-harness] ${name}${suffix}: ${instructions.length} instructions, ${elapsedMs} ms → ${path.relative(process.cwd(), outPath)}`);
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

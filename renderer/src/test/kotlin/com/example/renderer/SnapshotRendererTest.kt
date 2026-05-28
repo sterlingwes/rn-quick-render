@@ -56,6 +56,7 @@ class SnapshotRendererTest {
     @Test fun blueskyAdmonition() = runFixture("blueskyAdmonition")
     @Test fun blueskyPasswordUpdated() = runFixture("blueskyPasswordUpdated")
     @Test fun blueskyOnboardingInterests() = runFixture("blueskyOnboardingInterests")
+    @Test fun suspendedText() = runFixture("suspendedText")
     @Test fun customFontText() = runFixture(
         "customFontText",
         fontRegistry = FontRegistry().registerFile(

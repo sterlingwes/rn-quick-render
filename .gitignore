@@ -7,6 +7,9 @@ out/
 !rn-harness/out/
 !rn-harness/out/*.json
 
+# Sibling repo writes here
+rn-harness/var/
+
 # Generated Paparazzi output (kept under version control via the runner artifacts, not here)
 **/src/test/snapshots/images/*.png.tmp
 

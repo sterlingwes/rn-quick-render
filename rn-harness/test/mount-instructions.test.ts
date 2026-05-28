@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { loadRealRn, setColorScheme } from "../src/loadRealRn";
-import { renderFixture, renderFrames } from "../src/renderFixture";
+import { isConcurrentFixture, renderConcurrent, renderFixture, renderFrames } from "../src/renderFixture";
 
 // Rendered in the same order as src/captureFixtures.ts so that Fabric's
 // internal react-tag counter lines up with the committed goldens. If you
@@ -34,6 +34,7 @@ const FIXTURES: Variant[] = [
   { name: "blueskyPasswordUpdated", modulePath: "../fixtures/realApp/bluesky-password-updated", scheme: "light", suffix: "" },
   { name: "blueskyOnboardingInterests", modulePath: "../fixtures/realApp/bluesky-onboarding-interests", scheme: "light", suffix: "" },
   { name: "blueskyOnboardingInterests", modulePath: "../fixtures/realApp/bluesky-onboarding-interests", scheme: "dark", suffix: "__dark" },
+  { name: "suspendedText", modulePath: "../fixtures/suspendedText", scheme: "light", suffix: "" },
 ];
 
 // Load RN once up front so `setColorScheme()` has the module to monkey-
@@ -46,12 +47,14 @@ beforeAll(() => {
 describe("Fabric mount instruction capture", () => {
   for (const { name, modulePath, scheme, suffix } of FIXTURES) {
     const fullName = `${name}${suffix}`;
-    test(`${fullName} matches golden`, () => {
+    test(`${fullName} matches golden`, async () => {
       setColorScheme(scheme);
       const element = require(modulePath).default;
-      const { surfaceId, instructions } = Array.isArray(element)
-        ? renderFrames(element)
-        : renderFixture(element);
+      const { surfaceId, instructions } = isConcurrentFixture(element)
+        ? await renderConcurrent(element)
+        : Array.isArray(element)
+          ? renderFrames(element)
+          : renderFixture(element);
 
       const goldenPath = path.resolve(__dirname, "..", "out", `${fullName}.json`);
       const golden = JSON.parse(fs.readFileSync(goldenPath, "utf8"));
