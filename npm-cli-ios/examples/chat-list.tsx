@@ -63,9 +63,17 @@ function ChatRow({
   );
 }
 
+// flex:1 + paddingTop so the rows clear the iPhone status bar overlay.
 export default React.createElement(
   RCTView,
-  { style: { flexDirection: "column", backgroundColor: "#F5F5F5" } },
+  {
+    style: {
+      flex: 1,
+      flexDirection: "column",
+      backgroundColor: "#F5F5F5",
+      paddingTop: 80,
+    },
+  },
   React.createElement(ChatRow, {
     name: "Jane Cooper",
     message: "Hey, did you see the latest renders?",

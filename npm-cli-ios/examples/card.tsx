@@ -43,8 +43,14 @@ function Card({ status, title, subtitle }: { status: string; title: string; subt
   );
 }
 
-export default React.createElement(Card, {
-  status: "success",
-  title: "Deploy #1847",
-  subtitle: "Succeeded · 3m ago · main branch",
-});
+// Wrap in a flex:1 screen container with a non-white background + top
+// padding so the white card stands out and clears the status bar overlay.
+export default React.createElement(
+  RCTView,
+  { style: { flex: 1, backgroundColor: "#F5F5F5", paddingTop: 80 } },
+  React.createElement(Card, {
+    status: "success",
+    title: "Deploy #1847",
+    subtitle: "Succeeded · 3m ago · main branch",
+  }),
+);
