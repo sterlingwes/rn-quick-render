@@ -1,0 +1,38 @@
+{
+  "name": "rn-quick-render-ios",
+  "version": "0.1.0-prealpha.0",
+  "description": "iOS Fabric snapshot CLI. Captures via rn-harness, renders by POSTing to an rn-ios-render-server instance over HTTP.",
+  "bin": {
+    "rn-quick-render-ios": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "scripts/",
+    "examples/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "typecheck": "tsc -p . --noEmit",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "pixelmatch": "^7.2.0",
+    "pngjs": "^7.0.0",
+    "rn-harness": "file:../rn-harness",
+    "ts-node": "10.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pngjs": "^6.0.5",
+    "@types/react": "^19.2.2",
+    "react": "^19.2.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "private": true
+}
