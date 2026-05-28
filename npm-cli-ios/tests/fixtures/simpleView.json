@@ -1,0 +1,36 @@
+{
+  "fixture": "simpleView",
+  "surfaceId": 11,
+  "instructionCount": 4,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 2,
+      "viewName": "RCTView",
+      "surfaceId": 11,
+      "props": {
+        "style": {
+          "width": 320,
+          "height": 120,
+          "backgroundColor": "#3F51B5"
+        },
+        "testID": "simple-view"
+      }
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 1
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 11,
+      "childSetId": 1
+    }
+  ]
+}

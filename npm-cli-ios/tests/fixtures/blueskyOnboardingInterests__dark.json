@@ -1,0 +1,3012 @@
+{
+  "fixture": "blueskyOnboardingInterests__dark",
+  "surfaceId": 29,
+  "instructionCount": 226,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 588,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Step 2 of 4"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 590,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "fontSize": 14,
+                "letterSpacing": 0
+              },
+              {
+                "fontWeight": "500"
+              },
+              {
+                "color": "#9AA5B8"
+              }
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 592,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "What are your interests?"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 4,
+      "tag": 594,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "fontSize": 26,
+                "letterSpacing": 0
+              },
+              {
+                "fontWeight": "700"
+              },
+              {
+                "lineHeight": 18
+              },
+              null
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 3
+    },
+    {
+      "op": "createNode",
+      "nodeId": 5,
+      "tag": 596,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "We'll use this to help customize your experience."
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 6,
+      "tag": 598,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "fontSize": 16,
+                "letterSpacing": 0
+              },
+              {
+                "lineHeight": 18
+              },
+              {
+                "color": "#9AA5B8"
+              },
+              null
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 6,
+      "childNodeId": 5
+    },
+    {
+      "op": "createNode",
+      "nodeId": 7,
+      "tag": 600,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Animals"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 8,
+      "tag": 602,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 8,
+      "childNodeId": 7
+    },
+    {
+      "op": "createNode",
+      "nodeId": 9,
+      "tag": 604,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 9,
+      "childNodeId": 8
+    },
+    {
+      "op": "createNode",
+      "nodeId": 10,
+      "tag": 606,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 10,
+      "childNodeId": 9
+    },
+    {
+      "op": "createNode",
+      "nodeId": 11,
+      "tag": 608,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Art"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 12,
+      "tag": 610,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              [
+                {
+                  "color": "#16202F"
+                }
+              ]
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 12,
+      "childNodeId": 11
+    },
+    {
+      "op": "createNode",
+      "nodeId": 13,
+      "tag": 612,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          [
+            {
+              "backgroundColor": "#F4F5F8"
+            }
+          ],
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 13,
+      "childNodeId": 12
+    },
+    {
+      "op": "createNode",
+      "nodeId": 14,
+      "tag": 614,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 14,
+      "childNodeId": 13
+    },
+    {
+      "op": "createNode",
+      "nodeId": 15,
+      "tag": 616,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Books"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 16,
+      "tag": 618,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 16,
+      "childNodeId": 15
+    },
+    {
+      "op": "createNode",
+      "nodeId": 17,
+      "tag": 620,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 16
+    },
+    {
+      "op": "createNode",
+      "nodeId": 18,
+      "tag": 622,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 18,
+      "childNodeId": 17
+    },
+    {
+      "op": "createNode",
+      "nodeId": 19,
+      "tag": 624,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Comedy"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 20,
+      "tag": 626,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 20,
+      "childNodeId": 19
+    },
+    {
+      "op": "createNode",
+      "nodeId": 21,
+      "tag": 628,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 21,
+      "childNodeId": 20
+    },
+    {
+      "op": "createNode",
+      "nodeId": 22,
+      "tag": 630,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 22,
+      "childNodeId": 21
+    },
+    {
+      "op": "createNode",
+      "nodeId": 23,
+      "tag": 632,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Comics"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 24,
+      "tag": 634,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 24,
+      "childNodeId": 23
+    },
+    {
+      "op": "createNode",
+      "nodeId": 25,
+      "tag": 636,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 25,
+      "childNodeId": 24
+    },
+    {
+      "op": "createNode",
+      "nodeId": 26,
+      "tag": 638,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 26,
+      "childNodeId": 25
+    },
+    {
+      "op": "createNode",
+      "nodeId": 27,
+      "tag": 640,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Culture"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 28,
+      "tag": 642,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 28,
+      "childNodeId": 27
+    },
+    {
+      "op": "createNode",
+      "nodeId": 29,
+      "tag": 644,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 29,
+      "childNodeId": 28
+    },
+    {
+      "op": "createNode",
+      "nodeId": 30,
+      "tag": 646,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 30,
+      "childNodeId": 29
+    },
+    {
+      "op": "createNode",
+      "nodeId": 31,
+      "tag": 648,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Software Dev"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 32,
+      "tag": 650,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 32,
+      "childNodeId": 31
+    },
+    {
+      "op": "createNode",
+      "nodeId": 33,
+      "tag": 652,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 33,
+      "childNodeId": 32
+    },
+    {
+      "op": "createNode",
+      "nodeId": 34,
+      "tag": 654,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 34,
+      "childNodeId": 33
+    },
+    {
+      "op": "createNode",
+      "nodeId": 35,
+      "tag": 656,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Education"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 36,
+      "tag": 658,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 36,
+      "childNodeId": 35
+    },
+    {
+      "op": "createNode",
+      "nodeId": 37,
+      "tag": 660,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 37,
+      "childNodeId": 36
+    },
+    {
+      "op": "createNode",
+      "nodeId": 38,
+      "tag": 662,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 38,
+      "childNodeId": 37
+    },
+    {
+      "op": "createNode",
+      "nodeId": 39,
+      "tag": 664,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Finance"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 40,
+      "tag": 666,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 40,
+      "childNodeId": 39
+    },
+    {
+      "op": "createNode",
+      "nodeId": 41,
+      "tag": 668,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 41,
+      "childNodeId": 40
+    },
+    {
+      "op": "createNode",
+      "nodeId": 42,
+      "tag": 670,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 42,
+      "childNodeId": 41
+    },
+    {
+      "op": "createNode",
+      "nodeId": 43,
+      "tag": 672,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Food"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 44,
+      "tag": 674,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 44,
+      "childNodeId": 43
+    },
+    {
+      "op": "createNode",
+      "nodeId": 45,
+      "tag": 676,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 45,
+      "childNodeId": 44
+    },
+    {
+      "op": "createNode",
+      "nodeId": 46,
+      "tag": 678,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 46,
+      "childNodeId": 45
+    },
+    {
+      "op": "createNode",
+      "nodeId": 47,
+      "tag": 680,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Video Games"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 48,
+      "tag": 682,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 48,
+      "childNodeId": 47
+    },
+    {
+      "op": "createNode",
+      "nodeId": 49,
+      "tag": 684,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 49,
+      "childNodeId": 48
+    },
+    {
+      "op": "createNode",
+      "nodeId": 50,
+      "tag": 686,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 50,
+      "childNodeId": 49
+    },
+    {
+      "op": "createNode",
+      "nodeId": 51,
+      "tag": 688,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Journalism"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 52,
+      "tag": 690,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 52,
+      "childNodeId": 51
+    },
+    {
+      "op": "createNode",
+      "nodeId": 53,
+      "tag": 692,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 53,
+      "childNodeId": 52
+    },
+    {
+      "op": "createNode",
+      "nodeId": 54,
+      "tag": 694,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 54,
+      "childNodeId": 53
+    },
+    {
+      "op": "createNode",
+      "nodeId": 55,
+      "tag": 696,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Movies"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 56,
+      "tag": 698,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 56,
+      "childNodeId": 55
+    },
+    {
+      "op": "createNode",
+      "nodeId": 57,
+      "tag": 700,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 57,
+      "childNodeId": 56
+    },
+    {
+      "op": "createNode",
+      "nodeId": 58,
+      "tag": 702,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 58,
+      "childNodeId": 57
+    },
+    {
+      "op": "createNode",
+      "nodeId": 59,
+      "tag": 704,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Music"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 60,
+      "tag": 706,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              [
+                {
+                  "color": "#16202F"
+                }
+              ]
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 60,
+      "childNodeId": 59
+    },
+    {
+      "op": "createNode",
+      "nodeId": 61,
+      "tag": 708,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          [
+            {
+              "backgroundColor": "#F4F5F8"
+            }
+          ],
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 61,
+      "childNodeId": 60
+    },
+    {
+      "op": "createNode",
+      "nodeId": 62,
+      "tag": 710,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 62,
+      "childNodeId": 61
+    },
+    {
+      "op": "createNode",
+      "nodeId": 63,
+      "tag": 712,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Nature"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 64,
+      "tag": 714,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 64,
+      "childNodeId": 63
+    },
+    {
+      "op": "createNode",
+      "nodeId": 65,
+      "tag": 716,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 65,
+      "childNodeId": 64
+    },
+    {
+      "op": "createNode",
+      "nodeId": 66,
+      "tag": 718,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 66,
+      "childNodeId": 65
+    },
+    {
+      "op": "createNode",
+      "nodeId": 67,
+      "tag": 720,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "News"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 68,
+      "tag": 722,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 68,
+      "childNodeId": 67
+    },
+    {
+      "op": "createNode",
+      "nodeId": 69,
+      "tag": 724,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 69,
+      "childNodeId": 68
+    },
+    {
+      "op": "createNode",
+      "nodeId": 70,
+      "tag": 726,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 70,
+      "childNodeId": 69
+    },
+    {
+      "op": "createNode",
+      "nodeId": 71,
+      "tag": 728,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Pets"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 72,
+      "tag": 730,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 72,
+      "childNodeId": 71
+    },
+    {
+      "op": "createNode",
+      "nodeId": 73,
+      "tag": 732,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 73,
+      "childNodeId": 72
+    },
+    {
+      "op": "createNode",
+      "nodeId": 74,
+      "tag": 734,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 74,
+      "childNodeId": 73
+    },
+    {
+      "op": "createNode",
+      "nodeId": 75,
+      "tag": 736,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Photography"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 76,
+      "tag": 738,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              [
+                {
+                  "color": "#16202F"
+                }
+              ]
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 76,
+      "childNodeId": 75
+    },
+    {
+      "op": "createNode",
+      "nodeId": 77,
+      "tag": 740,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          [
+            {
+              "backgroundColor": "#F4F5F8"
+            }
+          ],
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 77,
+      "childNodeId": 76
+    },
+    {
+      "op": "createNode",
+      "nodeId": 78,
+      "tag": 742,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 78,
+      "childNodeId": 77
+    },
+    {
+      "op": "createNode",
+      "nodeId": 79,
+      "tag": 744,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Politics"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 80,
+      "tag": 746,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 80,
+      "childNodeId": 79
+    },
+    {
+      "op": "createNode",
+      "nodeId": 81,
+      "tag": 748,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 81,
+      "childNodeId": 80
+    },
+    {
+      "op": "createNode",
+      "nodeId": 82,
+      "tag": 750,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 82,
+      "childNodeId": 81
+    },
+    {
+      "op": "createNode",
+      "nodeId": 83,
+      "tag": 752,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Science"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 84,
+      "tag": 754,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 84,
+      "childNodeId": 83
+    },
+    {
+      "op": "createNode",
+      "nodeId": 85,
+      "tag": 756,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 85,
+      "childNodeId": 84
+    },
+    {
+      "op": "createNode",
+      "nodeId": 86,
+      "tag": 758,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 86,
+      "childNodeId": 85
+    },
+    {
+      "op": "createNode",
+      "nodeId": 87,
+      "tag": 760,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Sports"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 88,
+      "tag": 762,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 88,
+      "childNodeId": 87
+    },
+    {
+      "op": "createNode",
+      "nodeId": 89,
+      "tag": 764,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 89,
+      "childNodeId": 88
+    },
+    {
+      "op": "createNode",
+      "nodeId": 90,
+      "tag": 766,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 90,
+      "childNodeId": 89
+    },
+    {
+      "op": "createNode",
+      "nodeId": 91,
+      "tag": 768,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Tech"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 92,
+      "tag": 770,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              [
+                {
+                  "color": "#16202F"
+                }
+              ]
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 92,
+      "childNodeId": 91
+    },
+    {
+      "op": "createNode",
+      "nodeId": 93,
+      "tag": 772,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          [
+            {
+              "backgroundColor": "#F4F5F8"
+            }
+          ],
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 93,
+      "childNodeId": 92
+    },
+    {
+      "op": "createNode",
+      "nodeId": 94,
+      "tag": 774,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 94,
+      "childNodeId": 93
+    },
+    {
+      "op": "createNode",
+      "nodeId": 95,
+      "tag": 776,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "TV"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 96,
+      "tag": 778,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 96,
+      "childNodeId": 95
+    },
+    {
+      "op": "createNode",
+      "nodeId": 97,
+      "tag": 780,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 97,
+      "childNodeId": 96
+    },
+    {
+      "op": "createNode",
+      "nodeId": 98,
+      "tag": 782,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 98,
+      "childNodeId": 97
+    },
+    {
+      "op": "createNode",
+      "nodeId": 99,
+      "tag": 784,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Writers"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 100,
+      "tag": 786,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 24
+            },
+            {
+              "color": "#F4F5F8"
+            },
+            [
+              {
+                "color": "#F4F5F8"
+              },
+              {
+                "fontWeight": "600"
+              },
+              {
+                "paddingTop": 2
+              },
+              {}
+            ]
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 100,
+      "childNodeId": 99
+    },
+    {
+      "op": "createNode",
+      "nodeId": 101,
+      "tag": 788,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "backgroundColor": "#16202F",
+            "paddingVertical": 15
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingLeft": 24,
+            "paddingRight": 24
+          },
+          {},
+          {},
+          {},
+          {},
+          {}
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 101,
+      "childNodeId": 100
+    },
+    {
+      "op": "createNode",
+      "nodeId": 102,
+      "tag": 790,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 102,
+      "childNodeId": 101
+    },
+    {
+      "op": "createNode",
+      "nodeId": 103,
+      "tag": 792,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "flexDirection": "row"
+          },
+          {
+            "gap": 12
+          },
+          {
+            "flexWrap": "wrap"
+          }
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 10
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 14
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 18
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 22
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 26
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 30
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 34
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 38
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 42
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 46
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 50
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 54
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 58
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 62
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 66
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 70
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 74
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 78
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 82
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 86
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 90
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 94
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 98
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 103,
+      "childNodeId": 102
+    },
+    {
+      "op": "createNode",
+      "nodeId": 104,
+      "tag": 794,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "width": "100%"
+          },
+          null
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 104,
+      "childNodeId": 103
+    },
+    {
+      "op": "createNode",
+      "nodeId": 105,
+      "tag": 796,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "width": "100%"
+          },
+          {
+            "paddingTop": 16
+          }
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 105,
+      "childNodeId": 104
+    },
+    {
+      "op": "createNode",
+      "nodeId": 106,
+      "tag": 798,
+      "viewName": "RCTRawText",
+      "surfaceId": 29,
+      "props": {
+        "text": "Continue"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 107,
+      "tag": 800,
+      "viewName": "RCTText",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          [
+            {
+              "color": "#FFFFFF"
+            },
+            {
+              "fontSize": 16,
+              "letterSpacing": 0
+            },
+            {
+              "lineHeight": 18
+            },
+            {
+              "fontWeight": "500"
+            },
+            {
+              "textAlign": "center"
+            },
+            null
+          ]
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 107,
+      "childNodeId": 106
+    },
+    {
+      "op": "createNode",
+      "nodeId": 108,
+      "tag": 802,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "flexDirection": "row"
+          },
+          {
+            "alignItems": "center"
+          },
+          {
+            "justifyContent": "center"
+          },
+          {
+            "backgroundColor": "#3D9BFF"
+          },
+          {
+            "borderRadius": 999
+          },
+          {
+            "paddingVertical": 12,
+            "paddingHorizontal": 24,
+            "gap": 6
+          },
+          null
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 108,
+      "childNodeId": 107
+    },
+    {
+      "op": "createNode",
+      "nodeId": 109,
+      "tag": 804,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {}
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 109,
+      "childNodeId": 108
+    },
+    {
+      "op": "createNode",
+      "nodeId": 110,
+      "tag": 806,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": [
+          {
+            "alignItems": "flex-start"
+          },
+          {
+            "gap": 8
+          }
+        ],
+        "testID": "onboardingInterests"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 110,
+      "childNodeId": 2
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 110,
+      "childNodeId": 4
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 110,
+      "childNodeId": 6
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 110,
+      "childNodeId": 105
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 110,
+      "childNodeId": 109
+    },
+    {
+      "op": "createNode",
+      "nodeId": 111,
+      "tag": 808,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": {
+          "flex": 1,
+          "backgroundColor": "#0B0F19",
+          "paddingTop": 56,
+          "paddingHorizontal": 20,
+          "paddingBottom": 40
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 111,
+      "childNodeId": 110
+    },
+    {
+      "op": "createNode",
+      "nodeId": 112,
+      "tag": 810,
+      "viewName": "RCTView",
+      "surfaceId": 29,
+      "props": {
+        "style": {
+          "flex": 1
+        },
+        "pointerEvents": "box-none"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 112,
+      "childNodeId": 111
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 112
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 29,
+      "childSetId": 1
+    }
+  ]
+}

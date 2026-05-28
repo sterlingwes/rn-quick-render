@@ -1,0 +1,11 @@
+{
+  "fixture": "blueskyDivider",
+  "config": "dark",
+  "rnVersion": "0.85.1",
+  "device": {
+    "name": "iPhone 15 Pro",
+    "osVersion": "17.4"
+  },
+  "appearance": "dark",
+  "threshold": 0.01
+}

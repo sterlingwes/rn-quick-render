@@ -1,0 +1,75 @@
+{
+  "fixture": "realRnHelloWorld",
+  "surfaceId": 22,
+  "instructionCount": 8,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 298,
+      "viewName": "RCTRawText",
+      "surfaceId": 22,
+      "props": {
+        "text": "Hello from real react-native"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 300,
+      "viewName": "RCTText",
+      "surfaceId": 22,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          {
+            "fontSize": 16,
+            "color": "#1A1A1A"
+          }
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 302,
+      "viewName": "RCTView",
+      "surfaceId": 22,
+      "props": {
+        "style": {
+          "padding": 16,
+          "backgroundColor": "#FFFFFF"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 3,
+      "childNodeId": 2
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 3
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 22,
+      "childSetId": 1
+    }
+  ]
+}

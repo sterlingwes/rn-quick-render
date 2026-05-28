@@ -1,0 +1,12 @@
+{
+  "fixture": "updateBadgeCount",
+  "config": "light.xxxl",
+  "rnVersion": "0.85.1",
+  "device": {
+    "name": "iPhone 15 Pro",
+    "osVersion": "17.4"
+  },
+  "appearance": "light",
+  "fontScale": 3.1,
+  "threshold": 0.01
+}

@@ -1,0 +1,349 @@
+{
+  "fixture": "imageTintAndAsset",
+  "surfaceId": 21,
+  "instructionCount": 36,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 264,
+      "viewName": "RCTRawText",
+      "surfaceId": 21,
+      "props": {
+        "text": "control (no tintColor)"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 266,
+      "viewName": "RCTParagraph",
+      "surfaceId": 21,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 268,
+      "viewName": "RCTImageView",
+      "surfaceId": 21,
+      "props": {
+        "source": {
+          "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg==",
+          "width": 64,
+          "height": 64,
+          "scale": 1,
+          "__packager_asset": true
+        },
+        "resizeMode": "contain",
+        "style": {
+          "width": 80,
+          "height": 80,
+          "backgroundColor": "#F0F0F0"
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 4,
+      "tag": 270,
+      "viewName": "RCTView",
+      "surfaceId": 21,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 2
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 3
+    },
+    {
+      "op": "createNode",
+      "nodeId": 5,
+      "tag": 272,
+      "viewName": "RCTRawText",
+      "surfaceId": 21,
+      "props": {
+        "text": "tintColor #E91E63"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 6,
+      "tag": 274,
+      "viewName": "RCTParagraph",
+      "surfaceId": 21,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 6,
+      "childNodeId": 5
+    },
+    {
+      "op": "createNode",
+      "nodeId": 7,
+      "tag": 276,
+      "viewName": "RCTImageView",
+      "surfaceId": 21,
+      "props": {
+        "source": {
+          "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg==",
+          "width": 64,
+          "height": 64,
+          "scale": 1,
+          "__packager_asset": true
+        },
+        "resizeMode": "contain",
+        "style": {
+          "width": 80,
+          "height": 80,
+          "backgroundColor": "#F0F0F0"
+        },
+        "tintColor": "#E91E63"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 8,
+      "tag": 278,
+      "viewName": "RCTView",
+      "surfaceId": 21,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 8,
+      "childNodeId": 6
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 8,
+      "childNodeId": 7
+    },
+    {
+      "op": "createNode",
+      "nodeId": 9,
+      "tag": 280,
+      "viewName": "RCTRawText",
+      "surfaceId": 21,
+      "props": {
+        "text": "tintColor rgba(0,0,0,0.5)"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 10,
+      "tag": 282,
+      "viewName": "RCTParagraph",
+      "surfaceId": 21,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 10,
+      "childNodeId": 9
+    },
+    {
+      "op": "createNode",
+      "nodeId": 11,
+      "tag": 284,
+      "viewName": "RCTImageView",
+      "surfaceId": 21,
+      "props": {
+        "source": {
+          "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg==",
+          "width": 64,
+          "height": 64,
+          "scale": 1,
+          "__packager_asset": true
+        },
+        "resizeMode": "contain",
+        "style": {
+          "width": 80,
+          "height": 80,
+          "backgroundColor": "#F0F0F0"
+        },
+        "tintColor": "rgba(0,0,0,0.5)"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 12,
+      "tag": 286,
+      "viewName": "RCTView",
+      "surfaceId": 21,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 12,
+      "childNodeId": 10
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 12,
+      "childNodeId": 11
+    },
+    {
+      "op": "createNode",
+      "nodeId": 13,
+      "tag": 288,
+      "viewName": "RCTRawText",
+      "surfaceId": 21,
+      "props": {
+        "text": "tintColor #1976D2 + cover"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 14,
+      "tag": 290,
+      "viewName": "RCTParagraph",
+      "surfaceId": 21,
+      "props": {
+        "style": {
+          "fontSize": 12,
+          "color": "#666666",
+          "marginBottom": 4
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 14,
+      "childNodeId": 13
+    },
+    {
+      "op": "createNode",
+      "nodeId": 15,
+      "tag": 292,
+      "viewName": "RCTImageView",
+      "surfaceId": 21,
+      "props": {
+        "source": {
+          "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAfElEQVR42u3QURHAIBBDQYRFBCKQWBGIQEQdlKmK+7jNzIuAHV/zjf9OUlaeWRYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGgFkHXKenfKAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAArQA67wKRiXh4i4zh2wAAAABJRU5ErkJggg==",
+          "width": 64,
+          "height": 64,
+          "scale": 1,
+          "__packager_asset": true
+        },
+        "resizeMode": "cover",
+        "style": {
+          "width": 80,
+          "height": 80,
+          "backgroundColor": "#F0F0F0"
+        },
+        "tintColor": "#1976D2"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 16,
+      "tag": 294,
+      "viewName": "RCTView",
+      "surfaceId": 21,
+      "props": {
+        "style": {
+          "marginBottom": 12
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 16,
+      "childNodeId": 14
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 16,
+      "childNodeId": 15
+    },
+    {
+      "op": "createNode",
+      "nodeId": 17,
+      "tag": 296,
+      "viewName": "RCTView",
+      "surfaceId": 21,
+      "props": {
+        "style": {
+          "padding": 16,
+          "backgroundColor": "#FFFFFF"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 4
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 8
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 12
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 17,
+      "childNodeId": 16
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 17
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 21,
+      "childSetId": 1
+    }
+  ]
+}
