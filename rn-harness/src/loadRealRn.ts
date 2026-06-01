@@ -35,6 +35,19 @@ import {
 export interface LoadRealRnOptions {
   /** Per-fixture native-module overrides; merged over the shim defaults. */
   nativeModules?: NativeModuleOverrides;
+  /**
+   * Enable the opt-in catch-all so any otherwise-unresolvable bare
+   * import resolves to a permissive proxy module instead of throwing.
+   * Sets `RN_HARNESS_AUTOMOCK_UNRESOLVED` for the rest of the process;
+   * the resolvers read it lazily per resolution, so it takes effect for
+   * any module the fixture requires *after* this call. The curated
+   * default-mock pack is always on and needs no flag.
+   *
+   * Caveat: the require hook is installed when this module is first
+   * imported, so to auto-mock something imported *before* loadRealRn
+   * runs, set the env var yourself before importing the harness.
+   */
+  autoMockUnresolved?: boolean;
 }
 
 export interface RealRnRuntime extends FabricRuntime {
@@ -71,6 +84,13 @@ function stubRequire(requestedId: string, replacement: unknown): void {
 }
 
 export function loadRealRn(opts: LoadRealRnOptions = {}): RealRnRuntime {
+  // Flip the catch-all on for the rest of the process. The resolvers
+  // read this env var lazily, so it applies to modules the fixture
+  // requires after this call (see LoadRealRnOptions.autoMockUnresolved).
+  if (opts.autoMockUnresolved) {
+    process.env.RN_HARNESS_AUTOMOCK_UNRESOLVED = "1";
+  }
+
   // Install the asset require hook so `require('./foo.png')` from a
   // fixture returns an Image-source object instead of trying to parse
   // a PNG as JS. No-op under Jest (handled via the transform map).

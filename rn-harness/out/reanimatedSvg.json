@@ -1,0 +1,177 @@
+{
+  "fixture": "reanimatedSvg",
+  "surfaceId": 31,
+  "instructionCount": 20,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 822,
+      "viewName": "RCTRawText",
+      "surfaceId": 31,
+      "props": {
+        "text": "curated mocks"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 824,
+      "viewName": "RCTText",
+      "surfaceId": 31,
+      "props": {
+        "style": [
+          {
+            "overflow": "hidden"
+          },
+          null
+        ],
+        "accessible": false,
+        "allowFontScaling": true,
+        "ellipsizeMode": "tail"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 2,
+      "childNodeId": 1
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 826,
+      "viewName": "RCTView",
+      "surfaceId": 31,
+      "props": {
+        "accessibilityLabel": "<mock:Circle>"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 4,
+      "tag": 828,
+      "viewName": "RCTView",
+      "surfaceId": 31,
+      "props": {
+        "accessibilityLabel": "<mock:Path>"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 5,
+      "tag": 830,
+      "viewName": "RCTView",
+      "surfaceId": 31,
+      "props": {
+        "accessibilityLabel": "<mock:Svg>",
+        "style": [
+          {
+            "width": 40,
+            "height": 40
+          },
+          null
+        ]
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 5,
+      "childNodeId": 3
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 5,
+      "childNodeId": 4
+    },
+    {
+      "op": "createNode",
+      "nodeId": 6,
+      "tag": 832,
+      "viewName": "RCTView",
+      "surfaceId": 31,
+      "props": {
+        "accessibilityLabel": "<mock:Animated.View>",
+        "style": {
+          "width": 80,
+          "height": 80,
+          "backgroundColor": "#EEEEEE"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 6,
+      "childNodeId": 5
+    },
+    {
+      "op": "createNode",
+      "nodeId": 7,
+      "tag": 834,
+      "viewName": "RCTView",
+      "surfaceId": 31,
+      "props": {
+        "style": {
+          "padding": 16,
+          "backgroundColor": "#FFFFFF"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 7,
+      "childNodeId": 2
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 7,
+      "childNodeId": 6
+    },
+    {
+      "op": "createNode",
+      "nodeId": 8,
+      "tag": 836,
+      "viewName": "RCTView",
+      "surfaceId": 31,
+      "props": {
+        "accessibilityLabel": "<mock:SafeAreaProvider>"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 8,
+      "childNodeId": 7
+    },
+    {
+      "op": "createNode",
+      "nodeId": 9,
+      "tag": 838,
+      "viewName": "RCTView",
+      "surfaceId": 31,
+      "props": {
+        "style": {
+          "flex": 1
+        },
+        "pointerEvents": "box-none"
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 9,
+      "childNodeId": 8
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 9
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 31,
+      "childSetId": 1
+    }
+  ]
+}

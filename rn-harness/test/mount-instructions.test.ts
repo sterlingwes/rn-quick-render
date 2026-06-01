@@ -35,6 +35,7 @@ const FIXTURES: Variant[] = [
   { name: "blueskyOnboardingInterests", modulePath: "../fixtures/realApp/bluesky-onboarding-interests", scheme: "light", suffix: "" },
   { name: "blueskyOnboardingInterests", modulePath: "../fixtures/realApp/bluesky-onboarding-interests", scheme: "dark", suffix: "__dark" },
   { name: "suspendedText", modulePath: "../fixtures/suspendedText", scheme: "light", suffix: "" },
+  { name: "reanimatedSvg", modulePath: "../fixtures/defaultMocks/reanimatedSvg", scheme: "light", suffix: "" },
 ];
 
 // Load RN once up front so `setColorScheme()` has the module to monkey-
