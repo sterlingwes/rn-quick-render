@@ -20,7 +20,7 @@
 // genuinely needs a module's behaviour, the test wrapper supplies it via
 // the overrides map.
 
-function deepNoopProxy(name: string = "stub"): any {
+export function deepNoopProxy(name: string = "stub"): any {
   const fn = function stub() {};
   return new Proxy(fn, {
     get(_, key) {

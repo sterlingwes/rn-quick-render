@@ -26,6 +26,10 @@
 const path = require("path");
 const fs = require("fs");
 
+// Shared curated/catch-all default-mock table — same source the plain-Node
+// resolver (src/babelRegister.ts) uses. See defaultMocks/registry.js.
+const { curatedOverride, catchAllOverride } = require("./defaultMocks/registry");
+
 const RN_ROOT = path.dirname(require.resolve("react-native/package.json"));
 const RN_PREFIX = RN_ROOT + path.sep;
 const ANDROID_EXTENSIONS = [".android.ts", ".android.tsx", ".android.js", ".android.jsx"];
@@ -124,20 +128,33 @@ module.exports = (request, options) => {
 
   // Step 1: real-app submodule overrides. These need to win before
   // anything else — mocked design-system imports must NOT fall
-  // through to a real file under the submodule.
+  // through to a real file under the submodule (and an explicit
+  // real-app mock wins over a curated default for the same package).
   const raOverride = realAppOverride(request, basedir);
   if (raOverride != null) return raOverride;
 
-  // Step 2: platform-aware resolution for relative requires inside RN.
+  // Step 2: curated default-mock pack (always on) — request-string
+  // match, importer-independent.
+  const curated = curatedOverride(request);
+  if (curated != null) return curated;
+
+  // Step 3: platform-aware resolution for relative requires inside RN.
   let resolved;
   if (basedir && basedir.startsWith(RN_PREFIX) && request.startsWith(".")) {
     resolved = tryAndroidVariants(request, options);
   }
   if (resolved == null) {
-    resolved = defaultResolver(request, options);
+    try {
+      resolved = defaultResolver(request, options);
+    } catch (err) {
+      // Step 4: opt-in catch-all for bare unresolvable imports.
+      const ca = catchAllOverride(request);
+      if (ca != null) return ca;
+      throw err;
+    }
   }
 
-  // Step 3: post-resolution stub redirects for the bridge surfaces.
+  // Step 5: post-resolution stub redirects for the bridge surfaces.
   const redirected = REDIRECTS.get(resolved);
   return redirected ?? resolved;
 };

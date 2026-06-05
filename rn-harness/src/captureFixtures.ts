@@ -23,6 +23,7 @@ const FIXTURES = [
   { name: "blueskyPasswordUpdated", path: "../fixtures/realApp/bluesky-password-updated" },
   { name: "blueskyOnboardingInterests", path: "../fixtures/realApp/bluesky-onboarding-interests" },
   { name: "suspendedText", path: "../fixtures/suspendedText" },
+  { name: "reanimatedSvg", path: "../fixtures/defaultMocks/reanimatedSvg" },
 ] as const;
 
 // Fixtures we also capture under non-default platform settings, so

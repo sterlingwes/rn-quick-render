@@ -33,6 +33,13 @@ const isJest = typeof process !== "undefined" && process.env.JEST_WORKER_ID !== 
 
 import { realAppResolverPaths, realAppOverrides } from "./realAppResolver";
 
+// Shared curated/catch-all default-mock table (plain CommonJS so the
+// Jest resolver can require the same source). See defaultMocks/registry.js.
+const { curatedOverride, catchAllOverride } = require("./defaultMocks/registry") as {
+  curatedOverride: (request: string) => string | null;
+  catchAllOverride: (request: string) => string | null;
+};
+
 if (!isJest) {
   const RN_ROOTS = [
     // Real RN under node_modules/react-native/**.
@@ -83,7 +90,9 @@ if (!isJest) {
 
     // 2. Real-app submodule resolution — handles tsconfig paths
     //    (`#/...`), explicit mocks, and falls back to harness's
-    //    node_modules for npm-style imports.
+    //    node_modules for npm-style imports. Consulted before the
+    //    curated pack so an explicit real-app mock wins over a curated
+    //    default for the same package.
     if (parent && typeof parent.filename === "string") {
       const ra = realAppOverrides(request, parent.filename, HARNESS_NODE_MODULES);
       if (ra) {
@@ -95,7 +104,28 @@ if (!isJest) {
       }
     }
 
-    return originalResolve.call(this, request, parent, ...rest);
+    // 3. Curated default-mock pack (always on) — request-string match,
+    //    importer-independent, for common third-party packages whose
+    //    native side throws at import time under Node.
+    const curated = curatedOverride(request);
+    if (curated) {
+      try {
+        return originalResolve.call(this, curated, parent, ...rest);
+      } catch {
+        /* fall through to default */
+      }
+    }
+
+    // 4. Default resolution. On failure, the opt-in catch-all routes a
+    //    bare unresolvable import to the permissive proxy module so a
+    //    real-app bundle keeps loading.
+    try {
+      return originalResolve.call(this, request, parent, ...rest);
+    } catch (err) {
+      const ca = catchAllOverride(request);
+      if (ca) return originalResolve.call(this, ca, parent, ...rest);
+      throw err;
+    }
   };
 
   require("@babel/register")({
