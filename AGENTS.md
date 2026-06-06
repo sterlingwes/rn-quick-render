@@ -1,6 +1,6 @@
 # AGENTS.md — rn-quick-render
 
-Headless React Native snapshot renderer. Captures Fabric mount instructions in Node (Phase 1), then paints them through Android's `layoutlib` to PNGs on a plain JVM (Phase 2). No emulator, no AGP, no Paparazzi.
+Headless React Native snapshot renderer. **One capture front-end, two render engines.** A shared Node harness (`rn-harness/`) captures Fabric mount instructions, then the resulting JSON fans out to either engine: the **Android engine** (`npm-cli/` + `renderer/`) paints it through Android's `layoutlib` to PNGs on a plain JVM, in-process (no emulator, no AGP, no Paparazzi); the **iOS engine** (`npm-cli-ios/`) POSTs it to an external `rn-ios-render-server` that renders on a real iOS simulator. The mount-instruction stream is the contract shared by both. See [`docs/roadmap.md`](docs/roadmap.md) for the two-engine model and the cross-track backlog.
 
 ## Essential commands
 
@@ -15,9 +15,16 @@ npm --prefix rn-harness run capture   # rewrite out/*.json from scratch
 ./gradlew :renderer:test -Drenderer.record=true  # overwrite committed PNG goldens
 ./gradlew :renderer:run --args="--output /tmp/out.png" -q  # CLI: stdin JSON → PNG
 
-# Phase 5 — npm CLI packaging
+# Phase 5 — npm CLI packaging (Android engine)
 ./gradlew :renderer:packageForNpm                        # stage for build host
 ./gradlew :renderer:packageForNpm -Ptarget=linux         # stage linux-x64 via Docker
+
+# iOS engine — capture + simulator render over HTTP
+export RN_QUICK_RENDER_IOS_SERVER=http://127.0.0.1:8080  # rn-ios-render-server
+export RN_QUICK_RENDER_IOS_API_KEY=<your-key>
+npm --prefix npm-cli-ios install                         # pulls rn-harness via file:../rn-harness
+npm-cli-ios/bin/run snapshot examples/card.tsx --out card.png   # capture + render
+npm-cli-ios/bin/run capture examples/card.tsx --out card.json   # capture JSON only
 ```
 
 ### Prerequisites
@@ -50,14 +57,25 @@ FabricViewBuilder → Android View tree (FrameLayout + absolute positioning)
 SnapshotRenderer → Bitmap → BufferedImage → PNG
 ```
 
-Two separate processes joined by JSON: Node captures, JVM renders. The instruction stream is the contract between them.
+The mount-instruction JSON forks to two render engines:
+
+```
+rn-harness/out/<fixture>.json   (shared contract)
+        │
+        ├─► Android engine (npm-cli/, renderer/): YogaLayoutEngine + layoutlib, in-process JVM → PNG
+        │
+        └─► iOS engine (npm-cli-ios/): POST /renders to rn-ios-render-server (HTTP) → simulator → PNG
+```
+
+Node always captures; the Android engine renders in-process on a plain JVM, while the iOS engine delegates to an external simulator server over HTTP. The instruction stream is the contract shared by capture and both engines.
 
 ## Repository layout
 
 | Path | Purpose |
 | --- | --- |
-| `rn-harness/` | Phase 1: Node-side Fabric capture. Fixtures, stubs, Jest tests, CLI. |
+| `rn-harness/` | Shared front-end: Node-side Fabric capture. Fixtures, stubs, default mocks, Jest tests, CLI. Feeds **both** render engines. |
 | `rn-harness/fixtures/` | Hand-written React component trees. Append new fixtures here. |
+| `rn-harness/src/defaultMocks/` | Default mock layer: curated placeholder mocks for heavy RN libs + a catch-all proxy, behind a shared `registry.js` consumed by both resolvers. |
 | `rn-harness/fixtures/realApp/` | Fixtures that import from `third_party/bluesky-social-app`. |
 | `rn-harness/out/` | Committed JSON goldens (mount instruction streams). |
 | `rn-harness/src/loadFabric.ts` | Boots Fabric in Node by stubbing `nativeFabricUIManager` + two RN internals via `require.cache`. |
@@ -70,7 +88,8 @@ Two separate processes joined by JSON: Node captures, JVM renders. The instructi
 | `renderer/src/test/snapshots/matrix/` | Device/font-scale/theme matrix PNGs. |
 | `renderer/cmake/` | CMake build for Yoga JNI (`libyoga.so` / `.dylib` / `.dll`). |
 | `renderer/docker/` | Dockerfile for linux-x64 cross-build of Yoga. |
-| `npm-cli/` | Phase 5: Node launcher (`bin/rn-quick-render.js`) that execs the staged JVM renderer. Per-platform payloads under `dist-mac-arm/` and `dist-linux/`, populated by `:renderer:packageForNpm`. |
+| `npm-cli/` | **Android engine** packaging: Node launcher (`bin/rn-quick-render.js`) that execs the staged JVM renderer. Per-platform payloads under `dist-mac-arm/` and `dist-linux/`, populated by `:renderer:packageForNpm`. |
+| `npm-cli-ios/` | **iOS engine**: CLI (`bin/run`) that captures via `rn-harness`, then POSTs the stream to an external `rn-ios-render-server` (HTTP) for simulator rendering. `src/serverClient.ts` is the API client; `tests/` holds the fidelity goldens. Pre-alpha; see `npm-cli-ios/README.md`. |
 | `yoga/` | Git submodule: facebook/yoga (C++ layout engine, JNI bindings). |
 | `third_party/bluesky-social-app/` | Git submodule: real RN app source for Phase 3 integration fixtures. |
 | `docs/` | Phase-by-phase design docs. Read these for rationale and scope decisions. |
@@ -148,6 +167,14 @@ If running outside Gradle (e.g. from IDE), these must be set manually or the `ex
 ### Theme variants
 
 Dark-mode captures are handled by `setColorScheme()` in `loadRealRn.ts`, which replaces the `useColorScheme` getter on the RN module. Themed fixtures write separate goldens with a `__dark` suffix (e.g., `blueskyOnboardingInterests__dark.json`).
+
+### Concurrent / multi-frame capture
+
+`renderFixture(element)` delegates to `renderFrames([element])` in `renderFixture.ts`. Multi-frame fixtures export an array of elements; concurrent/Suspense fixtures export a function (`isConcurrentFixture`). Each frame still commits with `concurrentRoot=false` for a deterministic synchronous stream — the `suspendedText` fixture exercises the Suspense path. **Known gap:** the iOS engine flattens multi-frame/concurrent captures to a single `instructions` array before POSTing (`npm-cli-ios/README.md`).
+
+### Default mock layer
+
+Pointing the harness at a real-app bundle no longer requires hand-writing a stub per heavy library. `rn-harness/src/defaultMocks/` ships a curated pack (always on) mapping request strings — reanimated, svg, gesture-handler, screens, safe-area-context, async-storage, netinfo, lottie, fast-image — to placeholder `<View>`s that flow through the normal mount stream, so **one mock serves both engines**. `RN_HARNESS_AUTOMOCK_UNRESOLVED=1` (or `loadRealRn`'s `autoMockUnresolved` option) opts into a catch-all proxy for any other unresolved bare import. The shared `registry.js` is consumed by both the plain-Node (`babelRegister`) and Jest (`jestRnResolver.js`) resolvers — don't duplicate the mapping.
 
 ## CI
 

@@ -1,30 +1,67 @@
 # rn-quick-render
 
-Headless React Native snapshot rendering on Linux. Phase 1 captures
-Fabric mount instructions in Node; Phase 2 paints them through Android's
-`layoutlib` to PNGs on a plain JVM (no Paparazzi, no AGP, no emulator).
+Headless React Native snapshot rendering. **One capture front-end, two
+render engines.** A shared Node harness (`rn-harness/`) boots Fabric
+outside an app and records the mount-instruction stream; that JSON then
+fans out to either render engine:
 
-See [`docs/explore-plan.md`](docs/explore-plan.md) for the full
+- **Android engine** (`npm-cli/`) — paints the stream through Android's
+  `layoutlib` to PNGs on a plain JVM, in-process, on Linux. No Paparazzi,
+  no AGP, no emulator. This is the path the numbered phases below built.
+- **iOS engine** (`npm-cli-ios/`) — POSTs the same stream to an external
+  [`rn-ios-render-server`](https://github.com/sterlingwes/rn-ios-render-server)
+  that renders on a real iOS simulator. Pre-alpha; the only coupling to
+  the backend is its HTTP API.
+
+The instruction stream is the contract between capture and both engines —
+see [`docs/roadmap.md`](docs/roadmap.md) for the two-engine model and the
+re-sequenced backlog across both tracks.
+
+See [`docs/explore-plan.md`](docs/explore-plan.md) for the original
 exploration plan, [`docs/phase-2-translator.md`](docs/phase-2-translator.md)
-for the current renderer design,
+for the Android renderer design,
 [`docs/phase-2.5.md`](docs/phase-2.5.md) for per-item fidelity status,
-[`docs/phase-3.md`](docs/phase-3.md) for what it'll take to render
+[`docs/phase-3.md`](docs/phase-3.md) for what it takes to render
 a screen from a real RN app, [`docs/phase-4.md`](docs/phase-4.md)
-for the device / theme / perf matrix, and
+for the device / theme / perf matrix,
 [`docs/phase-5.md`](docs/phase-5.md) for the packaging /
-distribution plan.
+distribution plan, and [`npm-cli-ios/README.md`](npm-cli-ios/README.md)
+for the iOS engine.
 
 ## Status at a glance
+
+The numbered phases below are the **Android engine** roadmap. The shared
+front-end and the iOS engine are tracked separately; see
+[`docs/roadmap.md`](docs/roadmap.md) for the cross-track sequencing.
+
+### Shared front-end (`rn-harness/`)
+
+| Capability | Status |
+| --- | --- |
+| Fabric mount-instruction capture in Node | ✅ 20 fixtures, CI green |
+| Real-app boot (`loadRealRn`) + 3-tier native-module shim | ✅ used by Phase 3 fixtures |
+| Concurrent / multi-frame capture (`renderFrames`, `suspendedText`) | ✅ landed — `concurrentRoot=false` per frame still gives synchronous commits, but multi-frame and Suspense-driven fixtures are now captured |
+| Default mock layer (curated pack + opt-in catch-all) | ✅ reanimated / svg / gesture-handler / screens / safe-area-context / async-storage / netinfo / lottie / fast-image render as placeholder Views; `RN_HARNESS_AUTOMOCK_UNRESOLVED` routes any other unresolved import to a permissive proxy. One mock serves both engines. |
+
+### Android engine (`npm-cli/`, `renderer/`)
 
 | Phase | What | Status |
 | --- | --- | --- |
 | 0 | Paparazzi validates layoutlib-on-Linux | ✅ done — retrospective only, module deleted |
-| 1 | Fabric mount-instruction capture in Node | ✅ 18 fixtures, CI green |
+| 1 | Fabric mount-instruction capture in Node | ✅ (now part of the shared front-end above) |
 | 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
 | 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open. Latest fidelity fixes: Yoga `gap` / `rowGap` / `columnGap` plumbing, `textAlign` `TextView.gravity`, `marginLeft/Right: 'auto'`, `EXACTLY` measure-mode honor, shared `StyleFlattener` |
 | 3 | Render a real RN app screen (native-module shim + asset pipeline) | ✅ all 4 steps landed — four bsky-social-app fixtures ladder from primitive (Divider) → composite card (Admonition) → small form (PasswordUpdatedForm) → screen-sized onboarding step (StepInterests). Plan: [`docs/phase-3.md`](docs/phase-3.md) |
 | 4 | Device / theme matrix + perf | 🟡 steps 1 + 2b + 3 landed — device matrix (4 Android profiles); font-scale matrix (5 buckets bracketing iOS Dynamic Type + Android Font Size); theme matrix (light + dark driven by the platform `useColorScheme()` hook). RTL + perf + parallelization ahead. Plan: [`docs/phase-4.md`](docs/phase-4.md) |
 | 5 | Packaging (Gradle plugin + npm CLI) | 🟡 steps 1 + 3 + 3a landed — `--batch <manifest.json>` runs N renders in one warmed JVM (~9× wall-clock speedup); `npm-cli/` Node wrapper packages the JVM renderer for `npm install` consumption; Linux cross-target via Docker (`-Ptarget=linux`) builds linux-x64 bundles from any host. Gradle plugin + daemon mode + per-platform npm sub-packages ahead. Plan: [`docs/phase-5.md`](docs/phase-5.md) |
+
+### iOS engine (`npm-cli-ios/`)
+
+| Capability | Status |
+| --- | --- |
+| CLI: capture / render / snapshot / matrix / diff | ✅ working against a running `rn-ios-render-server` |
+| Light / dark + xxxl font-scale fidelity goldens | ✅ committed under `npm-cli-ios/tests/goldens/` |
+| Overall maturity | 🟡 pre-alpha. Known gaps: multi-frame surfacing flattened to one `instructions` array; publish-time packaging (the `rn-harness` `file:` dep won't resolve for end users); DSL hand-copied from the harness. See [`docs/roadmap.md`](docs/roadmap.md). |
 
 ## Phase 0 — layoutlib validation (retrospective)
 
@@ -108,11 +145,15 @@ npm --prefix rn-harness run capture # rewrite out/*.json from scratch
   `StaticLayout`) — no longer the char-width approximation that the
   Phase 2 sketch started with.
 
-### Still open
+### Resolved after Phase 3
 
-- Add a concurrent-root fixture before Phase 3 — concurrent updates can
-  fragment the stream across multiple `completeRoot` calls and the Phase 1
-  stream assumes synchronous commits.
+- Concurrent-root capture landed (`support concurrent rendering`). The
+  harness now exposes `renderFrames()` and captures Suspense-driven
+  fixtures (`suspendedText`); each frame still commits synchronously
+  (`concurrentRoot=false`), so the stream stays deterministic. The
+  remaining gap is downstream: the iOS engine flattens multi-frame
+  captures to a single `instructions` array (see
+  [`docs/roadmap.md`](docs/roadmap.md)).
 
 ## Phase 2 — Fabric → layoutlib renderer
 
@@ -231,7 +272,7 @@ Per-item detail and findings live in
 | 5 | `transform` / `opacity` / `boxShadow` | ✅ + `ShadowProxyDrawable` for software-canvas blur approximation |
 | 6 | RTL | ⏳ Yoga root still hard-coded `DIRECTION_LTR` |
 | 7 | Custom font loading | ✅ `FontRegistry` + `SnapshotRenderer(fontRegistry=…)` + CLI `--fonts DIR` |
-| – | Concurrent-root capture | ⏳ Phase 1 stream still assumes synchronous commits |
+| – | Concurrent-root capture | ✅ `renderFrames()` + `suspendedText` fixture; per-frame synchronous commit preserved |
 
 ## Phase 3 — render one screen of a real RN app
 
@@ -294,3 +335,26 @@ the full plan and the blocked-options reasoning.
 | 4 | Persistent daemon (`serve` mode) | ⏳ deferred — `--batch` covers the matrix / CI case without daemon machinery. Build when a single-fixture rapid-iteration workflow demands it. |
 | 5 | Snapshot-diff tooling integration | ⏳ pixel-diff + side-by-side HTML, or wire into existing tools (Reg-suit / Percy / Chromatic) |
 | 6 | Adoption docs + failure modes | ⏳ once steps 1–5 stabilise |
+
+## iOS engine — simulator rendering over HTTP
+
+A second render engine that reuses the shared capture front-end. The
+`npm-cli-ios/` CLI captures a fixture to the same Fabric mount-instruction
+JSON (via `rn-harness`), then POSTs it to an external
+[`rn-ios-render-server`](https://github.com/sterlingwes/rn-ios-render-server)
+which renders on a real iOS simulator and returns a PNG. The only coupling
+to the backend is its HTTP API (`POST /renders`, `/assets`) — no shared
+filesystem or deploy artefacts.
+
+```bash
+export RN_QUICK_RENDER_IOS_SERVER=http://127.0.0.1:8080
+export RN_QUICK_RENDER_IOS_API_KEY=<your-key>
+npm-cli-ios/bin/run snapshot examples/card.tsx --out card.png
+```
+
+**Status:** pre-alpha. Capture / render / snapshot / matrix / diff all work
+against a running server, with light/dark + xxxl fidelity goldens committed
+under `npm-cli-ios/tests/`. Open work (multi-frame surfacing, publish-time
+packaging, keeping the DSL single-sourced with the harness) is tracked in
+[`npm-cli-ios/README.md`](npm-cli-ios/README.md) and
+[`docs/roadmap.md`](docs/roadmap.md).
