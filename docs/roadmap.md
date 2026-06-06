@@ -61,6 +61,36 @@ light/dark + xxxl fidelity goldens committed.
    the stream into `frames`) and have each engine emit one render per commit —
    so a Suspense fallback and its resolved state, or each step of an update,
    can be snapshotted individually.
+
+   **Design note (proposed, not yet built):**
+   - **Opt-in, single-frame by default.** The default stays "render the
+     terminal frame only" — back-compat (the server response shape, the
+     `--out file.png` semantics, and every committed golden assume one image),
+     cost (N commits = N× simulator work), and signal/noise (intermediate
+     frames like a Suspense fallback are often noisy) all argue against making
+     everyone pay. A render-time flag opts in. Wire-field naming is open
+     (`frames: "last" | "all"` vs a `multiFrame` boolean).
+   - **Capture format is unchanged.** `completeRoot` already delimits frames,
+     so opting in is purely a consumer concern — no new capture artifact.
+   - **Split server-side, reuse one surface.** Rather than the client POSTing N
+     copies of the instruction set, the engine replays incrementally and
+     snapshots after each `completeRoot`, reusing one warm surface (far cheaper
+     than N cold renders) and keeping the wire payload to a single instruction
+     set. The same split lives in one place per engine, symmetric across both.
+   - **Additive response.** Keep `url` / `width` / `height` meaning the terminal
+     frame (single-frame clients keep working); add an optional
+     `frames: [{ index, url, width, height }]` populated only when opted in.
+     `--out` stays a file by default, becomes a directory / pattern
+     (`out-0.png`, `out-1.png`) under multi-frame — `matrix.ts` already writes
+     to a directory, so there's precedent.
+   - **Always report a frame count.** Both engines return `frameCount` (the
+     number of distinct `completeRoot` commits they saw) on *every* render,
+     even single-frame ones. This makes multi-frame discoverable: a default
+     render of a 3-frame fixture can tell the user "3 frames available — re-run
+     with multi-frame to capture each," instead of silently dropping the other
+     two. Cheap to compute and engine-authoritative.
+   - **Open questions:** wire-field naming (`frames`/`multiFrame`); the
+     multi-frame output naming pattern.
 2. **Single-source the DSL.** `npm-cli-ios/src/dsl.ts` is a hand-copy of
    `rn-harness/fixtures/_dsl.ts`. Publish/extract the harness DSL so the iOS
    package imports it instead of drifting.
