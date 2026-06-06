@@ -9,8 +9,8 @@ fans out to either render engine:
   `layoutlib` to PNGs on a plain JVM, in-process, on Linux. No Paparazzi,
   no AGP, no emulator. This is the path the numbered phases below built.
 - **iOS engine** (`npm-cli-ios/`) — POSTs the same stream to an external
-  [`rn-ios-render-server`](https://github.com/sterlingwes/rn-ios-render-server)
-  that renders on a real iOS simulator. Pre-alpha; the only coupling to
+  `rn-ios-render-server` (a private companion service) that renders on a
+  real iOS simulator. Pre-alpha; the only coupling to
   the backend is its HTTP API.
 
 The instruction stream is the contract between capture and both engines —
@@ -341,8 +341,8 @@ the full plan and the blocked-options reasoning.
 A second render engine that reuses the shared capture front-end. The
 `npm-cli-ios/` CLI captures a fixture to the same Fabric mount-instruction
 JSON (via `rn-harness`), then POSTs it to an external
-[`rn-ios-render-server`](https://github.com/sterlingwes/rn-ios-render-server)
-which renders on a real iOS simulator and returns a PNG. The only coupling
+`rn-ios-render-server` (a private companion service) which renders on a
+real iOS simulator and returns a PNG. The only coupling
 to the backend is its HTTP API (`POST /renders`, `/assets`) — no shared
 filesystem or deploy artefacts.
 

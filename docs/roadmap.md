@@ -49,10 +49,18 @@ light/dark + xxxl fidelity goldens committed.
 ## What's next (re-sequenced, by track)
 
 ### Shared front-end
-1. **Multi-frame surfacing.** The iOS engine flattens multi-frame / concurrent
-   captures to a single `instructions` array before POSTing
-   (`npm-cli-ios/README.md`). Decide the wire representation for N frames so
-   both engines can consume animated / Suspense fixtures faithfully.
+1. **Multi-frame surfacing.** A "frame" is a Fabric commit, already delimited
+   in the captured stream by a `completeRoot` op (`rn-harness/src/types.ts`).
+   Capture supports multiple frames — explicit (`renderFrames([...])`) or
+   emergent (`renderConcurrent` emits a Suspense fallback commit then a
+   resolved commit). The gap is **consumer-side, not a capture-format
+   problem**: both engines replay the whole stream to the terminal child set
+   (each `completeRoot` replaces the surface's children, so the last one wins
+   → one image), and the iOS payload ships the flat `instructions` array as-is
+   (`npm-cli-ios/README.md`). The work is to split on `completeRoot` (or group
+   the stream into `frames`) and have each engine emit one render per commit —
+   so a Suspense fallback and its resolved state, or each step of an update,
+   can be snapshotted individually.
 2. **Single-source the DSL.** `npm-cli-ios/src/dsl.ts` is a hand-copy of
    `rn-harness/fixtures/_dsl.ts`. Publish/extract the harness DSL so the iOS
    package imports it instead of drifting.
