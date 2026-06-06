@@ -153,7 +153,17 @@ If all three look tractable → viable path. If #3 reveals that 80% of screens d
 
 ## Open questions
 
-- Target RN architecture (Fabric only, Paper only, both)?
+> **Note:** this is the original exploration doc. Two of the questions below
+> are now decided — annotated inline. The forward-looking backlog lives in
+> [`docs/roadmap.md`](roadmap.md).
+
+- ~~Target RN architecture (Fabric only, Paper only, both)?~~
+  **Decided: Fabric only** — the capture front-end is built entirely on the
+  Fabric mount-instruction stream.
+- ~~Whether to support iOS targets.~~ **Decided: two engines by design** —
+  Android (layoutlib, in-process) and iOS (simulator over HTTP via
+  `rn-ios-render-server`) share the `rn-harness` capture front-end. See
+  [`docs/roadmap.md`](roadmap.md).
 - Target Android API level for the layoutlib artifact?
 - How much divergence from real-device rendering is acceptable for "structural" tests? Need a concrete diff metric.
 - Is there a path where we skip layoutlib entirely and render through Skia + a hand-rolled minimal view system? Probably not worth it, but worth a day of thought.

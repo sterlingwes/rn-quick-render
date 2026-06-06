@@ -142,10 +142,14 @@ against goldens when Phase 2 starts pixel-diffing.
   that path.
 - **Event handler is registered once.** Per-event dispatch is out of scope
   for Phase 1 (we're not driving user input in Node).
-- **No concurrent-root work.** We render with `concurrentRoot=false` to get
-  a synchronous commit. In a real app, concurrent updates can fragment the
-  stream across multiple `completeRoot` calls. Worth adding a fixture for
-  Phase 2 if the translator has to handle interleaved commits.
+- **Concurrent-root capture landed (post-Phase-3).** We still render each
+  frame with `concurrentRoot=false` for a synchronous commit, but the
+  harness now exposes `renderFrames()` and captures Suspense-driven
+  fixtures — see `rn-harness/fixtures/suspendedText.ts`. Multi-frame
+  fixtures export an array of elements; concurrent fixtures export a
+  function. The remaining work is downstream: the iOS engine flattens
+  multi-frame captures to a single `instructions` array. See
+  [`docs/roadmap.md`](roadmap.md).
 
 ## Cross-references into RN source
 

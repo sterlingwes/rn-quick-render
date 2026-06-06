@@ -332,8 +332,12 @@ in Phase 4.
   `rn-harness/package.json` has. Locking a version range for Phase 3
   belongs in the first integration PR, once we know what the target
   repo uses.
-- Whether to support iOS targets. Everything here is Android-side via
-  layoutlib. iOS rendering is a Phase 5 / packaging concern.
+- ~~Whether to support iOS targets. Everything here is Android-side via
+  layoutlib. iOS rendering is a Phase 5 / packaging concern.~~
+  **Decided (post-Phase-3): yes — two engines by design.** iOS rendering
+  is now an active parallel engine (`npm-cli-ios/`) that reuses this same
+  capture front-end and POSTs the stream to an external simulator server,
+  rather than a packaging afterthought. See [`docs/roadmap.md`](roadmap.md).
 - A perf budget. Phase 4 handles the device / theme matrix and
   per-snapshot timing; on day one of Phase 3 it's fine if a capture
   takes 5 seconds.

@@ -2,8 +2,8 @@
 
 iOS Fabric snapshot CLI. Captures a React Native component fixture to a Fabric
 mount-instruction JSON stream (via `rn-harness`), then submits it to an
-[`rn-ios-render-server`](https://github.com/sterlingwes/rn-ios-render-server)
-instance over HTTP for rendering on a real iOS simulator.
+`rn-ios-render-server` (a private companion service) instance over HTTP for
+rendering on a real iOS simulator.
 
 > **Status:** pre-alpha. Sibling to [`npm-cli/`](../npm-cli) (the Android
 > layoutlib renderer). Two packages, two render engines.
