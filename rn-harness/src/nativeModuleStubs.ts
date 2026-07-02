@@ -16,7 +16,7 @@
 //     get back undefined instead of crashing.
 //
 // The proxy is the developer-responsibility boundary the Phase 3 design
-// doc draws (docs/phase-3.md "What the developer brings"). If a screen
+// doc draws (docs/rendering-real-apps.md). If a screen
 // genuinely needs a module's behaviour, the test wrapper supplies it via
 // the overrides map.
 

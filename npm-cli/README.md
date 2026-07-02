@@ -7,9 +7,9 @@ build chain themselves.
 
 > **Status:** pre-alpha. Single-platform per package (host you
 > staged on); JDK 17+ must be installed separately. See
-> [`docs/phase-5.md`](../docs/phase-5.md) for the productionisation
-> roadmap (multi-platform `optionalDependencies` layout, daemon
-> mode, Gradle plugin).
+> [`docs/roadmap.md`](../docs/roadmap.md) for the distribution
+> plan (multi-platform `optionalDependencies` layout, npm publish,
+> size trimming).
 
 ## Install (from this checkout)
 
@@ -88,8 +88,8 @@ Named device profiles: `smallPhone` / `pixel5` / `pixel7Pro` /
 
 The renderer wraps Android's `layoutlib` (JVM bytecode against
 Android's native runtime libs). Wasm / Kotlin Native / GraalVM
-Native Image can't host it. See [`docs/phase-5.md`](../docs/phase-5.md#compilation-form-options-and-why-theyre-blocked)
-for the reasoning.
+Native Image can't host it. See the "Why a JVM at all" section of
+[`docs/architecture.md`](../docs/architecture.md) for the reasoning.
 
 ## Troubleshooting
 
