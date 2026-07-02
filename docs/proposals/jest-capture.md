@@ -1,6 +1,11 @@
 # Proposal: capture snapshots from inside an existing Jest suite
 
-**Status: proposed, not built.**
+**Status: capture spike passed — GO.** A consumer-shaped Jest app
+(stock `@react-native/jest-preset`, no harness config) captures a
+renderer-ready artifact with the test's own mocks applied, needing only
+two packageable shims. Evidence and details:
+[`spikes/jest-capture/FINDINGS.md`](../../spikes/jest-capture/FINDINGS.md).
+The rest of this doc is the design going forward.
 
 ## Problem
 
@@ -72,40 +77,59 @@ rendered.
 A `rn-quick-render/jest` entry point in the published package,
 consisting of:
 
-- **A preset fragment** the consumer merges into their Jest config
-  (or a `withRnQuickRender(config)` wrapper): the two private-module
-  `moduleNameMapper` entries, the NativeModules/TurboModuleRegistry
-  stubs *as fallbacks* (see mock precedence below), and a
-  `globalTeardown` + reporter pair.
+- **A `setupFiles` module.** The spike showed the integration surface
+  is smaller than first assumed — no `moduleNameMapper` entries, no
+  resolver: `ReactFabric-dev` boots with RN's *real* private modules
+  under the consumer's preset. What the setup file ships is (a) a
+  no-op mock for the `NativeDOM` TurboModule (null under the Jest
+  preset, but Fabric root creation calls it on RN 0.85), and (b)
+  permissive view-config registrations that translate the preset's
+  mocked component host names (`'View'`, `'Text'`, …) to the RCT class
+  names, so the emitted stream matches a real-RN capture at the node
+  level.
 - **`screenSnapshot(element, opts)`** — captures the mount-instruction
   stream (multi-frame and concurrent shapes included), applies
   `setColorScheme` per requested scheme, normalizes it, and writes
-  `__screensnaps__/<testPath>/<name>.json` plus manifest entries for
-  the requested device × fontScale matrix.
-- **A render/diff step** that runs once after the suite.
+  `__screensnaps__/<name>.json` plus a manifest entry for the
+  requested device × fontScale matrix.
+- **A separate render/verify CLI step** that consumes those artifacts.
 
-### Deferred rendering, not inline
+### Two distinct steps: tests emit consumables, rendering is separate
 
-`Bridge.init()` costs ~4 s per device profile; paying it inside
-individual tests is a non-starter. v1 splits the work:
+The Jest run's only output is **renderable artifacts**: per-snapshot
+mount-instruction JSON (mocks already applied, exactly the JVM
+renderer's input shape) plus per-worker JSONL manifest lines
+(`{name, input, testPath, devices, fontScales}`). Nothing renders
+during the test run — capture is pure JS and costs milliseconds, so
+tests stay fast, and `Bridge.init()` (~4 s per device profile) is
+never paid inside a test.
 
-1. **During the test run**: capture only. Pure JS, milliseconds, no
-   JVM. Tests stay fast and the API stays synchronous-feeling.
-2. **After the suite** (`globalTeardown` or an explicit
-   `rn-quick-render verify` CLI step): collect the per-worker
-   manifests, run one `--batch` render over a warm JVM, pixel-diff
-   against committed PNG goldens, and emit a report (with a
-   record mode to bless new goldens, mirroring
-   `-Drenderer.record=true`).
+Rendering is an explicit second call — `rn-quick-render verify` (or
+raw `--batch`) — that merges the manifests, fans out the device/font
+matrix over one warm JVM, pixel-diffs against committed goldens, and
+supports a record mode mirroring `-Drenderer.record=true`.
 
-The tradeoff is that snapshot failures surface at the end of the run
-rather than inline in the test. That's acceptable for v1 and matches
-how several visual-testing tools behave (capture in test, compare in
-CI step). If inline `expect(...).toMatchScreenSnapshot()` ergonomics
-prove necessary, that's what would finally justify the renderer daemon
-mode that has been deliberately deferred — the matcher awaits a render
-from a long-lived warm JVM. Build the deferred path first; it shares
-all its parts with the daemon path.
+Keeping the steps decoupled (rather than hiding the render step in a
+Jest `globalTeardown` hook) buys:
+
+- **Filtering.** The render step can select a subset by name, test
+  path, or anything derivable from the manifest — e.g. CI renders only
+  components whose source changed, while the full capture set stays
+  cheap to emit on every run.
+- **Portability.** The artifacts are plain files; they can be rendered
+  on a different machine (or engine — the same JSON feeds the iOS
+  engine), cached, or diffed without Jest in the loop.
+- **No Jest lifecycle coupling.** Nothing breaks under watch mode,
+  sharding, or partial runs; a teardown-triggered render would fire on
+  every watch iteration.
+
+A `globalTeardown` convenience wrapper can still be offered for
+one-command local workflows, but it's sugar over the CLI step, not the
+mechanism. If inline `expect(...).toMatchScreenSnapshot()` ergonomics
+prove necessary later, that's what would finally justify the
+deliberately-deferred renderer daemon mode — the matcher awaits a
+render from a long-lived warm JVM. Build the artifact path first; the
+daemon path shares all its parts.
 
 ### Mock precedence
 
@@ -145,12 +169,15 @@ Roughly in order of how much they threaten the idea:
    immediate. Prerequisite work: a version-matrix CI job that runs
    capture against the last ~4 RN minors, a documented support range,
    and a loud, actionable error outside it.
-2. **RN Jest preset interactions.** `react-native/jest-preset` mocks
-   native components via `requireNativeComponent` and sets up its own
-   NativeModules mocks. Whether `ReactFabric-dev` boots cleanly with
-   view configs under that preset (vs. our stub registry) needs a
-   spike — it's the first thing to prototype, against a bare
-   `npx react-native init` app, then Expo (`jest-expo`), then an OSS
+2. **RN Jest preset interactions.** ~~Whether `ReactFabric-dev` boots
+   cleanly under the stock preset needs a spike.~~ **Resolved (GO)** —
+   see [`spikes/jest-capture/FINDINGS.md`](../../spikes/jest-capture/FINDINGS.md).
+   Two shims needed (NativeDOM mock + view configs for the preset's
+   mocked component names); real private modules load as-is. Still
+   open from that spike: the preset's single-node ScrollView mock vs.
+   the renderer's `RCTScrollView`/`RCTScrollContentView` pair, a
+   spurious text-nesting DEV warning (currently scope-filtered), and
+   repeating the exercise under Expo (`jest-expo`) and a real OSS
    app.
 3. **Degenerate mocks.** A consumer who mocks `react-native` wholesale
    or replaces `View` with a string will capture an empty or misleading
@@ -195,13 +222,17 @@ If this lands, some current roadmap items get re-scoped:
 
 ## Suggested sequencing
 
-1. Spike risk #2: boot Fabric capture inside a fresh RN app's Jest
-   suite with the app's default preset. Go/no-go signal for the whole
-   design.
-2. Land capture normalization (tag renumbering) in the harness.
-3. Extract the capture core into the publishable package with the
-   preset fragment + `screenSnapshot` (capture-only, JSON out).
-4. The teardown render/diff step over `--batch`, with record mode.
-5. RN version-matrix CI.
-6. Run it against one OSS app end-to-end; feed the resulting captures
+1. ~~Spike risk #2: boot Fabric capture inside a fresh RN app's Jest
+   suite with the app's default preset.~~ **Done — GO**
+   ([`spikes/jest-capture/`](../../spikes/jest-capture/)).
+2. Render the spike artifact through the JVM renderer to close the
+   loop (blocked in the spike sandbox by network policy; one local
+   command), and probe the ScrollView single-node shape.
+3. Land capture normalization (tag renumbering) in the harness.
+4. Extract the capture core into the publishable package: the
+   `setupFiles` shims + `screenSnapshot` (capture-only, JSON out).
+5. The `verify` render/diff CLI step over `--batch`, with record mode
+   and manifest filtering.
+6. RN version-matrix CI.
+7. Run it against one OSS app end-to-end; feed the resulting captures
    into the renderer's stress-test corpus.

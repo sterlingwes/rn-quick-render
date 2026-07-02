@@ -1,0 +1,143 @@
+{
+  "fixture": "inboxCard",
+  "surfaceId": 1001,
+  "instructionCount": 16,
+  "instructions": [
+    {
+      "op": "createNode",
+      "nodeId": 1,
+      "tag": 2,
+      "viewName": "RCTImageView",
+      "surfaceId": 1001,
+      "props": {
+        "source": {
+          "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIA1nGB5gAAAABJRU5ErkJggg=="
+        },
+        "style": {
+          "width": 12,
+          "height": 12,
+          "marginRight": 8
+        }
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 2,
+      "tag": 4,
+      "viewName": "RCTRawText",
+      "surfaceId": 1001,
+      "props": {
+        "text": "Inbox"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 3,
+      "tag": 6,
+      "viewName": "RCTText",
+      "surfaceId": 1001,
+      "props": {
+        "style": {
+          "fontSize": 18,
+          "fontWeight": "bold",
+          "color": "#111111"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 3,
+      "childNodeId": 2
+    },
+    {
+      "op": "createNode",
+      "nodeId": 4,
+      "tag": 8,
+      "viewName": "RCTView",
+      "surfaceId": 1001,
+      "props": {
+        "style": {
+          "flexDirection": "row",
+          "alignItems": "center"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 1
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 4,
+      "childNodeId": 3
+    },
+    {
+      "op": "createNode",
+      "nodeId": 5,
+      "tag": 10,
+      "viewName": "RCTRawText",
+      "surfaceId": 1001,
+      "props": {
+        "text": "3 unread messages"
+      }
+    },
+    {
+      "op": "createNode",
+      "nodeId": 6,
+      "tag": 12,
+      "viewName": "RCTText",
+      "surfaceId": 1001,
+      "props": {
+        "style": {
+          "fontSize": 14,
+          "color": "#D81B60"
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 6,
+      "childNodeId": 5
+    },
+    {
+      "op": "createNode",
+      "nodeId": 7,
+      "tag": 14,
+      "viewName": "RCTView",
+      "surfaceId": 1001,
+      "props": {
+        "style": {
+          "width": 320,
+          "padding": 16,
+          "backgroundColor": "#FFFFFF",
+          "borderRadius": 8
+        }
+      }
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 7,
+      "childNodeId": 4
+    },
+    {
+      "op": "appendChild",
+      "parentNodeId": 7,
+      "childNodeId": 6
+    },
+    {
+      "op": "createChildSet",
+      "childSetId": 1
+    },
+    {
+      "op": "appendChildToSet",
+      "childSetId": 1,
+      "childNodeId": 7
+    },
+    {
+      "op": "completeRoot",
+      "surfaceId": 1001,
+      "childSetId": 1
+    }
+  ]
+}

@@ -30,9 +30,11 @@ an app's existing Jest suite, where the app's own mocks already tame
 the module graph — instead of hand-porting mocks per target. Also the
 cheapest path to a large, high-fidelity stress-test corpus from OSS
 apps. Design, risks, and sequencing:
-[`proposals/jest-capture.md`](proposals/jest-capture.md). First step is
-a go/no-go spike: boot Fabric capture inside a fresh RN app's default
-Jest preset.
+[`proposals/jest-capture.md`](proposals/jest-capture.md). The go/no-go
+spike **passed** — capture works under a stock
+`@react-native/jest-preset` app with two packageable shims
+([`spikes/jest-capture/FINDINGS.md`](../spikes/jest-capture/FINDINGS.md));
+next steps are in the proposal.
 
 ### 2. RN version compatibility
 
