@@ -76,11 +76,17 @@ the render leg can be exercised without re-running the suite.
   message around the render call. Cleaner fixes all have costs — an
   upstream RN change, or overriding the preset's Text mock (rejected:
   it would rename nodes in consumers' existing RTR snapshots).
-- **ScrollView shape.** The preset's ScrollView mock renders a single
-  host node — no `RCTScrollContentView` child the real component
-  emits. The renderer expects the pair; needs a probe (either tolerate
-  direct children in `FabricViewBuilder` or synthesize the content
-  view at capture normalization time).
+- **ScrollView shape (probed, static).** The preset's ScrollView mock
+  renders a single host node — no `RCTScrollContentView` child the
+  real component emits. Yoga-side layout is unaffected (no scroll
+  special-casing; every child gets a rect), but
+  `FabricViewBuilder.buildScrollView` treats `children.firstOrNull()`
+  as the sole content wrapper, so a scroll view with N direct children
+  paints only the first and **silently drops the rest**. Right fix is
+  capture-side: synthesize the canonical content wrapper during
+  normalization, which corrects both engines at once and keeps the
+  artifact indistinguishable from a real-RN capture. Until then,
+  ScrollView-rooted captures from consumer suites are unreliable.
 - **TextInput / Modal / ActivityIndicator** are mapped naively
   (`RCTTextInput` isn't a renderer-supported type; Modal/AI map to
   plain views). Fidelity for these is placeholder-level, matching the
@@ -94,6 +100,20 @@ the render leg can be exercised without re-running the suite.
   version-sensitive by nature (it exists *because* 0.85 routes roots
   through the DOM layer) — exactly the kind of thing the proposed
   version-matrix CI must cover.
+
+## Landed after the initial spike: capture normalization
+
+`rn-harness/src/normalizeCapture.ts` renumbers `reactTag`s (by first
+appearance, to Fabric's even-numbered 2, 4, 6… convention) and
+`surfaceId`s (to 1, 2, …) so an artifact is a pure function of the
+rendered element rather than of process history. `screenSnapshot`
+applies it before writing, and the suite includes an empirical
+order-independence test: capturing the same element twice — where raw
+Fabric tags necessarily differ — produces identical instruction
+streams. This is the same fragility that forced append-only fixture
+ordering in the harness repo; adopting normalization for the committed
+`rn-harness/out/` goldens is a separate pass (it rewrites every golden,
+and re-capturing needs the bluesky submodule).
 
 ## Cost observations
 

@@ -9,13 +9,17 @@ The rest of this doc is the design going forward.
 
 ## Problem
 
-Today, rendering a component from a real app means writing a fixture in
-*this* repo: hand-mocking the app's providers, theme system, and any
-library the default mock pack doesn't cover (see
-[`rendering-real-apps.md`](../rendering-real-apps.md)). The
-bluesky integration fixtures show the cost — a faithful `Button` slice,
-an `alf` theme mock, a `@lingui` macro stack — all re-creating mocking
-work the app's own test suite has already done.
+Today, rendering a component from a real app means authoring a fixture
+against the harness's mocking pattern: hand-mocking the app's
+providers, theme system, and any library the default mock pack doesn't
+cover (see [`rendering-real-apps.md`](../rendering-real-apps.md)).
+That's the intended usage — consumers follow the same pattern in their
+own repo once the library is published; the in-repo bluesky fixtures
+are the reference implementation of it. But the bluesky fixtures also
+show what the pattern costs per target — a faithful `Button` slice, an
+`alf` theme mock, a `@lingui` macro stack — and for any app with a
+working test suite, that cost re-creates mocking work its Jest setup
+has already done.
 
 Meanwhile, most RN apps already have a Jest suite where components
 render successfully: the RN Jest preset, `jest.mock()` calls,
@@ -153,9 +157,19 @@ captured mid-suite embeds tags that depend on how many captures ran
 before it. The renderer doesn't care (tags are only internal
 identifiers), but stable JSON artifacts are worth having — for caching,
 for diffing, and to kill the existing "append fixtures only at the end"
-fragility in our own repo. Capture should renumber tags to a canonical
-sequence per capture before writing. This is a small, standalone
-improvement worth landing even before the Jest package.
+fragility in our own repo.
+
+**Landed**: `rn-harness/src/normalizeCapture.ts` renumbers tags and
+surface ids to a canonical per-capture sequence; the spike's
+`screenSnapshot` applies it and proves order-independence empirically
+(same element captured twice → identical artifacts). Still open:
+adopting it for the committed `rn-harness/out/` goldens (a full
+re-capture, needs the bluesky submodule), and extending the
+normalization pass to synthesize the `RCTScrollContentView` wrapper
+that the Jest preset's single-node ScrollView mock omits — without it,
+`FabricViewBuilder.buildScrollView` paints only the first direct child
+and silently drops siblings (same gap applies to the iOS engine, which
+is why the fix belongs capture-side).
 
 ## Risks and open questions
 
@@ -227,8 +241,12 @@ If this lands, some current roadmap items get re-scoped:
    ([`spikes/jest-capture/`](../../spikes/jest-capture/)).
 2. Render the spike artifact through the JVM renderer to close the
    loop (blocked in the spike sandbox by network policy; one local
-   command), and probe the ScrollView single-node shape.
-3. Land capture normalization (tag renumbering) in the harness.
+   command). ~~Probe the ScrollView single-node shape~~ — probed
+   statically: only the first direct child paints; fix via
+   normalization-time wrapper synthesis (above).
+3. ~~Land capture normalization (tag renumbering) in the harness.~~
+   **Done** — `normalizeCapture.ts` + unit tests; golden migration
+   deferred to a re-capture pass.
 4. Extract the capture core into the publishable package: the
    `setupFiles` shims + `screenSnapshot` (capture-only, JSON out).
 5. The `verify` render/diff CLI step over `--batch`, with record mode

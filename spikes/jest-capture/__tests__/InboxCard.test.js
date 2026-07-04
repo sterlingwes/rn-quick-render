@@ -39,3 +39,13 @@ test("screenSnapshot captures a renderable stream with the test's mocks applied"
   expect(artifact).toMatchObject({ fixture: "inboxCard" });
   expect(Array.isArray(artifact.instructions)).toBe(true);
 });
+
+test("capture is order-independent: a later capture of the same element is identical", () => {
+  // Without normalization this would fail — Fabric's tag counter keeps
+  // climbing across renders in the process, so a second capture of the
+  // same element embeds different reactTags. This is the fragility that
+  // forced append-only fixture ordering in the harness repo.
+  const first = screenSnapshot(<InboxCard />, { name: "inboxCard-a" });
+  const second = screenSnapshot(<InboxCard />, { name: "inboxCard-b" });
+  expect(second.instructions).toEqual(first.instructions);
+});

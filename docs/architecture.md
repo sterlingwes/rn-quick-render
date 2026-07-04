@@ -138,14 +138,19 @@ one-time implementation cost for no AGP, a plain Kotlin `application`
 module that builds with any JDK 17 + CMake, and direct control over the
 render session.
 
-**Yoga in the JVM, not Node.** An earlier design ran Yoga in Node
-(mirroring where real Fabric runs it) and shipped rects to the JVM.
-That split falls apart at text: the JVM owns the Android-faithful text
+**Yoga in the JVM, not in the capture process.** On a real device,
+Fabric computes layout in its C++ shadow tree (Yoga is native C++) —
+layout is resolved before the Android view layer ever sees the tree. An
+early sketch of *this project* copied that separation by computing
+layout at capture time, in Node, via the `yoga-layout` npm bindings,
+and shipping resolved rects to the JVM alongside the instructions. That
+split falls apart at text: the JVM owns the Android-faithful text
 measurer, so layout either round-trips per measured node or drifts.
-Keeping Yoga in-process (JNI, built from the `yoga/` submodule) lets
-the real measurer plug straight into `setMeasureFunction`, and keeps
-one language, one build, one test surface for what is fundamentally one
-pass.
+The renderer instead runs Yoga in-process (JNI, built from the same
+C++ source via the `yoga/` submodule), which lets the real measurer
+plug straight into `setMeasureFunction` and keeps one language, one
+build, one test surface for what is fundamentally one pass. The capture
+process never runs layout at all.
 
 **Theme is data, not a render flag.** Dark mode changes what colors
 land in props at render time, so it's captured — the harness's

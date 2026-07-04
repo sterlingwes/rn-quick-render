@@ -1,6 +1,6 @@
 {
   "fixture": "inboxCard",
-  "surfaceId": 1001,
+  "surfaceId": 1,
   "instructionCount": 16,
   "instructions": [
     {
@@ -8,7 +8,7 @@
       "nodeId": 1,
       "tag": 2,
       "viewName": "RCTImageView",
-      "surfaceId": 1001,
+      "surfaceId": 1,
       "props": {
         "source": {
           "uri": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIA1nGB5gAAAABJRU5ErkJggg=="
@@ -25,7 +25,7 @@
       "nodeId": 2,
       "tag": 4,
       "viewName": "RCTRawText",
-      "surfaceId": 1001,
+      "surfaceId": 1,
       "props": {
         "text": "Inbox"
       }
@@ -35,7 +35,7 @@
       "nodeId": 3,
       "tag": 6,
       "viewName": "RCTText",
-      "surfaceId": 1001,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 18,
@@ -54,7 +54,7 @@
       "nodeId": 4,
       "tag": 8,
       "viewName": "RCTView",
-      "surfaceId": 1001,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "row",
@@ -77,7 +77,7 @@
       "nodeId": 5,
       "tag": 10,
       "viewName": "RCTRawText",
-      "surfaceId": 1001,
+      "surfaceId": 1,
       "props": {
         "text": "3 unread messages"
       }
@@ -87,7 +87,7 @@
       "nodeId": 6,
       "tag": 12,
       "viewName": "RCTText",
-      "surfaceId": 1001,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 14,
@@ -105,7 +105,7 @@
       "nodeId": 7,
       "tag": 14,
       "viewName": "RCTView",
-      "surfaceId": 1001,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 320,
@@ -136,7 +136,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 1001,
+      "surfaceId": 1,
       "childSetId": 1
     }
   ]

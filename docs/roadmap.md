@@ -64,7 +64,13 @@ Prerequisite for anyone using this without cloning the repo:
 Renumber `reactTag`s to a canonical per-capture sequence. Kills the
 "fixtures must be appended in order or every golden shifts" fragility,
 makes captures cacheable/diffable, and is a prerequisite for capture
-inside arbitrarily-ordered test suites. Small, standalone.
+inside arbitrarily-ordered test suites. **The utility landed**
+(`rn-harness/src/normalizeCapture.ts`, used by the Jest-capture spike
+with an order-independence test). Remaining: adopt it in
+`captureFixtures` and re-capture the committed goldens (needs the
+bluesky submodule), and extend the pass to synthesize the
+`RCTScrollContentView` wrapper missing from Jest-preset ScrollView
+captures.
 
 ### 5. Fidelity: RTL
 

@@ -16,6 +16,12 @@
 
 const fs = require("fs");
 const path = require("path");
+// In the published package this ships compiled; the spike reaches into
+// the harness source (babel-jest transforms the TS). Normalization
+// makes the artifact a pure function of the rendered element — tags no
+// longer depend on what rendered earlier in the process, which is what
+// makes arbitrary test-suite ordering safe.
+const { normalizeInstructions } = require("../../rn-harness/src/normalizeCapture");
 
 const OUT_DIR = path.join(__dirname, "__screensnaps__");
 
@@ -245,17 +251,27 @@ function screenSnapshot(element, opts) {
   } finally {
     console.error = realConsoleError;
   }
-  const instructions = capture.instructions.slice();
+  const instructions = normalizeInstructions(capture.instructions.slice());
   ReactFabric.stopSurface(surfaceId);
 
   assertRenderableStream(opts.name, instructions);
+
+  // Report the *normalized* surface id (the in-process one is an
+  // ordering-dependent counter the normalizer just erased).
+  const normalizedSurfaceId =
+    instructions.map((i) => ("surfaceId" in i ? i.surfaceId : undefined)).find((s) => s !== undefined) ?? 1;
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const artifactPath = path.join(OUT_DIR, `${opts.name}.json`);
   fs.writeFileSync(
     artifactPath,
     JSON.stringify(
-      { fixture: opts.name, surfaceId, instructionCount: instructions.length, instructions },
+      {
+        fixture: opts.name,
+        surfaceId: normalizedSurfaceId,
+        instructionCount: instructions.length,
+        instructions,
+      },
       null,
       2,
     ),
