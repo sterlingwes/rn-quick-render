@@ -1,5 +1,82 @@
 import type { MountInstruction } from "./types";
 
+// Real RN's <ScrollView> always mounts an RCTScrollContentView between
+// the RCTScrollView and its content, and both render engines assume
+// that pair (the Android builder treats the scroll node's first child
+// as *the* content wrapper and ignores siblings). The Jest preset's
+// ScrollView mock emits a single host node with the children attached
+// directly, so captures from consumer test suites would silently drop
+// every child but the first. Synthesize the canonical wrapper at the
+// capture side so both engines see the real-RN shape.
+//
+// Scope: initial-mount streams only. Streams containing clone* ops
+// (update-path captures) pass through untouched — re-parenting inside
+// an update sequence has ambiguous semantics and no consumer yet.
+export function synthesizeScrollContentViews(
+  instructions: MountInstruction[],
+): MountInstruction[] {
+  if (instructions.some((i) => i.op.startsWith("cloneNode"))) return instructions;
+
+  const viewNameOf = new Map<number, string>();
+  let maxNodeId = 0;
+  let maxTag = 0;
+  for (const ins of instructions) {
+    if (ins.op === "createNode") {
+      viewNameOf.set(ins.nodeId, ins.viewName);
+      if (ins.nodeId > maxNodeId) maxNodeId = ins.nodeId;
+      if (ins.tag > maxTag) maxTag = ins.tag;
+    }
+  }
+
+  const childrenOf = new Map<number, number[]>();
+  for (const ins of instructions) {
+    if (ins.op === "appendChild") {
+      const kids = childrenOf.get(ins.parentNodeId) ?? [];
+      kids.push(ins.childNodeId);
+      childrenOf.set(ins.parentNodeId, kids);
+    }
+  }
+
+  const needsWrap = new Set<number>();
+  for (const [nodeId, viewName] of viewNameOf) {
+    if (viewName !== "RCTScrollView") continue;
+    const kids = childrenOf.get(nodeId) ?? [];
+    const alreadyCanonical =
+      kids.length === 1 && viewNameOf.get(kids[0]) === "RCTScrollContentView";
+    if (!alreadyCanonical) needsWrap.add(nodeId);
+  }
+  if (needsWrap.size === 0) return instructions;
+
+  const wrapperFor = new Map<number, number>(); // scroll nodeId → wrapper nodeId
+  const out: MountInstruction[] = [];
+  for (const ins of instructions) {
+    if (ins.op === "createNode" && needsWrap.has(ins.nodeId)) {
+      out.push(ins);
+      const wrapperId = ++maxNodeId;
+      maxTag += 2;
+      wrapperFor.set(ins.nodeId, wrapperId);
+      out.push({
+        op: "createNode",
+        nodeId: wrapperId,
+        tag: maxTag,
+        viewName: "RCTScrollContentView",
+        surfaceId: ins.surfaceId,
+        props: {},
+      });
+      // Attach immediately — the wrapper exists from this point on, and
+      // its own children may be re-parented onto it by later ops.
+      out.push({ op: "appendChild", parentNodeId: ins.nodeId, childNodeId: wrapperId });
+      continue;
+    }
+    if (ins.op === "appendChild" && wrapperFor.has(ins.parentNodeId)) {
+      out.push({ ...ins, parentNodeId: wrapperFor.get(ins.parentNodeId)! });
+      continue;
+    }
+    out.push(ins);
+  }
+  return out;
+}
+
 // Fabric assigns reactTags and surfaceIds monotonically per *process*,
 // so the same element captured after N prior captures embeds different
 // tag/surface values. That's why fixtures historically had to be

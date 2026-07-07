@@ -98,13 +98,18 @@ function ensureJavaMajor(java, minMajor) {
     );
     process.exit(127);
   }
-  // `java -version` prints to stderr. First line:
+  // `java -version` prints to stderr:
   //   openjdk version "17.0.18" 2024-10-15
   //   openjdk version "1.8.0_392" 2023-10-17
-  const first = (probe.stderr || probe.stdout || "").split("\n")[0] || "";
-  const m = first.match(/version "([^"]+)"/);
+  // Scan the whole output, not just the first line — when
+  // JAVA_TOOL_OPTIONS is set (common in CI/containers) the JVM
+  // prepends a "Picked up JAVA_TOOL_OPTIONS: …" notice.
+  const output = probe.stderr || probe.stdout || "";
+  const m = output.match(/version "([^"]+)"/);
   if (!m) {
-    console.error(`rn-quick-render: couldn't parse Java version from: ${first.trim()}`);
+    console.error(
+      `rn-quick-render: couldn't parse Java version from: ${output.split("\n", 1)[0].trim()}`,
+    );
     process.exit(127);
   }
   const versionStr = m[1];

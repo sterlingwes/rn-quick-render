@@ -1,5 +1,6 @@
 import React from "react";
 import TestRenderer from "react-test-renderer";
+import { ActivityFeed } from "../src/ActivityFeed";
 import { InboxCard } from "../src/InboxCard";
 import { ThemedBanner } from "../src/ThemedBanner";
 import { screenSnapshot } from "rn-quick-render-jest";
@@ -66,4 +67,27 @@ test("colorSchemes captures per-scheme artifacts through the real useColorScheme
   expect(light).toContain("#FAFAFA");
   expect(dark).toContain("Dark mode");
   expect(dark).toContain("#111111");
+});
+
+test("ScrollView captures get the canonical content wrapper synthesized", () => {
+  const { instructions } = screenSnapshot(<ActivityFeed />, { name: "activityFeed" });
+  const creates = instructions.filter((i) => i.op === "createNode");
+  const scroll = creates.find((i) => i.viewName === "RCTScrollView");
+  const wrapper = creates.find((i) => i.viewName === "RCTScrollContentView");
+  expect(scroll).toBeDefined();
+  expect(wrapper).toBeDefined();
+  const appends = instructions.filter((i) => i.op === "appendChild");
+  const childrenOf = (id) =>
+    appends.filter((a) => a.parentNodeId === id).map((a) => a.childNodeId);
+  // Scroll's sole child is the synthesized wrapper. The preset's mock
+  // wraps children in a plain <View>, so the three rows sit one level
+  // below: scroll → wrapper → inner view → rows.
+  expect(childrenOf(scroll.nodeId)).toEqual([wrapper.nodeId]);
+  const [innerViewId] = childrenOf(wrapper.nodeId);
+  expect(innerViewId).toBeDefined();
+  expect(childrenOf(innerViewId)).toHaveLength(3);
+  const raw = JSON.stringify(instructions);
+  for (const label of ["Row one", "Row two", "Row three"]) {
+    expect(raw).toContain(label);
+  }
 });

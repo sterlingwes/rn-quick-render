@@ -85,30 +85,41 @@ the render leg can be exercised without re-running the suite.
   message around the render call. Cleaner fixes all have costs — an
   upstream RN change, or overriding the preset's Text mock (rejected:
   it would rename nodes in consumers' existing RTR snapshots).
-- **ScrollView shape (probed, static).** The preset's ScrollView mock
-  renders a single host node — no `RCTScrollContentView` child the
-  real component emits. Yoga-side layout is unaffected (no scroll
-  special-casing; every child gets a rect), but
-  `FabricViewBuilder.buildScrollView` treats `children.firstOrNull()`
-  as the sole content wrapper, so a scroll view with N direct children
-  paints only the first and **silently drops the rest**. Right fix is
-  capture-side: synthesize the canonical content wrapper during
-  normalization, which corrects both engines at once and keeps the
-  artifact indistinguishable from a real-RN capture. Until then,
-  ScrollView-rooted captures from consumer suites are unreliable.
+- **ScrollView shape (resolved).** Two distinct issues hid here. The
+  static analysis predicted sibling-dropping from a single-node mock;
+  in fact the preset's ScrollView mock wraps children in a plain
+  `<View>` (so ordinary children survive — the drop only threatens the
+  `refreshControl` slot). The *actual* runtime failure was different:
+  the mock emits its host element under the native name
+  (`requireNativeComponent('RCTScrollView')`), which had no registered
+  view config. Fixed twice over: the registry `get` is wrapped to
+  auto-register a permissive identity config for any unknown host name
+  (the same policy the in-repo harness uses), and
+  `synthesizeScrollContentViews` (in `normalizeCapture.ts`) inserts
+  the canonical `RCTScrollContentView` wrapper so artifacts match the
+  real-RN shape. Validated end-to-end: the `ActivityFeed` capture
+  renders all three rows through the JVM (pixel-checked).
 - **TextInput / Modal / ActivityIndicator** are mapped naively
   (`RCTTextInput` isn't a renderer-supported type; Modal/AI map to
   plain views). Fidelity for these is placeholder-level, matching the
   default-mock philosophy.
-- **Render leg not executed here.** This sandbox can't reach
-  github.com to fetch the yoga submodule, so the PNG step wasn't run.
-  The artifact is contract-identical to committed goldens; render it
-  locally with
-  `cat spikes/jest-capture/__screensnaps__/inboxCard.json | npm-cli/bin/rn-quick-render.js --output /tmp/inboxCard.png`.
-- **Single RN version.** 0.85.1 only. The `NativeDOM` shim is
-  version-sensitive by nature (it exists *because* 0.85 routes roots
-  through the DOM layer) — exactly the kind of thing the proposed
-  version-matrix CI must cover.
+- **Render leg: done.** With network access restored, the yoga
+  submodule + JDK 17 unblocked the JVM renderer and the full loop ran
+  in this repo: Jest capture → `rn-quick-render verify --record` →
+  byte-exact re-`verify` → `--filter` subset. 7 snapshots (2 devices ×
+  2 font scales + light/dark + ScrollView) render in one warm JVM,
+  ~3.6 s wall including 2 bootstraps. Reference goldens are committed
+  under `__screensnaps__-goldens/`. Two environment finds along the
+  way: the CLI's Java-version probe read only the first stderr line,
+  which breaks when `JAVA_TOOL_OPTIONS` is set (common in CI) — fixed
+  in `lib/launcher.js`; and layoutlib's `BitmapFactory` rejects some
+  hand-minified 1×1 PNGs while well-formed encoder output decodes fine
+  (keep test-fixture data URIs encoder-generated).
+- **RN version coverage.** Originally 0.85.1 only; now green on
+  0.83.10 / 0.84.1 / 0.85.1 via `run-matrix-probe.js` (CI-enforced by
+  the `jest-capture` workflow). The `NativeDOM` shim self-skips on
+  versions without the module, which is what makes the older minors
+  work unchanged.
 
 ## Landed after the initial spike: capture normalization
 

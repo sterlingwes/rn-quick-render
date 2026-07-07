@@ -2,10 +2,12 @@ import React from "react";
 import { Image, Text, View } from "react-native";
 import { useUnreadCount } from "./useUnreadCount";
 
-// 1x1 magenta PNG. A data: URI keeps the spike independent of Metro's
+// 12x12 pink PNG. A data: URI keeps the spike independent of Metro's
 // asset pipeline; the renderer decodes data: sources natively.
+// (Generated with pngjs — layoutlib's BitmapFactory rejects some
+// hand-minified 1x1 PNGs, so keep this a well-formed encoder output.)
 const DOT =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIA1nGB5gAAAABJRU5ErkJggg==";
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAKklEQVR4AZXBAQEAIAyAME4NyxnbNj4D27xzP4FEEkkkkUQSSSSRRBJJtGxVAmpTsKsjAAAAAElFTkSuQmCC";
 
 export function InboxCard() {
   const unread = useUnreadCount();

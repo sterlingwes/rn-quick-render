@@ -17,7 +17,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import { createCapture, type Capture } from "../../rn-harness/src/captureStub";
-import { normalizeInstructions } from "../../rn-harness/src/normalizeCapture";
+import {
+  normalizeInstructions,
+  synthesizeScrollContentViews,
+} from "../../rn-harness/src/normalizeCapture";
 import type { MountInstruction } from "../../rn-harness/src/types";
 import { installNativeDomMock, registerPresetViewConfigs } from "./shims";
 
@@ -141,7 +144,12 @@ function renderOnce(name: string, element: unknown): MountInstruction[] {
   } finally {
     console.error = realConsoleError;
   }
-  const instructions = normalizeInstructions(capture!.instructions.slice());
+  // The Jest preset's ScrollView mock omits the RCTScrollContentView
+  // wrapper real RN always mounts; synthesize it so both engines see
+  // the canonical shape, then canonicalize tags/surfaces.
+  const instructions = normalizeInstructions(
+    synthesizeScrollContentViews(capture!.instructions.slice()),
+  );
   ReactFabric.stopSurface(surfaceId);
 
   assertRenderableStream(name, instructions);

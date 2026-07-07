@@ -119,6 +119,61 @@ function createCapture() {
 }
 
 // ../rn-harness/src/normalizeCapture.ts
+function synthesizeScrollContentViews(instructions) {
+  if (instructions.some((i) => i.op.startsWith("cloneNode"))) return instructions;
+  const viewNameOf = /* @__PURE__ */ new Map();
+  let maxNodeId = 0;
+  let maxTag = 0;
+  for (const ins of instructions) {
+    if (ins.op === "createNode") {
+      viewNameOf.set(ins.nodeId, ins.viewName);
+      if (ins.nodeId > maxNodeId) maxNodeId = ins.nodeId;
+      if (ins.tag > maxTag) maxTag = ins.tag;
+    }
+  }
+  const childrenOf = /* @__PURE__ */ new Map();
+  for (const ins of instructions) {
+    if (ins.op === "appendChild") {
+      const kids = childrenOf.get(ins.parentNodeId) ?? [];
+      kids.push(ins.childNodeId);
+      childrenOf.set(ins.parentNodeId, kids);
+    }
+  }
+  const needsWrap = /* @__PURE__ */ new Set();
+  for (const [nodeId, viewName] of viewNameOf) {
+    if (viewName !== "RCTScrollView") continue;
+    const kids = childrenOf.get(nodeId) ?? [];
+    const alreadyCanonical = kids.length === 1 && viewNameOf.get(kids[0]) === "RCTScrollContentView";
+    if (!alreadyCanonical) needsWrap.add(nodeId);
+  }
+  if (needsWrap.size === 0) return instructions;
+  const wrapperFor = /* @__PURE__ */ new Map();
+  const out = [];
+  for (const ins of instructions) {
+    if (ins.op === "createNode" && needsWrap.has(ins.nodeId)) {
+      out.push(ins);
+      const wrapperId = ++maxNodeId;
+      maxTag += 2;
+      wrapperFor.set(ins.nodeId, wrapperId);
+      out.push({
+        op: "createNode",
+        nodeId: wrapperId,
+        tag: maxTag,
+        viewName: "RCTScrollContentView",
+        surfaceId: ins.surfaceId,
+        props: {}
+      });
+      out.push({ op: "appendChild", parentNodeId: ins.nodeId, childNodeId: wrapperId });
+      continue;
+    }
+    if (ins.op === "appendChild" && wrapperFor.has(ins.parentNodeId)) {
+      out.push({ ...ins, parentNodeId: wrapperFor.get(ins.parentNodeId) });
+      continue;
+    }
+    out.push(ins);
+  }
+  return out;
+}
 function normalizeInstructions(instructions) {
   const tagMap = /* @__PURE__ */ new Map();
   const surfaceMap = /* @__PURE__ */ new Map();
@@ -230,17 +285,27 @@ function registerPresetViewConfigs() {
       get: (_t, key) => key === "children" || key === "ref" || key === "key" ? void 0 : true
     }
   );
+  const configFor = (uiViewClassName) => ({
+    uiViewClassName,
+    validAttributes: permissiveAttributes,
+    bubblingEventTypes: {},
+    directEventTypes: {}
+  });
   for (const [hostName, rctName] of Object.entries(PRESET_MOCK_HOST_NAMES)) {
     try {
-      registry.register(hostName, () => ({
-        uiViewClassName: rctName,
-        validAttributes: permissiveAttributes,
-        bubblingEventTypes: {},
-        directEventTypes: {}
-      }));
+      registry.register(hostName, () => configFor(rctName));
     } catch {
     }
   }
+  const realGet = registry.get.bind(registry);
+  registry.get = (name) => {
+    try {
+      return realGet(name);
+    } catch {
+      registry.register(name, () => configFor(name));
+      return realGet(name);
+    }
+  };
 }
 
 // src/index.ts
@@ -304,7 +369,9 @@ function renderOnce(name, element) {
   } finally {
     console.error = realConsoleError;
   }
-  const instructions = normalizeInstructions(capture.instructions.slice());
+  const instructions = normalizeInstructions(
+    synthesizeScrollContentViews(capture.instructions.slice())
+  );
   ReactFabric.stopSurface(surfaceId);
   assertRenderableStream(name, instructions);
   return instructions;

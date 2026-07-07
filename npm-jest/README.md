@@ -77,14 +77,11 @@ module.exports = {
 
 ## Known limitations
 
-- **ScrollView children**: the Jest preset's ScrollView mock emits a
-  single host node; the renderer currently paints only its first
-  child. Tracked — fix lands in the capture normalization pass.
 - **Single-frame captures**: multi-frame / Suspense capture (supported
   by the harness) isn't exposed through `screenSnapshot` yet.
-- **RN version range**: only 0.85 is exercised so far; the NativeDOM
-  shim is version-sensitive by design. A version-matrix CI job gates
-  widening the documented range.
+- **RN version range**: 0.83 / 0.84 / 0.85 are exercised by the
+  version-matrix CI job; the NativeDOM shim self-skips on versions
+  without the module. Outside that range you're in untested territory.
 - Wholesale `jest.mock("react-native")` produces hollow streams; the
   capture fails loudly rather than snapshotting a blank image.
 

@@ -100,16 +100,37 @@ export function registerPresetViewConfigs(): void {
         key === "children" || key === "ref" || key === "key" ? undefined : true,
     },
   );
+  const configFor = (uiViewClassName: string) => ({
+    uiViewClassName,
+    validAttributes: permissiveAttributes,
+    bubblingEventTypes: {},
+    directEventTypes: {},
+  });
+
   for (const [hostName, rctName] of Object.entries(PRESET_MOCK_HOST_NAMES)) {
     try {
-      registry.register(hostName, () => ({
-        uiViewClassName: rctName,
-        validAttributes: permissiveAttributes,
-        bubblingEventTypes: {},
-        directEventTypes: {},
-      }));
+      registry.register(hostName, () => configFor(rctName));
     } catch {
       // Already registered elsewhere — theirs wins.
     }
   }
+
+  // Some preset mocks emit host elements under their native names via
+  // requireNativeComponent ('RCTScrollView', 'RCTRefreshControl', …),
+  // and app/library mocks can invent arbitrary host names. Rather than
+  // enumerate them, auto-register a permissive identity config for any
+  // name the registry doesn't know — the same policy the in-repo
+  // capture harness uses; both render engines fall back to a plain
+  // view for unrecognized names. ReactFabric captures `registry.get`
+  // by reference at module load, so this wrap must be installed before
+  // ReactFabric-dev is required (ensureFabric guarantees that).
+  const realGet = registry.get.bind(registry);
+  registry.get = (name: string) => {
+    try {
+      return realGet(name);
+    } catch {
+      registry.register(name, () => configFor(name));
+      return realGet(name);
+    }
+  };
 }

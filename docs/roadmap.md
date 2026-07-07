@@ -37,9 +37,9 @@ apps. Design and status:
 0.83–0.85 under each stock preset via the `jest-capture` CI matrix)
 and the `rn-quick-render verify` render/diff subcommand
 (manifest merge + filtering → one warm `--batch` render → pixel diff,
-`--record` to bless). **Remaining:** one JVM-in-the-loop `verify` run,
-ScrollView content-wrapper synthesis in normalization, an OSS-app
-end-to-end, npm publish.
+`--record` to bless). The JVM-in-the-loop `verify` cycle and
+ScrollView wrapper synthesis are done and validated against real
+renders. **Remaining:** an OSS-app end-to-end, npm publish.
 
 ### 2. RN version compatibility
 
@@ -70,12 +70,12 @@ Renumber `reactTag`s to a canonical per-capture sequence. Kills the
 "fixtures must be appended in order or every golden shifts" fragility,
 makes captures cacheable/diffable, and is a prerequisite for capture
 inside arbitrarily-ordered test suites. **The utility landed**
-(`rn-harness/src/normalizeCapture.ts`, used by the Jest-capture spike
-with an order-independence test). Remaining: adopt it in
-`captureFixtures` and re-capture the committed goldens (needs the
-bluesky submodule), and extend the pass to synthesize the
-`RCTScrollContentView` wrapper missing from Jest-preset ScrollView
-captures.
+(`rn-harness/src/normalizeCapture.ts`, used by the Jest-capture
+package with an order-independence test), as did
+`synthesizeScrollContentViews` (canonical ScrollView shape for
+Jest-preset captures, render-validated). Remaining: adopt
+normalization in `captureFixtures` and re-capture the committed
+goldens.
 
 ### 5. Fidelity: RTL
 

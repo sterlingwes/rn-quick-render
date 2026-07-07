@@ -13,10 +13,11 @@ below is now implemented:
 - Spike evidence and packaging lessons:
   [`spikes/jest-capture/FINDINGS.md`](../../spikes/jest-capture/FINDINGS.md).
 
-Not yet done: a JVM-in-the-loop run of `verify` (needs a machine that
-can build the renderer), ScrollView content-wrapper synthesis, an OSS
-app end-to-end, and publishing. The rest of this doc is the design
-rationale.
+The JVM-in-the-loop run of `verify` is done (record → byte-exact
+verify → filtered subset, all against real renders), and ScrollView
+content-wrapper synthesis landed in the capture core. Not yet done: an
+OSS app end-to-end, golden migration of the in-repo captures, and
+publishing. The rest of this doc is the design rationale.
 
 ## Problem
 
@@ -253,11 +254,12 @@ If this lands, some current roadmap items get re-scoped:
 1. ~~Spike risk #2: boot Fabric capture inside a fresh RN app's Jest
    suite with the app's default preset.~~ **Done — GO**
    ([`spikes/jest-capture/`](../../spikes/jest-capture/)).
-2. Render the spike artifact through the JVM renderer to close the
-   loop (blocked in the spike sandbox by network policy; one local
-   command). ~~Probe the ScrollView single-node shape~~ — probed
-   statically: only the first direct child paints; fix via
-   normalization-time wrapper synthesis (above).
+2. ~~Render the spike artifact through the JVM renderer to close the
+   loop.~~ **Done** — full record/verify/filter cycle against real
+   renders; reference goldens committed in the test bed. ScrollView
+   resolved via a registry catch-all for native-named host elements +
+   `synthesizeScrollContentViews`, validated by pixel-checking all
+   rows of a ScrollView capture.
 3. ~~Land capture normalization (tag renumbering) in the harness.~~
    **Done** — `normalizeCapture.ts` + unit tests; golden migration
    deferred to a re-capture pass.

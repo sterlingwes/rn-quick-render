@@ -1,4 +1,7 @@
-import { normalizeInstructions } from "../src/normalizeCapture";
+import {
+  normalizeInstructions,
+  synthesizeScrollContentViews,
+} from "../src/normalizeCapture";
 import type { MountInstruction } from "../src/types";
 
 // A stream as Fabric would emit it mid-process: tags offset by prior
@@ -64,4 +67,61 @@ test("ops without tags/surfaces pass through untouched; createChildSet without s
   expect(normalized[1]).toEqual({ op: "createChildSet", childSetId: 1 });
   expect(normalized[2]).toEqual({ op: "createChildSet", childSetId: 2, surfaceId: 1 });
   expect(normalized[3]).toEqual(stream[3]);
+});
+
+describe("synthesizeScrollContentViews", () => {
+  const scrollWithDirectChildren: MountInstruction[] = [
+    { op: "createNode", nodeId: 1, tag: 2, viewName: "RCTView", surfaceId: 1, props: { style: { height: 40 } } },
+    { op: "createNode", nodeId: 2, tag: 4, viewName: "RCTView", surfaceId: 1, props: { style: { height: 40 } } },
+    { op: "createNode", nodeId: 3, tag: 6, viewName: "RCTScrollView", surfaceId: 1, props: {} },
+    { op: "appendChild", parentNodeId: 3, childNodeId: 1 },
+    { op: "appendChild", parentNodeId: 3, childNodeId: 2 },
+    { op: "createChildSet", childSetId: 1 },
+    { op: "appendChildToSet", childSetId: 1, childNodeId: 3 },
+    { op: "completeRoot", surfaceId: 1, childSetId: 1 },
+  ];
+
+  test("wraps a scroll view's direct children in a synthesized RCTScrollContentView", () => {
+    const out = synthesizeScrollContentViews(scrollWithDirectChildren);
+    const wrapper = out.find(
+      (i): i is Extract<MountInstruction, { op: "createNode" }> =>
+        i.op === "createNode" && i.viewName === "RCTScrollContentView",
+    );
+    expect(wrapper).toBeDefined();
+    const appends = out.filter(
+      (i): i is Extract<MountInstruction, { op: "appendChild" }> => i.op === "appendChild",
+    );
+    expect(appends.filter((a) => a.parentNodeId === 3).map((a) => a.childNodeId)).toEqual([
+      wrapper!.nodeId,
+    ]);
+    expect(appends.filter((a) => a.parentNodeId === wrapper!.nodeId).map((a) => a.childNodeId)).toEqual([1, 2]);
+  });
+
+  test("leaves the canonical RCTScrollView/RCTScrollContentView pair untouched", () => {
+    const canonical: MountInstruction[] = [
+      { op: "createNode", nodeId: 1, tag: 2, viewName: "RCTView", surfaceId: 1, props: {} },
+      { op: "createNode", nodeId: 2, tag: 4, viewName: "RCTScrollContentView", surfaceId: 1, props: {} },
+      { op: "createNode", nodeId: 3, tag: 6, viewName: "RCTScrollView", surfaceId: 1, props: {} },
+      { op: "appendChild", parentNodeId: 2, childNodeId: 1 },
+      { op: "appendChild", parentNodeId: 3, childNodeId: 2 },
+      { op: "completeRoot", surfaceId: 1, childSetId: 1 },
+    ];
+    expect(synthesizeScrollContentViews(canonical)).toEqual(canonical);
+  });
+
+  test("streams with clone ops pass through untouched", () => {
+    const withClone: MountInstruction[] = [
+      ...scrollWithDirectChildren,
+      { op: "cloneNodeWithNewProps", nodeId: 9, sourceNodeId: 3, newProps: {} },
+    ];
+    expect(synthesizeScrollContentViews(withClone)).toEqual(withClone);
+  });
+
+  test("composes with normalization: synthesized nodes get canonical tags", () => {
+    const out = normalizeInstructions(synthesizeScrollContentViews(scrollWithDirectChildren));
+    const creates = out.filter(
+      (i): i is Extract<MountInstruction, { op: "createNode" }> => i.op === "createNode",
+    );
+    expect(creates.map((i) => i.tag)).toEqual([2, 4, 6, 8]);
+  });
 });
