@@ -70,12 +70,13 @@ Renumber `reactTag`s to a canonical per-capture sequence. Kills the
 "fixtures must be appended in order or every golden shifts" fragility,
 makes captures cacheable/diffable, and is a prerequisite for capture
 inside arbitrarily-ordered test suites. **The utility landed**
-(`rn-harness/src/normalizeCapture.ts`, used by the Jest-capture
-package with an order-independence test), as did
+(`rn-harness/src/normalizeCapture.ts`) and is now applied by every
+harness capture path — the committed `rn-harness/out/` goldens are
+re-captured in normalized form, the full harness suite and the
+renderer's PNG golden suite both pass against them, and the old
+"append fixtures at the end or every golden shifts" rule is gone.
 `synthesizeScrollContentViews` (canonical ScrollView shape for
-Jest-preset captures, render-validated). Remaining: adopt
-normalization in `captureFixtures` and re-capture the committed
-goldens.
+Jest-preset captures) is render-validated. **Done.**
 
 ### 5. Fidelity: RTL
 

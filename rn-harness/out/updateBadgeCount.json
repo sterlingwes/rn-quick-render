@@ -1,14 +1,14 @@
 {
   "fixture": "updateBadgeCount",
-  "surfaceId": 19,
+  "surfaceId": 1,
   "instructionCount": 22,
   "instructions": [
     {
       "op": "createNode",
       "nodeId": 1,
-      "tag": 206,
+      "tag": 2,
       "viewName": "RCTRawText",
-      "surfaceId": 19,
+      "surfaceId": 1,
       "props": {
         "text": "Inbox"
       }
@@ -16,9 +16,9 @@
     {
       "op": "createNode",
       "nodeId": 2,
-      "tag": 208,
+      "tag": 4,
       "viewName": "RCTParagraph",
-      "surfaceId": 19,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 18,
@@ -35,9 +35,9 @@
     {
       "op": "createNode",
       "nodeId": 3,
-      "tag": 210,
+      "tag": 6,
       "viewName": "RCTRawText",
-      "surfaceId": 19,
+      "surfaceId": 1,
       "props": {
         "text": "0 unread"
       }
@@ -45,9 +45,9 @@
     {
       "op": "createNode",
       "nodeId": 4,
-      "tag": 212,
+      "tag": 8,
       "viewName": "RCTParagraph",
-      "surfaceId": 19,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 14,
@@ -64,9 +64,9 @@
     {
       "op": "createNode",
       "nodeId": 5,
-      "tag": 214,
+      "tag": 10,
       "viewName": "RCTView",
-      "surfaceId": 19,
+      "surfaceId": 1,
       "props": {
         "style": {
           "padding": 16,
@@ -95,7 +95,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 19,
+      "surfaceId": 1,
       "childSetId": 1
     },
     {
@@ -167,7 +167,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 19,
+      "surfaceId": 1,
       "childSetId": 2
     }
   ]

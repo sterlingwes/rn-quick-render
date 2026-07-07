@@ -208,7 +208,9 @@ between them:
   against `renderer/src/test/snapshots/`; `-Drenderer.record=true`
   re-records. Matrix tests parameterize device / font-scale / theme.
 
-One gotcha worth knowing: Fabric assigns monotonically increasing
-`reactTag`s per process, so fixtures must be captured in a stable order
-— new fixtures are appended to the end of both `captureFixtures.ts` and
-the Jest test list, or every subsequent golden shifts.
+Captures are canonicalized before they're written or compared
+(`rn-harness/src/normalizeCapture.ts`): `reactTag`s renumber per
+capture and scroll-content wrappers are synthesized when absent, so a
+golden is a pure function of its fixture — capture order in the
+process doesn't matter. New fixtures must be added to both
+`captureFixtures.ts` and the Jest test list.

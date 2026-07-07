@@ -131,9 +131,10 @@ applies it before writing, and the suite includes an empirical
 order-independence test: capturing the same element twice — where raw
 Fabric tags necessarily differ — produces identical instruction
 streams. This is the same fragility that forced append-only fixture
-ordering in the harness repo; adopting normalization for the committed
-`rn-harness/out/` goldens is a separate pass (it rewrites every golden,
-and re-capturing needs the bluesky submodule).
+ordering in the harness repo — since eliminated there too: every
+harness capture path canonicalizes, the committed goldens are
+re-captured in normalized form, and the renderer's PNG suite confirmed
+the renumbering is pixel-neutral.
 
 ## Packaging lessons (learned the hard way)
 

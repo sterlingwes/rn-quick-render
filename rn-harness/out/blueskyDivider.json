@@ -1,14 +1,14 @@
 {
   "fixture": "blueskyDivider",
-  "surfaceId": 25,
+  "surfaceId": 1,
   "instructionCount": 8,
   "instructions": [
     {
       "op": "createNode",
       "nodeId": 1,
-      "tag": 320,
+      "tag": 2,
       "viewName": "RCTView",
-      "surfaceId": 25,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -27,9 +27,9 @@
     {
       "op": "createNode",
       "nodeId": 2,
-      "tag": 322,
+      "tag": 4,
       "viewName": "RCTView",
-      "surfaceId": 25,
+      "surfaceId": 1,
       "props": {
         "style": {
           "padding": 24,
@@ -45,9 +45,9 @@
     {
       "op": "createNode",
       "nodeId": 3,
-      "tag": 324,
+      "tag": 6,
       "viewName": "RCTView",
-      "surfaceId": 25,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flex": 1
@@ -71,7 +71,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 25,
+      "surfaceId": 1,
       "childSetId": 1
     }
   ]

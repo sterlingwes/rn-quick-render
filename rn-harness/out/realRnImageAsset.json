@@ -1,14 +1,14 @@
 {
   "fixture": "realRnImageAsset",
-  "surfaceId": 23,
+  "surfaceId": 1,
   "instructionCount": 6,
   "instructions": [
     {
       "op": "createNode",
       "nodeId": 1,
-      "tag": 304,
+      "tag": 2,
       "viewName": "RCTImageView",
-      "surfaceId": 23,
+      "surfaceId": 1,
       "props": {
         "src": [
           {
@@ -48,9 +48,9 @@
     {
       "op": "createNode",
       "nodeId": 2,
-      "tag": 306,
+      "tag": 4,
       "viewName": "RCTView",
-      "surfaceId": 23,
+      "surfaceId": 1,
       "props": {
         "style": {
           "padding": 16,
@@ -74,7 +74,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 23,
+      "surfaceId": 1,
       "childSetId": 1
     }
   ]

@@ -118,9 +118,9 @@ Node always captures; the Android engine renders in-process on a plain JVM, whil
 
 ## Important patterns and gotchas
 
-### Fixture ordering matters
+### Fixture lists live in two places
 
-Fixtures must appear in **the same order** in both `captureFixtures.ts` and `mount-instructions.test.ts`. Fabric assigns monotonically increasing `reactTag` IDs, so adding a fixture in the wrong position shifts all subsequent tags and breaks goldens. **Always append new fixtures at the end of both lists.**
+Every fixture must appear in both `captureFixtures.ts` and `mount-instructions.test.ts`. Ordering no longer matters for goldens: `renderFixture`/`renderFrames`/`renderConcurrent` canonicalize every capture through `normalizeCapture.ts` (reactTags renumbered per capture, surfaces to 1), so a golden is a pure function of its fixture. Convention is still to append at the end so diffs stay tidy.
 
 ### Golden management
 
