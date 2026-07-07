@@ -32,3 +32,6 @@ hs_err_pid*.log
 
 # Local env
 local.properties
+
+# Node packages
+node_modules/

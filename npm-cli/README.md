@@ -77,6 +77,31 @@ Named device profiles: `smallPhone` / `pixel5` / `pixel7Pro` /
 `tablet`. Named font scales: `compact` / `default` / `large` /
 `a11y` / `a11yMax`.
 
+### verify — render + diff Jest-captured snapshots
+
+Consumes the artifacts a Jest run emitted via
+[`rn-quick-render-jest`](../npm-jest/README.md): merges the per-worker
+manifests, renders the requested device × font-scale matrix in one warm
+JVM (`--batch` under the hood), and pixel-diffs each PNG against
+committed goldens.
+
+```bash
+# verify everything captured by the last test run
+rn-quick-render verify __screensnaps__ --goldens snaps-goldens
+
+# render only a subset (e.g. CI scoping to changed components)
+rn-quick-render verify __screensnaps__ --goldens snaps-goldens --filter inbox
+rn-quick-render verify __screensnaps__ --goldens snaps-goldens --test-path InboxCard
+
+# bless the current renders as goldens
+rn-quick-render verify __screensnaps__ --goldens snaps-goldens --record
+```
+
+Goldens default to a `<snapsDir>-goldens` sibling (commit that
+directory; the snaps dir itself is test output). Fresh renders land in
+`<snapsDir>/.renders/` for inspection on failure. Exit codes: 0 pass /
+recorded, 1 diff or render failure, 2 usage error.
+
 ## Requirements
 
 - **JDK 17+** on `$PATH` (or set `$JAVA_HOME`). The wrapper

@@ -113,6 +113,33 @@ full contract, including per-fixture native-module overrides and the
 opt-in catch-all auto-mock, is in
 [`docs/rendering-real-apps.md`](docs/rendering-real-apps.md).
 
+## Capturing from your existing Jest tests
+
+If your app already has a Jest suite, you can skip fixture authoring
+entirely: wherever a component renders in a test, capture it there —
+with your mocks and providers already applied — and render the
+artifacts in a separate, filterable step:
+
+```tsx
+import { screenSnapshot } from "rn-quick-render-jest";
+
+test("inbox renders", () => {
+  render(<InboxScreen {...props} />);      // your existing test
+  screenSnapshot(<InboxScreen {...props} />, {
+    name: "inboxScreen",
+    devices: ["pixel5", "tablet"],
+    colorSchemes: ["light", "dark"],
+  });
+});
+```
+
+```bash
+rn-quick-render verify __screensnaps__ --goldens snaps-goldens
+```
+
+Pre-alpha; validated on RN 0.83–0.85 stock Jest presets. See
+[`npm-jest/README.md`](npm-jest/README.md).
+
 ## Rendering across devices, font scales, and themes
 
 The renderer ships named device profiles (`smallPhone`, `pixel5`,
@@ -200,6 +227,7 @@ artifacts.
 | [`docs/rendering-real-apps.md`](docs/rendering-real-apps.md) | Rendering components from a real app: the mocking layers, asset/font pipelines, and what the harness expects you to bring. |
 | [`docs/fabric-mount-instructions.md`](docs/fabric-mount-instructions.md) | Reference: every Fabric mount-instruction type the capture stub records. |
 | [`docs/roadmap.md`](docs/roadmap.md) | What's next, across both engines. |
-| [`docs/proposals/jest-capture.md`](docs/proposals/jest-capture.md) | Proposal: capture snapshots from inside an existing Jest test suite. |
-| [`npm-cli/README.md`](npm-cli/README.md) | Android-engine CLI install, usage, troubleshooting. |
+| [`docs/proposals/jest-capture.md`](docs/proposals/jest-capture.md) | Design + status: capturing snapshots from inside an existing Jest suite. |
+| [`npm-jest/README.md`](npm-jest/README.md) | The `rn-quick-render-jest` capture package. |
+| [`npm-cli/README.md`](npm-cli/README.md) | Android-engine CLI install, usage, troubleshooting — including `verify`. |
 | [`npm-cli-ios/README.md`](npm-cli-ios/README.md) | iOS engine (simulator rendering over HTTP). |

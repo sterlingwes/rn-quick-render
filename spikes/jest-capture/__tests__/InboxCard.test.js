@@ -1,7 +1,8 @@
 import React from "react";
 import TestRenderer from "react-test-renderer";
 import { InboxCard } from "../src/InboxCard";
-import { screenSnapshot } from "../screenSnapshot";
+import { ThemedBanner } from "../src/ThemedBanner";
+import { screenSnapshot } from "rn-quick-render-jest";
 
 // The consumer's pre-existing mock — the real useUnreadCount throws to
 // prove the capture path can only succeed by inheriting this mock.
@@ -48,4 +49,21 @@ test("capture is order-independent: a later capture of the same element is ident
   const first = screenSnapshot(<InboxCard />, { name: "inboxCard-a" });
   const second = screenSnapshot(<InboxCard />, { name: "inboxCard-b" });
   expect(second.instructions).toEqual(first.instructions);
+});
+
+test("colorSchemes captures per-scheme artifacts through the real useColorScheme boundary", () => {
+  const { artifacts } = screenSnapshot(<ThemedBanner />, {
+    name: "themedBanner",
+    colorSchemes: ["light", "dark"],
+  });
+
+  expect(artifacts.map((a) => a.scheme)).toEqual(["light", "dark"]);
+  expect(artifacts[1].artifactPath).toMatch(/themedBanner__dark\.json$/);
+
+  const light = JSON.stringify(artifacts[0].instructions);
+  const dark = JSON.stringify(artifacts[1].instructions);
+  expect(light).toContain("Light mode");
+  expect(light).toContain("#FAFAFA");
+  expect(dark).toContain("Dark mode");
+  expect(dark).toContain("#111111");
 });

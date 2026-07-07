@@ -19,6 +19,12 @@ npm --prefix rn-harness run capture   # rewrite out/*.json from scratch
 ./gradlew :renderer:packageForNpm                        # stage for build host
 ./gradlew :renderer:packageForNpm -Ptarget=linux         # stage linux-x64 via Docker
 
+# Jest capture package (rn-quick-render-jest)
+cd npm-jest && npm install && npm run build              # bundle to dist/ (committed; CI checks drift)
+cd spikes/jest-capture && npm install && npx jest        # consumer-shaped test bed
+node spikes/jest-capture/run-matrix-probe.js 0.84.1 19.2.3 0.84.1   # RN version probe
+cd npm-cli && npm test                                   # verify-subcommand unit tests
+
 # iOS engine — capture + simulator render over HTTP
 export RN_QUICK_RENDER_IOS_SERVER=http://127.0.0.1:8080  # rn-ios-render-server
 export RN_QUICK_RENDER_IOS_API_KEY=<your-key>
@@ -88,7 +94,9 @@ Node always captures; the Android engine renders in-process on a plain JVM, whil
 | `renderer/src/test/snapshots/matrix/` | Device/font-scale/theme matrix PNGs. |
 | `renderer/cmake/` | CMake build for Yoga JNI (`libyoga.so` / `.dylib` / `.dll`). |
 | `renderer/docker/` | Dockerfile for linux-x64 cross-build of Yoga. |
-| `npm-cli/` | **Android engine** packaging: Node launcher (`bin/rn-quick-render.js`) that execs the staged JVM renderer. Per-platform payloads under `dist-mac-arm/` and `dist-linux/`, populated by `:renderer:packageForNpm`. |
+| `npm-cli/` | **Android engine** packaging: Node launcher (`bin/rn-quick-render.js`) that execs the staged JVM renderer, plus the `verify` subcommand (`lib/verify.js`) that renders + pixel-diffs Jest-captured snapshots. Per-platform payloads under `dist-mac-arm/` and `dist-linux/`, populated by `:renderer:packageForNpm`. |
+| `npm-jest/` | `rn-quick-render-jest`: capture screen snapshots from inside a consumer app's Jest suite. Bundles the harness capture core (`captureStub` / `normalizeCapture`) into `dist/` (committed). `.npmrc` pins `legacy-peer-deps` so the package never carries its own react-native. |
+| `spikes/jest-capture/` | Consumer-shaped test bed for `npm-jest` (stock `@react-native/jest-preset`, own node_modules) + `run-matrix-probe.js` for RN version-matrix runs. Findings: `FINDINGS.md`. |
 | `npm-cli-ios/` | **iOS engine**: CLI (`bin/run`) that captures via `rn-harness`, then POSTs the stream to an external `rn-ios-render-server` (HTTP) for simulator rendering. `src/serverClient.ts` is the API client; `tests/` holds the fidelity goldens. Pre-alpha; see `npm-cli-ios/README.md`. |
 | `yoga/` | Git submodule: facebook/yoga (C++ layout engine, JNI bindings). |
 | `third_party/bluesky-social-app/` | Git submodule: real RN app source for the integration fixtures. |
@@ -184,6 +192,7 @@ Two workflows, triggered by path filters:
 | --- | --- | --- |
 | `phase-1-rn-harness.yml` | `rn-harness/**`, workflow file itself | Node 22, `npm ci && jest && capture && git diff` |
 | `phase-2-renderer.yml` | `renderer/**`, `yoga/**`, `rn-harness/out/**`, `gradle/**`, `build.gradle.kts`, `settings.gradle.kts`, workflow file itself | JDK 17, build Yoga JNI, `./gradlew :renderer:test`, upload PNG artifacts |
+| `jest-capture.yml` | `npm-jest/**`, `npm-cli/{bin,lib,test}/**`, capture-core harness files, `spikes/jest-capture/**`, workflow file itself | Node 22: build `npm-jest` + dist-drift check + `verify` unit tests; consumer-suite matrix across RN 0.83 / 0.84 / 0.85 |
 
 Both run on `ubuntu-latest`. The renderer workflow has a `workflow_dispatch` with `record` input to auto-commit new goldens.
 

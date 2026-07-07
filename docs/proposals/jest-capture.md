@@ -1,11 +1,22 @@
 # Proposal: capture snapshots from inside an existing Jest suite
 
-**Status: capture spike passed — GO.** A consumer-shaped Jest app
-(stock `@react-native/jest-preset`, no harness config) captures a
-renderer-ready artifact with the test's own mocks applied, needing only
-two packageable shims. Evidence and details:
-[`spikes/jest-capture/FINDINGS.md`](../../spikes/jest-capture/FINDINGS.md).
-The rest of this doc is the design going forward.
+**Status: built (pre-alpha).** The capture spike passed and the design
+below is now implemented:
+
+- **[`npm-jest/`](../../npm-jest)** — `rn-quick-render-jest`, the
+  capture package (`screenSnapshot` + lazy environment shims +
+  per-scheme capture). Green against RN 0.83.10 / 0.84.1 / 0.85.1
+  under each version's stock Jest preset (`jest-capture` CI workflow).
+- **`rn-quick-render verify`** — the separate render/diff step in
+  [`npm-cli/`](../../npm-cli): manifest merge + filtering → one warm
+  `--batch` render → pixel diff, with `--record`.
+- Spike evidence and packaging lessons:
+  [`spikes/jest-capture/FINDINGS.md`](../../spikes/jest-capture/FINDINGS.md).
+
+Not yet done: a JVM-in-the-loop run of `verify` (needs a machine that
+can build the renderer), ScrollView content-wrapper synthesis, an OSS
+app end-to-end, and publishing. The rest of this doc is the design
+rationale.
 
 ## Problem
 
@@ -177,12 +188,15 @@ Roughly in order of how much they threaten the idea:
 
 1. **RN version skew.** In-repo capture pins one RN version
    (0.85.1 today); in-consumer capture uses *their* RN. The capture
-   stub and `privateInterfaceStub` track Fabric internals that move
-   between releases. This is the project's largest pre-existing
-   architectural risk, and this proposal converts it from latent to
-   immediate. Prerequisite work: a version-matrix CI job that runs
-   capture against the last ~4 RN minors, a documented support range,
-   and a loud, actionable error outside it.
+   stub tracks Fabric internals that move between releases. This is
+   the project's largest pre-existing architectural risk, and this
+   proposal converts it from latent to immediate. **Mitigated so
+   far:** the consumer suite is green on 0.83.10 / 0.84.1 / 0.85.1
+   with zero per-version code (the NativeDOM shim self-skips when the
+   module doesn't exist), enforced by the `jest-capture` workflow's
+   version matrix. Widening/documenting the supported range tracks
+   with that matrix; a loud, actionable error outside it is still to
+   do.
 2. **RN Jest preset interactions.** ~~Whether `ReactFabric-dev` boots
    cleanly under the stock preset needs a spike.~~ **Resolved (GO)** —
    see [`spikes/jest-capture/FINDINGS.md`](../../spikes/jest-capture/FINDINGS.md).
@@ -247,10 +261,17 @@ If this lands, some current roadmap items get re-scoped:
 3. ~~Land capture normalization (tag renumbering) in the harness.~~
    **Done** — `normalizeCapture.ts` + unit tests; golden migration
    deferred to a re-capture pass.
-4. Extract the capture core into the publishable package: the
-   `setupFiles` shims + `screenSnapshot` (capture-only, JSON out).
-5. The `verify` render/diff CLI step over `--batch`, with record mode
-   and manifest filtering.
-6. RN version-matrix CI.
+4. ~~Extract the capture core into the publishable package.~~ **Done**
+   — [`npm-jest/`](../../npm-jest), bundling the harness capture core
+   so there's one source of truth and no `file:` dependency at publish
+   time.
+5. ~~The `verify` render/diff CLI step over `--batch`, with record
+   mode and manifest filtering.~~ **Done** — `npm-cli/lib/verify.js`,
+   unit-tested with an injected renderer; still needs one
+   JVM-in-the-loop run on a machine that can build the renderer.
+6. ~~RN version-matrix CI.~~ **Done** — `jest-capture` workflow runs
+   the consumer suite against 0.83 / 0.84 / 0.85.
 7. Run it against one OSS app end-to-end; feed the resulting captures
-   into the renderer's stress-test corpus.
+   into the renderer's stress-test corpus. (Needs network access to
+   clone the app — first environment-unblocked follow-up, together
+   with the render leg.)

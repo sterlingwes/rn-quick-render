@@ -1,10 +1,19 @@
 # Spike: Fabric capture inside a consumer app's stock Jest setup
 
-**Verdict: GO.** Fabric mount-instruction capture works inside a
-consumer-shaped Jest environment (`@react-native/jest-preset`, no
-harness config), inherits the test's `jest.mock`s, and emits an
-artifact byte-compatible with the JVM renderer's input contract. Two
-small shims were needed, both packageable as a setup file.
+**Verdict: GO — and since productized.** Fabric mount-instruction
+capture works inside a consumer-shaped Jest environment
+(`@react-native/jest-preset`, no harness config), inherits the test's
+`jest.mock`s, and emits an artifact byte-compatible with the JVM
+renderer's input contract. Two small shims were needed, both
+packageable as a setup file.
+
+The prototype described below graduated into the
+[`npm-jest/`](../../npm-jest) package (`rn-quick-render-jest`); this
+directory is now its consumer-shaped test bed, and
+`run-matrix-probe.js` re-runs the suite against other RN versions
+(green on 0.83.10 / 0.84.1 / 0.85.1 — see the `jest-capture` CI
+workflow). The render/diff side is `rn-quick-render verify` in
+[`npm-cli/`](../../npm-cli).
 
 This validates risk #1 of [`docs/proposals/jest-capture.md`](../../docs/proposals/jest-capture.md)
 (preset interactions) and the two-step model: the Jest run writes
@@ -115,6 +124,27 @@ ordering in the harness repo; adopting normalization for the committed
 `rn-harness/out/` goldens is a separate pass (it rewrites every golden,
 and re-capturing needs the bluesky submodule).
 
+## Packaging lessons (learned the hard way)
+
+Two failure modes surfaced while extracting the package, both about
+`file:` installs and worth remembering for the publish pass:
+
+- **npm auto-installs peer deps into the package's own node_modules.**
+  `rn-quick-render-jest` declares `react-native` as a peer; a plain
+  `npm install` in the package dir pulled in react-native **0.86** —
+  and under RN 0.85's preset the `moduleNameMapper` silently redirected
+  every RN require to the consumer's copy, masking the problem. Under
+  RN 0.84 (whose in-package preset has no such mapping) the package's
+  own 0.86 copy loaded, unmocked, and exploded with
+  `__fbBatchedBridgeConfig is not set`. Fix: `legacy-peer-deps=true` in
+  the package's `.npmrc` — the package must never carry its own RN.
+- **`file:` symlinks put the dist outside node_modules' real path**, so
+  the consumer's babel transform rewrites it (injecting
+  `@babel/runtime` helpers it can't resolve) and module resolution
+  walks the wrong tree. Fix: `install-links=true` in consumers of the
+  in-repo package — npm copies it into node_modules, matching the
+  published layout. Published installs never hit either problem.
+
 ## Cost observations
 
 Whole suite (RTR test + capture test) runs in ~0.8 s warm on this
@@ -123,14 +153,19 @@ container; the capture test itself ~100–200 ms including the lazy
 practical concern at this scale; worth re-measuring inside a large app
 where the transform cache is the dominant term.
 
-## What the package needs (sharpened by this spike)
+## What the package needs (sharpened by this spike — all since built)
 
-- A `setupFiles` module with the two shims (replaces the earlier
-  assumption that we'd need `moduleNameMapper` entries — we don't).
-- `screenSnapshot(element, opts)` writing artifact + per-worker JSONL
-  manifest entries (`__screensnaps__/` here; name TBD).
-- A `render`/`verify` CLI step that merges manifests → `--batch`
-  manifest → PNG diff, with record mode and name/path filtering for
-  CI.
+- ~~A `setupFiles` module with the two shims~~ → shipped as lazy-by-default
+  shims in `npm-jest/src/shims.ts`, with an optional
+  `rn-quick-render-jest/setup` entry for apps that touch RN DOM APIs
+  before the first capture.
+- ~~`screenSnapshot(element, opts)` writing artifact + per-worker JSONL
+  manifest entries~~ → `npm-jest/src/index.ts`, including per-scheme
+  capture via `colorSchemes` (overrides RN's `useColorScheme()` hook,
+  `__dark`-suffixed artifacts).
+- ~~A `render`/`verify` CLI step~~ → `rn-quick-render verify`
+  (`npm-cli/lib/verify.js`), unit-tested with an injected fake renderer
+  (`npm-cli/test/verify.test.js`); the JVM leg still needs a machine
+  that can build the renderer.
 - The hollow-stream guard (`captured no host components`) proved
-  useful during the spike itself; keep it.
+  useful during the spike itself; kept.

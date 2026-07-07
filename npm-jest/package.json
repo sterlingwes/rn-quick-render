@@ -1,0 +1,39 @@
+{
+  "name": "rn-quick-render-jest",
+  "version": "0.1.0-prealpha.0",
+  "description": "Capture rn-quick-render screen snapshots from inside an existing Jest suite. Tests emit renderable mount-instruction artifacts; the rn-quick-render CLI renders and diffs them in a separate step.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./setup": "./dist/setup.js"
+  },
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node build.js && tsc --noEmit",
+    "prepack": "npm run build"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "esbuild": "^0.25.0",
+    "typescript": "5.7.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "react-native",
+    "jest",
+    "snapshot",
+    "visual-testing",
+    "rn-quick-render"
+  ],
+  "private": true
+}

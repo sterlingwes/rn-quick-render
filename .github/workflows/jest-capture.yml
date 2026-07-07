@@ -1,0 +1,94 @@
+name: jest-capture
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "npm-jest/**"
+      - "npm-cli/bin/**"
+      - "npm-cli/lib/**"
+      - "npm-cli/test/**"
+      - "npm-cli/package.json"
+      - "rn-harness/src/captureStub.ts"
+      - "rn-harness/src/normalizeCapture.ts"
+      - "rn-harness/src/types.ts"
+      - "spikes/jest-capture/**"
+      - ".github/workflows/jest-capture.yml"
+  pull_request:
+    paths:
+      - "npm-jest/**"
+      - "npm-cli/bin/**"
+      - "npm-cli/lib/**"
+      - "npm-cli/test/**"
+      - "npm-cli/package.json"
+      - "rn-harness/src/captureStub.ts"
+      - "rn-harness/src/normalizeCapture.ts"
+      - "rn-harness/src/types.ts"
+      - "spikes/jest-capture/**"
+      - ".github/workflows/jest-capture.yml"
+  workflow_dispatch:
+
+jobs:
+  build-and-unit:
+    name: npm-jest build + verify CLI unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build rn-quick-render-jest
+        working-directory: npm-jest
+        run: |
+          npm ci
+          npm run build
+
+      - name: Fail on committed-dist drift
+        run: git diff --exit-code npm-jest/dist
+
+      - name: verify subcommand unit tests
+        working-directory: npm-cli
+        run: |
+          npm ci
+          npm test
+
+  consumer-matrix:
+    name: capture under RN ${{ matrix.rn }} (stock Jest preset)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # RN >= 0.85 uses the standalone @react-native/jest-preset.
+          - rn: "0.85.1"
+            react: "19.2.5"
+            babel-preset: "0.85.3"
+            jest-preset: "0.85.1"
+          # RN <= 0.84 ships the preset inside the react-native package.
+          - rn: "0.84.1"
+            react: "19.2.3"
+            babel-preset: "0.84.1"
+          - rn: "0.83.10"
+            react: "19.2.0"
+            babel-preset: "0.83.10"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build rn-quick-render-jest
+        working-directory: npm-jest
+        run: |
+          npm ci
+          npm run build
+
+      - name: Run consumer suite against RN ${{ matrix.rn }}
+        run: |
+          node spikes/jest-capture/run-matrix-probe.js \
+            "${{ matrix.rn }}" "${{ matrix.react }}" \
+            "${{ matrix.babel-preset }}" "${{ matrix.jest-preset }}"

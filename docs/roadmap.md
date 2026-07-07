@@ -29,12 +29,17 @@ The single biggest lever on "painless": capture snapshots from inside
 an app's existing Jest suite, where the app's own mocks already tame
 the module graph — instead of hand-porting mocks per target. Also the
 cheapest path to a large, high-fidelity stress-test corpus from OSS
-apps. Design, risks, and sequencing:
-[`proposals/jest-capture.md`](proposals/jest-capture.md). The go/no-go
-spike **passed** — capture works under a stock
-`@react-native/jest-preset` app with two packageable shims
-([`spikes/jest-capture/FINDINGS.md`](../spikes/jest-capture/FINDINGS.md));
-next steps are in the proposal.
+apps. Design and status:
+[`proposals/jest-capture.md`](proposals/jest-capture.md).
+
+**Built (pre-alpha):** the [`npm-jest/`](../npm-jest) package
+(`screenSnapshot`, per-scheme capture, lazy shims; green on RN
+0.83–0.85 under each stock preset via the `jest-capture` CI matrix)
+and the `rn-quick-render verify` render/diff subcommand
+(manifest merge + filtering → one warm `--batch` render → pixel diff,
+`--record` to bless). **Remaining:** one JVM-in-the-loop `verify` run,
+ScrollView content-wrapper synthesis in normalization, an OSS-app
+end-to-end, npm publish.
 
 ### 2. RN version compatibility
 
