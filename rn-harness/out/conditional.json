@@ -1,14 +1,14 @@
 {
   "fixture": "conditional",
-  "surfaceId": 15,
+  "surfaceId": 1,
   "instructionCount": 26,
   "instructions": [
     {
       "op": "createNode",
       "nodeId": 1,
-      "tag": 52,
+      "tag": 2,
       "viewName": "RCTView",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 8,
@@ -22,9 +22,9 @@
     {
       "op": "createNode",
       "nodeId": 2,
-      "tag": 54,
+      "tag": 4,
       "viewName": "RCTRawText",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "text": "Unread message"
       }
@@ -32,9 +32,9 @@
     {
       "op": "createNode",
       "nodeId": 3,
-      "tag": 56,
+      "tag": 6,
       "viewName": "RCTParagraph",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 14,
@@ -50,9 +50,9 @@
     {
       "op": "createNode",
       "nodeId": 4,
-      "tag": 58,
+      "tag": 8,
       "viewName": "RCTView",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "row",
@@ -74,9 +74,9 @@
     {
       "op": "createNode",
       "nodeId": 5,
-      "tag": 60,
+      "tag": 10,
       "viewName": "RCTRawText",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "text": "Read message"
       }
@@ -84,9 +84,9 @@
     {
       "op": "createNode",
       "nodeId": 6,
-      "tag": 62,
+      "tag": 12,
       "viewName": "RCTParagraph",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 14,
@@ -102,9 +102,9 @@
     {
       "op": "createNode",
       "nodeId": 7,
-      "tag": 64,
+      "tag": 14,
       "viewName": "RCTView",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "row",
@@ -121,9 +121,9 @@
     {
       "op": "createNode",
       "nodeId": 8,
-      "tag": 66,
+      "tag": 16,
       "viewName": "RCTView",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 8,
@@ -137,9 +137,9 @@
     {
       "op": "createNode",
       "nodeId": 9,
-      "tag": 68,
+      "tag": 18,
       "viewName": "RCTRawText",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "text": "Another unread"
       }
@@ -147,9 +147,9 @@
     {
       "op": "createNode",
       "nodeId": 10,
-      "tag": 70,
+      "tag": 20,
       "viewName": "RCTParagraph",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 14,
@@ -165,9 +165,9 @@
     {
       "op": "createNode",
       "nodeId": 11,
-      "tag": 72,
+      "tag": 22,
       "viewName": "RCTView",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "row",
@@ -189,9 +189,9 @@
     {
       "op": "createNode",
       "nodeId": 12,
-      "tag": 74,
+      "tag": 24,
       "viewName": "RCTView",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "column",
@@ -226,7 +226,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 15,
+      "surfaceId": 1,
       "childSetId": 1
     }
   ]

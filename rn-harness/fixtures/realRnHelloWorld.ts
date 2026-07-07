@@ -9,7 +9,7 @@ import { loadRealRn } from "../src/loadRealRn";
 // already understands.
 //
 // Everything above the rendered component is the developer's
-// responsibility (see docs/phase-3.md "What the developer brings") —
+// responsibility (see docs/rendering-real-apps.md) —
 // this fixture supplies its own native-module overrides if/when the
 // renderer needs them.
 

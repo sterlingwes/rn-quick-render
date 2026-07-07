@@ -1,360 +1,233 @@
 # rn-quick-render
 
-Headless React Native snapshot rendering. **One capture front-end, two
-render engines.** A shared Node harness (`rn-harness/`) boots Fabric
-outside an app and records the mount-instruction stream; that JSON then
-fans out to either render engine:
+Headless React Native snapshot rendering. Render a React Native
+component to a PNG on a plain Linux/macOS machine — no emulator, no
+Metro, no Android Gradle Plugin.
 
-- **Android engine** (`npm-cli/`) — paints the stream through Android's
-  `layoutlib` to PNGs on a plain JVM, in-process, on Linux. No Paparazzi,
-  no AGP, no emulator. This is the path the numbered phases below built.
-- **iOS engine** (`npm-cli-ios/`) — POSTs the same stream to an external
-  `rn-ios-render-server` (a private companion service) that renders on a
-  real iOS simulator. Pre-alpha; the only coupling to
-  the backend is its HTTP API.
-
-The instruction stream is the contract between capture and both engines —
-see [`docs/roadmap.md`](docs/roadmap.md) for the two-engine model and the
-re-sequenced backlog across both tracks.
-
-See [`docs/explore-plan.md`](docs/explore-plan.md) for the original
-exploration plan, [`docs/phase-2-translator.md`](docs/phase-2-translator.md)
-for the Android renderer design,
-[`docs/phase-2.5.md`](docs/phase-2.5.md) for per-item fidelity status,
-[`docs/phase-3.md`](docs/phase-3.md) for what it takes to render
-a screen from a real RN app, [`docs/phase-4.md`](docs/phase-4.md)
-for the device / theme / perf matrix,
-[`docs/phase-5.md`](docs/phase-5.md) for the packaging /
-distribution plan, and [`npm-cli-ios/README.md`](npm-cli-ios/README.md)
-for the iOS engine.
-
-## Status at a glance
-
-The numbered phases below are the **Android engine** roadmap. The shared
-front-end and the iOS engine are tracked separately; see
-[`docs/roadmap.md`](docs/roadmap.md) for the cross-track sequencing.
-
-### Shared front-end (`rn-harness/`)
-
-| Capability | Status |
-| --- | --- |
-| Fabric mount-instruction capture in Node | ✅ 20 fixtures, CI green |
-| Real-app boot (`loadRealRn`) + 3-tier native-module shim | ✅ used by Phase 3 fixtures |
-| Concurrent / multi-frame capture (`renderFrames`, `suspendedText`) | ✅ landed — `concurrentRoot=false` per frame still gives synchronous commits, but multi-frame and Suspense-driven fixtures are now captured |
-| Default mock layer (curated pack + opt-in catch-all) | ✅ reanimated / svg / gesture-handler / screens / safe-area-context / async-storage / netinfo / lottie / fast-image render as placeholder Views; `RN_HARNESS_AUTOMOCK_UNRESOLVED` routes any other unresolved import to a permissive proxy. One mock serves both engines. |
-
-### Android engine (`npm-cli/`, `renderer/`)
-
-| Phase | What | Status |
-| --- | --- | --- |
-| 0 | Paparazzi validates layoutlib-on-Linux | ✅ done — retrospective only, module deleted |
-| 1 | Fabric mount-instruction capture in Node | ✅ (now part of the shared front-end above) |
-| 2 | Direct layoutlib renderer (Yoga JNI + text measurer + view builder) | ✅ PNG goldens committed and diffed per CI run |
-| 2.5 | Text spans, image loading, transforms, updates, fonts, RTL | 🟡 #1–#5 + #7 landed; only #6 (RTL) remains open. Latest fidelity fixes: Yoga `gap` / `rowGap` / `columnGap` plumbing, `textAlign` `TextView.gravity`, `marginLeft/Right: 'auto'`, `EXACTLY` measure-mode honor, shared `StyleFlattener` |
-| 3 | Render a real RN app screen (native-module shim + asset pipeline) | ✅ all 4 steps landed — four bsky-social-app fixtures ladder from primitive (Divider) → composite card (Admonition) → small form (PasswordUpdatedForm) → screen-sized onboarding step (StepInterests). Plan: [`docs/phase-3.md`](docs/phase-3.md) |
-| 4 | Device / theme matrix + perf | 🟡 steps 1 + 2b + 3 landed — device matrix (4 Android profiles); font-scale matrix (5 buckets bracketing iOS Dynamic Type + Android Font Size); theme matrix (light + dark driven by the platform `useColorScheme()` hook). RTL + perf + parallelization ahead. Plan: [`docs/phase-4.md`](docs/phase-4.md) |
-| 5 | Packaging (Gradle plugin + npm CLI) | 🟡 steps 1 + 3 + 3a landed — `--batch <manifest.json>` runs N renders in one warmed JVM (~9× wall-clock speedup); `npm-cli/` Node wrapper packages the JVM renderer for `npm install` consumption; Linux cross-target via Docker (`-Ptarget=linux`) builds linux-x64 bundles from any host. Gradle plugin + daemon mode + per-platform npm sub-packages ahead. Plan: [`docs/phase-5.md`](docs/phase-5.md) |
-
-### iOS engine (`npm-cli-ios/`)
-
-| Capability | Status |
-| --- | --- |
-| CLI: capture / render / snapshot / matrix / diff | ✅ working against a running `rn-ios-render-server` |
-| Light / dark + xxxl font-scale fidelity goldens | ✅ committed under `npm-cli-ios/tests/goldens/` |
-| Overall maturity | 🟡 pre-alpha. Known gaps: multi-frame surfacing flattened to one `instructions` array; publish-time packaging (the `rn-harness` `file:` dep won't resolve for end users); DSL hand-copied from the harness. See [`docs/roadmap.md`](docs/roadmap.md). |
-
-## Phase 0 — layoutlib validation (retrospective)
-
-Phase 0 used Paparazzi to confirm that Android's view system runs headless
-on a plain Linux JVM. Exit criteria were met on CI (`ubuntu-latest`, 4 vCPU /
-16 GB):
-
-| Metric | Value |
-| --- | --- |
-| JVM → first Paparazzi snapshot | 4.1 s |
-| Per-snapshot median | 121 ms |
-| Per-snapshot p95 | 158 ms |
-| Paparazzi-induced RSS delta | +71 MB |
-
-The `snapshots/` module and its Paparazzi-based tests were deleted in the
-Phase 2 pivot to a direct layoutlib bootstrap (commit `437e34a`). See
-[`docs/phase-2-translator.md`](docs/phase-2-translator.md) for why
-Paparazzi did not survive Phase 2; git history is the system of record
-for the Phase 0 implementation.
-
-## Phase 1 — Fabric mount-instruction capture in Node
-
-**Goal:** prove we can run React Native's Fabric JS renderer outside an app —
-no Metro, no emulator, no Gradle — by hand-stubbing the single global seam
-(`nativeFabricUIManager`) and recording every JS→native call it makes.
-
-**Exit criteria:**
-- Render 5 representative fixture screens (View nesting, Text, Image,
-  ScrollView, conditional component boundaries) through Fabric in pure Node.
-- Produce a deterministic JSON instruction stream per fixture — committed as
-  goldens and diffed on every CI run.
-- Document the full set of instruction types the translator has to implement.
-
-### What's under `rn-harness/`
-
-| Path | Purpose |
-| --- | --- |
-| `src/captureStub.ts` | In-memory `nativeFabricUIManager` that appends every `createNode` / clone / `appendChild*` / `completeRoot` call to an ordered array. |
-| `src/privateInterfaceStub.ts` | Narrow stand-in for `ReactNativePrivateInterface` — the only RN internal the Fabric renderer calls at runtime. Covers `createAttributePayload`, `diffAttributePayloads`, `ReactNativeViewConfigRegistry`, `Platform`, and a handful of instance/handle helpers. |
-| `src/loadFabric.ts` | Installs the globals and RN-internal stubs in the right order, then `require()`s `ReactFabric-dev.js`. Works under plain Node (via `require.cache`) and under Jest (via `moduleNameMapper`). |
-| `src/renderFixture.ts` | `ReactFabric.render(…, concurrentRoot=false)` → copy instructions → `stopSurface`. Synchronous commit, isolated per fixture. |
-| `src/captureFixtures.ts` | CLI that renders all five fixtures in a fixed order and writes `out/*.json`. |
-| `fixtures/*.ts` | Hand-written React trees using RN host types (`RCTView`, `RCTRawText`, `RCTImageView`, `RCTScrollView`, `RCTParagraph`). |
-| `out/*.json` | Committed goldens. |
-| `test/mount-instructions.test.ts` | Jest suite that re-renders each fixture and deep-equals against its golden. |
-| `docs/fabric-mount-instructions.md` | Catalogue of every call the renderer makes, cross-referenced with RN source lines. |
-
-### Local run
-
-```bash
-npm --prefix rn-harness install
-npm --prefix rn-harness test        # Jest: re-render + diff against goldens
-npm --prefix rn-harness run capture # rewrite out/*.json from scratch
+```
+your component (.tsx) ──► capture (Node) ──► mount-instruction JSON ──► render (JVM) ──► PNG
 ```
 
-### Phase 1 findings
+A Node harness boots React Native's Fabric renderer outside any app and
+records the mount-instruction stream a real device would receive. That
+JSON is then painted through Android's `layoutlib` — the same
+Android-on-a-JVM artifact that powers Android Studio's layout preview —
+with layout computed by the real Yoga engine and text measured with
+Android's real text stack.
 
-- The Fabric JS renderer talks to C++ through a single global
-  (`nativeFabricUIManager`) plus 10 mount-instruction functions. The full
-  catalogue is in [`docs/fabric-mount-instructions.md`](docs/fabric-mount-instructions.md).
-- Stream is self-contained for structural mount. Two gaps: text measurement
-  (requires a Yoga+Minikin measurer) and mount-changes emitted from native
-  threads outside JS (Reanimated, gesture handler). Phase 2 handles the first;
-  Phase 3's native-module audit handles the second.
-- Five fixtures, 84 total instructions, captured in <300 ms of Node time
-  (cold-includes-require). CI runs the whole loop — `npm ci && jest && capture
-  && git diff --quiet out/` — in under a minute.
+Because there's no emulator in the loop, a warm render takes ~100 ms
+and a whole device/font-scale/theme matrix runs in seconds.
 
-### Status
+> **Status: pre-alpha.** The pipeline works end-to-end (including
+> screens from a real open-source RN app), but packaging, published npm
+> distribution, and the capture API for existing test suites are still
+> in flight. See [`docs/roadmap.md`](docs/roadmap.md).
 
-| Check | Where |
-| --- | --- |
-| Fabric-dev boots under Node 22 with only globals + two internal stubs | ✅ locally + CI |
-| 5 fixture goldens render byte-identically on re-capture | ✅ `rn-harness/out/*.json` |
-| Catalogue of mount-instruction types with RN source line refs | ✅ `docs/fabric-mount-instructions.md` |
-| CI re-capture + golden diff | ✅ `.github/workflows/phase-1-rn-harness.yml` |
+An experimental **iOS engine** (`npm-cli-ios/`) reuses the same capture
+front-end and renders on a real iOS simulator via a companion HTTP
+service — see [`npm-cli-ios/README.md`](npm-cli-ios/README.md). The
+rest of this README covers the Android engine.
 
-### Resolved in Phase 2
+## Requirements
 
-- Text measurer landed as `LayoutlibTextMeasurer` (`TextPaint` +
-  `StaticLayout`) — no longer the char-width approximation that the
-  Phase 2 sketch started with.
+- **Node 22** — capture
+- **JDK 17+** — rendering
+- **CMake + a C++ toolchain** — one-time Yoga JNI build (from-source
+  checkout only; not needed once you use a staged `npm-cli/` bundle)
+- Git submodules checked out: `git submodule update --init --recursive`
 
-### Resolved after Phase 3
-
-- Concurrent-root capture landed (`support concurrent rendering`). The
-  harness now exposes `renderFrames()` and captures Suspense-driven
-  fixtures (`suspendedText`); each frame still commits synchronously
-  (`concurrentRoot=false`), so the stream stays deterministic. The
-  remaining gap is downstream: the iOS engine flattens multi-frame
-  captures to a single `instructions` array (see
-  [`docs/roadmap.md`](docs/roadmap.md)).
-
-## Phase 2 — Fabric → layoutlib renderer
-
-**Goal:** take a Phase 1 mount-instruction JSON stream and paint it through
-Android's `layoutlib` to a PNG on Linux. No Paparazzi, no Android Gradle
-Plugin, no emulator. See [`docs/phase-2-translator.md`](docs/phase-2-translator.md)
-for the design writeup and the architectural pivot away from Paparazzi.
-
-**Exit criteria:**
-- Direct `layoutlib` bootstrap on a plain JVM — `Bridge.init()` with the
-  fonts / ICU / native libs extracted from `layoutlib-runtime`. ✅
-- Yoga 3.2 running in-process via JNI (built from source), with a real
-  text measurer (`TextPaint` + `StaticLayout` over layoutlib's bundled
-  fonts). ✅
-- Kotlin translator (`FabricViewBuilder`) constructs a `FrameLayout`
-  tree with absolute positioning; layoutlib is reduced to a painter. ✅
-- One committed PNG golden per Phase 1 fixture, diffed on every CI run.
-  ⏳ Test harness landed; PNG goldens still need to be bootstrapped from
-  the first CI run (see _CI_ below).
-- Text / image / transform fidelity is honestly labelled as a Phase 2.5
-  backlog. ✅
-
-### What's under `renderer/`
-
-| Path | Purpose |
-| --- | --- |
-| `build.gradle.kts` | Yoga CMake build, `layoutlib-runtime` extraction, JNI lib resolution per host OS. |
-| `cmake/CMakeLists.txt` | Cross-platform JNI build of `libyoga.so` / `.dylib` / `.dll`. |
-| `src/main/java/com/facebook/yoga/YogaNative.java` | Patched: `System.loadLibrary` instead of SoLoader. |
-| `src/main/kotlin/.../LayoutlibBootstrap.kt` | `Bridge.init()` + `RenderSession` with stub `LayoutlibCallback`/`ResourceResolver`. |
-| `src/main/kotlin/.../FrameworkResourceLoader.kt` | Parses framework XML resources for the bridge's resolver (replaces `sdk-common`). |
-| `src/main/kotlin/.../YogaLayoutEngine.kt` | Kotlin port of the old `computeLayout.ts` — tree reconstruction + Yoga pass. |
-| `src/main/kotlin/.../LayoutlibTextMeasurer.kt` | `TextPaint` + `StaticLayout` text measurer, wired into Yoga's `setMeasureFunction`. |
-| `src/main/kotlin/.../FabricViewBuilder.kt` | Mount instructions + Yoga rects → `View` tree (FrameLayout + ScrollView + TextView + ImageView). |
-| `src/main/kotlin/.../SnapshotRenderer.kt` | End-to-end: JSON → layout → Views → `Bitmap` → `BufferedImage`. |
-| `src/main/kotlin/.../Main.kt` | CLI: stdin JSON → PNG. |
-| `src/test/kotlin/.../SnapshotRendererTest.kt` | One `@Test` per Phase 1 fixture; PNG golden-diff with optional `-Drenderer.record=true`. |
-| `src/test/snapshots/*.png` | Committed PNG goldens. Bootstrapped from the `phase2-fresh-renders` CI artifact. |
-| `.github/workflows/phase-2-renderer.yml` | Linux job: build Yoga JNI, run tests, upload PNG renders on every run. |
-
-### Phase 2 findings
-
-- Direct `Bridge.init()` is ~150 lines (bootstrap + framework resource
-  loader + a handful of stubs) and removes the AGP / Paparazzi dependency
-  graph entirely. The renderer module is a plain Kotlin `application`
-  module — any JDK 17 + CMake builds it.
-- Yoga ports cleanly between the TS and Kotlin versions of
-  `computeLayout`; the JNI bindings from upstream needed only a one-line
-  patch to swap `SoLoader` for `System.loadLibrary`.
-- Real text measurement via `TextPaint` + `StaticLayout` slots into
-  Yoga's `setMeasureFunction` without an IPC hop. The char-width
-  approximation that Phase 2's first sketch carried over from Node is
-  gone.
-- The previous Node-side Yoga split (`computeLayout.ts`,
-  `*.layout.json` goldens, `yoga-layout` npm dep) is deleted. Layout and
-  rendering live in the same process, in one language.
-
-### Local run
+## Quick start
 
 ```bash
-# Verify against committed goldens.
-./gradlew :renderer:test
+# 1. Install the capture harness.
+npm --prefix rn-harness install
 
-# Re-record committed goldens (intentional drift).
-./gradlew :renderer:test -Drenderer.record=true
+# 2. Capture a fixture to a mount-instruction JSON.
+npm --prefix rn-harness run capture     # writes rn-harness/out/*.json
 
-# One-off render via the CLI.
+# 3. Render it to a PNG.
 cat rn-harness/out/simpleView.json | \
   ./gradlew :renderer:run --args="--output /tmp/simpleView.png" -q
 ```
 
-Requires JDK 17 and a C++ toolchain with CMake on `PATH`. The Yoga
-submodule must be checked out (`git submodule update --init --recursive`).
-
-### Status
-
-| Check | Where |
-| --- | --- |
-| Yoga JNI builds from source on Linux + macOS | ✅ locally |
-| `LayoutlibBootstrap` creates a successful `RenderSession` | ✅ unit test |
-| `FabricViewBuilder` maps the 5 fixture instruction streams to View trees | ✅ unit test |
-| `LayoutlibTextMeasurer` returns Roboto-shaped metrics | ✅ unit test |
-| Per-fixture end-to-end PNG diff vs. committed golden | ⏳ harness landed; goldens bootstrapped from first green CI run |
-| CI workflow | ✅ `.github/workflows/phase-2-renderer.yml` (uploads PNGs on every run) |
-
-### Bootstrapping the goldens
-
-The committed-PNG directory (`renderer/src/test/snapshots/`) starts
-empty. Two ways to seed it:
-
-1. **Manual-dispatch the workflow with `record=true`** (recommended for
-   the first run). The job runs in record mode, writes the PNGs into
-   `renderer/src/test/snapshots/`, commits them as
-   `github-actions[bot]`, and pushes back to the dispatching branch.
-   Requires the workflow to run from a branch you control. Subsequent
-   runs without the `record` input default to verify mode.
-2. **Download + commit by hand.** Every run uploads
-   `renderer/build/snapshot-output/*.png` as the `phase2-fresh-renders`
-   artifact (even on failure). Download, eyeball, drop into
-   `renderer/src/test/snapshots/`, commit.
-
-After the goldens are in place, every push/PR verifies against them. A
-pixel diff fails the job and uploads the fresh renders for inspection.
-
-### Phase 2.5 status
-
-Per-item detail and findings live in
-[`docs/phase-2.5.md`](docs/phase-2.5.md). Snapshot:
-
-| # | Item | Status |
-| --- | --- | --- |
-| 1 | ScrollView row outline anomaly | ✅ resolved — canvas pre-fills with `windowBackgroundColor` |
-| 2 | Nested text styling | ✅ `ParagraphTextBuilder` + `SpannableStringBuilder` per-run spans |
-| 3 | Image loading | ✅ `data:` + `file://` decoding, 4 `resizeMode`s, `tintColor` via `PorterDuffColorFilter`, tolerates Metro-shaped sources (the capture-time `require()` resolver lives in Phase 3 #2) |
-| 4 | Update path (`cloneNodeWithNewProps` & friends) | ✅ multi-frame fixtures + `cloneInto` in both engines |
-| 5 | `transform` / `opacity` / `boxShadow` | ✅ + `ShadowProxyDrawable` for software-canvas blur approximation |
-| 6 | RTL | ⏳ Yoga root still hard-coded `DIRECTION_LTR` |
-| 7 | Custom font loading | ✅ `FontRegistry` + `SnapshotRenderer(fontRegistry=…)` + CLI `--fonts DIR` |
-| – | Concurrent-root capture | ✅ `renderFrames()` + `suspendedText` fixture; per-frame synchronous commit preserved |
-
-## Phase 3 — render one screen of a real RN app
-
-Boot the real `react-native` package under Node and feed a fixture
-that imports `<View>` / `<Text>` / `<Image>` from `react-native`
-through Fabric to the same mount-instruction stream the renderer
-already understands. Per-item plan and scope decisions live in
-[`docs/phase-3.md`](docs/phase-3.md). Status:
-
-| # | Item | Status |
-| --- | --- | --- |
-| 1 | `loadRealRn` + native-module proxy shim | ✅ `react-native` boots in Node + Jest; `NativeModules` / `TurboModuleRegistry` resolve through a 3-tier proxy (per-fixture overrides → sync defaults → deep no-op). Fixture: `realRnHelloWorld` |
-| 2 | `AssetRegistry` hook + capture-time `require()` interceptor | ✅ `require('./*.png')` produces an inline-`data:` URI source object; renderer decodes via existing `data:` path. Fixture: `realRnImageAsset` |
-| 3 | `captureFromAppKey` (AppRegistry-driven entry) | ✅ `AppRegistry.registerComponent(key, …)` round-trips through `AppContainer-prod` so captures match what `ReactRootView` mounts on a real device. Fixture: `realRnRegisteredApp` |
-| 4 | First-target integration (one screen from a public RN repo) | ✅ ramped leaf → screen across four tiers against `bluesky-social-app` (git-submoduled at `third_party/`; per-target resolver in `realAppResolver.ts` + `jestRnResolver.js` maps `#/...` tsconfig aliases + per-module mocks). **Tier 1** `Divider` (11 lines) end-to-end with one `#/alf` stub. **Tier 2** `Admonition` (150-line composite card; needed `alf`/`typography`/`button`/`icons` placeholder mocks). **Tier 3** `PasswordUpdatedForm` (43-line success page; added the `@lingui/*` macro stack — `msg` / `<Trans>` / `useLingui` — at runtime since the harness skips bsky's babel-plugin-macros). **Tier 4** `StepInterests` (~100-line onboarding screen rendered into a Pixel-5 viewport; added `Toggle` form context, `Onboarding` state + Layout pass-throughs, no-op `analytics` / `logger` / `Loader` stubs, plus a faithful resting-state slice of the real ~900-line `Button` so primary CTAs paint as solid pills with white text). |
-
-### Developer-responsibility boundary
-
-The harness handles the runtime plumbing (boot RN, intercept the
-mount stream, paint it). Everything *above* the component being
-rendered — props, context providers (navigation / Redux / theme),
-mocked network/storage responses, animated target values,
-placeholder swaps for unsupported children — is the developer's
-test wrapper to write, the same way Storybook stories work. See the
-"What the developer brings" section of
-[`docs/phase-3.md`](docs/phase-3.md) for the contract.
-
-## Phase 4 — device / theme matrix + perf
-
-**Goal:** prove the "render one component across N configs in
-parallel, faster than an emulator" value prop. See
-[`docs/phase-4.md`](docs/phase-4.md) for the plan and per-step
-status.
-
-| # | Item | Status |
-| --- | --- | --- |
-| 1 | Device matrix | ✅ `DeviceProfile` + `DeviceMatrixSnapshotTest` render `blueskyOnboardingInterests` across 4 Android profiles (smallPhone / pixel5 / pixel7Pro / tablet), each with its own bootstrap-cached layoutlib session and per-config PNG golden under `src/test/snapshots/matrix/` |
-| 2b | Font-scale matrix | ✅ `FontScale` + `FontScaleMatrixSnapshotTest` render the same fixture at 5 buckets (compact 0.85x, default 1.0x, large 1.30x, a11y 2.0x, a11yMax 3.10x) bracketing iOS Dynamic Type + Android Font Size. `--fontScale` CLI flag exposed for one-off renders. |
-| 3 | Theme matrix (light / dark) | ✅ Driven at the platform-API boundary — `setColorScheme()` patches RN's `useColorScheme` hook; bsky's alf mock's `useTheme()` calls that hook directly (mirroring real `useColorModeTheme`); capture pipeline writes per-scheme JSONs (`out/<fixture>__dark.json`); `ThemeMatrixSnapshotTest` picks the right input and emits per-scheme PNGs. |
-| 3b | RTL / locale | ⏳ couples to Phase 2.5 #6 |
-| 4 | Perf benchmark vs emulator baseline | ⏳ baseline numbers ahead; see Phase 5 step 1 for the amortisation foundation |
-| 5 | Parallel matrix execution | ⏳ not started — currently sequential per JUnit method |
-
-## Phase 5 — packaging / distribution
-
-**Goal:** turn the renderer into something usable from outside
-this repo, and amortise the `Bridge.init()` cost across many
-renders. Compilation-form options (Wasm, Kotlin/Native, GraalVM
-native-image) are all blocked by layoutlib being JVM Android
-bytecode — the perf wins live in **how the JVM is reused**, not
-in eliminating it. See [`docs/phase-5.md`](docs/phase-5.md) for
-the full plan and the blocked-options reasoning.
-
-| # | Item | Status |
-| --- | --- | --- |
-| 1 | `--batch <manifest.json>` CLI mode | ✅ one JVM, N renders, bootstrap cached per `DeviceProfile`. 3-entry × 2-device sanity check: 1.7 s wall vs ~15 s for separate invocations (~9× speedup). Default stays one-shot. |
-| 2 | Gradle plugin | ⏳ separate `renderer-plugin` module, declarative matrix DSL, depends on a capture task that runs the JS harness |
-| 3 | npm CLI wrapper | ✅ `npm-cli/` ships a thin Node wrapper that locates the staged runtime (jars + native libs + layoutlib data ~375 MB), validates JDK 17+, and execs Java. `./gradlew :renderer:packageForNpm` stages `npm-cli/dist-<host>/`. |
-| 3a | Linux cross-target | ✅ `packageForNpm -Ptarget=linux` produces `dist-linux/` from any host via a Docker-based Yoga cross-build (`docker/yoga-linux.Dockerfile`) + the linux variant of layoutlib-runtime. Smoke-tested by running the wrapper inside a `node:20` + JDK 17 container; PNG renders pixel-identical to the mac-arm output. |
-| 4 | Persistent daemon (`serve` mode) | ⏳ deferred — `--batch` covers the matrix / CI case without daemon machinery. Build when a single-fixture rapid-iteration workflow demands it. |
-| 5 | Snapshot-diff tooling integration | ⏳ pixel-diff + side-by-side HTML, or wire into existing tools (Reg-suit / Percy / Chromatic) |
-| 6 | Adoption docs + failure modes | ⏳ once steps 1–5 stabilise |
-
-## iOS engine — simulator rendering over HTTP
-
-A second render engine that reuses the shared capture front-end. The
-`npm-cli-ios/` CLI captures a fixture to the same Fabric mount-instruction
-JSON (via `rn-harness`), then POSTs it to an external
-`rn-ios-render-server` (a private companion service) which renders on a
-real iOS simulator and returns a PNG. The only coupling
-to the backend is its HTTP API (`POST /renders`, `/assets`) — no shared
-filesystem or deploy artefacts.
+Or, skip Gradle at render time by staging the npm CLI once:
 
 ```bash
-export RN_QUICK_RENDER_IOS_SERVER=http://127.0.0.1:8080
-export RN_QUICK_RENDER_IOS_API_KEY=<your-key>
-npm-cli-ios/bin/run snapshot examples/card.tsx --out card.png
+./gradlew :renderer:packageForNpm       # stages npm-cli/dist-<host>/
+cat rn-harness/out/simpleView.json | \
+  npm-cli/bin/rn-quick-render.js --output /tmp/simpleView.png
 ```
 
-**Status:** pre-alpha. Capture / render / snapshot / matrix / diff all work
-against a running server, with light/dark + xxxl fidelity goldens committed
-under `npm-cli-ios/tests/`. Open work (multi-frame surfacing, publish-time
-packaging, keeping the DSL single-sourced with the harness) is tracked in
-[`npm-cli-ios/README.md`](npm-cli-ios/README.md) and
-[`docs/roadmap.md`](docs/roadmap.md).
+See [`npm-cli/README.md`](npm-cli/README.md) for the CLI's full flag
+surface and troubleshooting.
+
+## Writing a fixture
+
+A fixture is a file whose default export is a React element. Two
+styles:
+
+**Real `react-native` components** — the harness boots the actual
+`react-native` package under Node with a native-module shim, so your
+component renders exactly as Fabric would mount it:
+
+```tsx
+import React from "react";
+import { loadRealRn } from "../src/loadRealRn";
+
+const { RN } = loadRealRn();
+const { View, Text } = RN;
+
+export default (
+  <View style={{ padding: 16 }}>
+    <Text style={{ fontSize: 20, fontWeight: "bold" }}>Hello</Text>
+  </View>
+);
+```
+
+**Host-element DSL** — lightweight, no RN module graph, useful for
+renderer-focused fixtures:
+
+```tsx
+import React from "react";
+import { RCTView, paragraph } from "./_dsl";
+
+export default React.createElement(
+  RCTView,
+  { style: { padding: 16, backgroundColor: "#fff" } },
+  paragraph("hello", { fontSize: 16 }),
+);
+```
+
+Multi-frame fixtures export an array of elements (each frame renders
+into the same surface, exercising the update path); Suspense/concurrent
+fixtures export a `{ type: "concurrent", element, settle }` object. See
+[`rn-harness/fixtures/`](rn-harness/fixtures/) for examples of every
+shape.
+
+Components that pull in heavy native-backed libraries (reanimated, svg,
+gesture-handler, screens, async-storage, …) work out of the box: the
+harness ships a curated mock pack that renders them as placeholder
+views, and everything above your component — props, providers, data —
+is yours to supply in the fixture, exactly like a Storybook story. The
+full contract, including per-fixture native-module overrides and the
+opt-in catch-all auto-mock, is in
+[`docs/rendering-real-apps.md`](docs/rendering-real-apps.md).
+
+## Capturing from your existing Jest tests
+
+If your app already has a Jest suite, you can skip fixture authoring
+entirely: wherever a component renders in a test, capture it there —
+with your mocks and providers already applied — and render the
+artifacts in a separate, filterable step:
+
+```tsx
+import { screenSnapshot } from "rn-quick-render-jest";
+
+test("inbox renders", () => {
+  render(<InboxScreen {...props} />);      // your existing test
+  screenSnapshot(<InboxScreen {...props} />, {
+    name: "inboxScreen",
+    devices: ["pixel5", "tablet"],
+    colorSchemes: ["light", "dark"],
+  });
+});
+```
+
+```bash
+rn-quick-render verify __screensnaps__ --goldens snaps-goldens
+```
+
+Pre-alpha; validated on RN 0.83–0.85 stock Jest presets. See
+[`npm-jest/README.md`](npm-jest/README.md).
+
+## Rendering across devices, font scales, and themes
+
+The renderer ships named device profiles (`smallPhone`, `pixel5`,
+`pixel7Pro`, `tablet` — chosen to bracket the dp-width buckets RN
+breakpoint hooks branch on) and font-scale buckets (`compact` 0.85×,
+`default` 1.0×, `large` 1.3×, `a11y` 2.0×, `a11yMax` 3.1× — bracketing
+iOS Dynamic Type and Android Font Size).
+
+One-off:
+
+```bash
+cat out/myScreen.json | rn-quick-render --output out.png --fontScale 2.0
+```
+
+Fan a matrix out across one warm JVM with `--batch` (the expensive
+`Bridge.init()` is paid once per device profile, not once per render —
+roughly a 9× wall-clock win over separate invocations):
+
+```json
+{
+  "fonts": "android/app/src/main/assets/fonts",
+  "entries": [
+    { "input": "out/myScreen.json", "output": "renders/myScreen_pixel5.png", "device": "pixel5" },
+    { "input": "out/myScreen.json", "output": "renders/myScreen_tablet.png", "device": "tablet" },
+    { "input": "out/myScreen__dark.json", "output": "renders/myScreen_pixel5_dark.png", "device": "pixel5" }
+  ]
+}
+```
+
+```bash
+rn-quick-render --batch manifest.json
+```
+
+**Dark mode** is a capture-time concern, not a render flag: the harness's
+`setColorScheme("dark")` overrides RN's `useColorScheme()` hook — the
+same API real apps derive their theme from — and the capture is written
+with a `__dark` suffix. The renderer just paints whatever colors landed
+in the stream.
+
+**Custom fonts**: pass `--fonts <dir>` (e.g. your app's
+`android/app/src/main/assets/fonts/`) and every `.ttf`/`.otf` is
+registered by filename; unknown families fall back to Roboto with a
+logged warning.
+
+## What renders faithfully (and what doesn't)
+
+Supported today: view nesting and full flexbox layout (real Yoga),
+nested text spans (size/weight/color/style per run), local images
+(`data:`/`file://`, all `resizeMode`s, `tintColor`), ScrollView (resting
+state), transforms, opacity, `boxShadow` (blur approximated on the
+software canvas), custom fonts, multi-frame updates, and
+Suspense-driven commits.
+
+Known gaps, by design or pending:
+
+- **RTL** — the Yoga root is currently hard-coded LTR.
+- **Animations and gestures** render at their resting/initial state; a
+  snapshot is a single frame.
+- **HTTP image sources** are not fetched — pin assets locally.
+- **Custom native views** (maps, charts, svg internals) render as
+  placeholder rects unless you swap them out in your fixture.
+- Rendering happens on layoutlib's software canvas: most pixels match a
+  device exactly, but hardware-accelerated effects (platform elevation
+  shadows, blurs) are approximated.
+
+## Verifying and testing
+
+Both stages are golden-tested:
+
+```bash
+npm --prefix rn-harness test                     # JSON capture goldens (Jest)
+./gradlew :renderer:test                         # PNG render goldens (JUnit)
+./gradlew :renderer:test -Drenderer.record=true  # re-record PNGs after intentional drift
+```
+
+Matrix goldens live under `renderer/src/test/snapshots/matrix/`. CI
+re-runs both suites on every push and uploads fresh renders as
+artifacts.
+
+## Documentation
+
+| Doc | What's in it |
+| --- | --- |
+| [`docs/architecture.md`](docs/architecture.md) | How the pipeline works: capture, the mount-instruction contract, Yoga + layoutlib rendering, and the key design decisions. |
+| [`docs/rendering-real-apps.md`](docs/rendering-real-apps.md) | Rendering components from a real app: the mocking layers, asset/font pipelines, and what the harness expects you to bring. |
+| [`docs/fabric-mount-instructions.md`](docs/fabric-mount-instructions.md) | Reference: every Fabric mount-instruction type the capture stub records. |
+| [`docs/roadmap.md`](docs/roadmap.md) | What's next, across both engines. |
+| [`docs/proposals/jest-capture.md`](docs/proposals/jest-capture.md) | Design + status: capturing snapshots from inside an existing Jest suite. |
+| [`npm-jest/README.md`](npm-jest/README.md) | The `rn-quick-render-jest` capture package. |
+| [`npm-cli/README.md`](npm-cli/README.md) | Android-engine CLI install, usage, troubleshooting — including `verify`. |
+| [`npm-cli-ios/README.md`](npm-cli-ios/README.md) | iOS engine (simulator rendering over HTTP). |

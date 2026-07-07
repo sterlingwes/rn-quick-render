@@ -1,6 +1,6 @@
 {
   "fixture": "simpleView",
-  "surfaceId": 11,
+  "surfaceId": 1,
   "instructionCount": 4,
   "instructions": [
     {
@@ -8,7 +8,7 @@
       "nodeId": 1,
       "tag": 2,
       "viewName": "RCTView",
-      "surfaceId": 11,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 320,
@@ -29,7 +29,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 11,
+      "surfaceId": 1,
       "childSetId": 1
     }
   ]

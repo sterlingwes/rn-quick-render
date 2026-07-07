@@ -1,0 +1,21 @@
+{
+  "name": "jest-capture-spike",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Spike: capture Fabric mount instructions from inside a consumer app's stock Jest setup (preset: 'react-native'). See FINDINGS.md.",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "19.2.5",
+    "react-native": "0.85.1"
+  },
+  "devDependencies": {
+    "@react-native/babel-preset": "^0.85.3",
+    "@react-native/jest-preset": "^0.85.1",
+    "babel-jest": "29.7.0",
+    "jest": "29.7.0",
+    "react-test-renderer": "19.2.0",
+    "rn-quick-render-jest": "file:../../npm-jest"
+  }
+}

@@ -1,23 +1,29 @@
 # AGENTS.md — rn-quick-render
 
-Headless React Native snapshot renderer. **One capture front-end, two render engines.** A shared Node harness (`rn-harness/`) captures Fabric mount instructions, then the resulting JSON fans out to either engine: the **Android engine** (`npm-cli/` + `renderer/`) paints it through Android's `layoutlib` to PNGs on a plain JVM, in-process (no emulator, no AGP, no Paparazzi); the **iOS engine** (`npm-cli-ios/`) POSTs it to an external `rn-ios-render-server` that renders on a real iOS simulator. The mount-instruction stream is the contract shared by both. See [`docs/roadmap.md`](docs/roadmap.md) for the two-engine model and the cross-track backlog.
+Headless React Native snapshot renderer. **One capture front-end, two render engines.** A shared Node harness (`rn-harness/`) captures Fabric mount instructions, then the resulting JSON fans out to either engine: the **Android engine** (`npm-cli/` + `renderer/`) paints it through Android's `layoutlib` to PNGs on a plain JVM, in-process (no emulator, no AGP, no Paparazzi); the **iOS engine** (`npm-cli-ios/`) POSTs it to an external `rn-ios-render-server` that renders on a real iOS simulator. The mount-instruction stream is the contract shared by both. See [`docs/architecture.md`](docs/architecture.md) for the two-engine model and [`docs/roadmap.md`](docs/roadmap.md) for the backlog.
 
 ## Essential commands
 
 ```bash
-# Phase 1 — Fabric capture (Node)
+# Capture (Node)
 npm --prefix rn-harness install
 npm --prefix rn-harness test          # Jest: re-render fixtures + diff against out/*.json goldens
 npm --prefix rn-harness run capture   # rewrite out/*.json from scratch
 
-# Phase 2 — Renderer (Kotlin/JVM)
+# Renderer (Kotlin/JVM)
 ./gradlew :renderer:test              # build Yoga JNI, run golden-diff tests
 ./gradlew :renderer:test -Drenderer.record=true  # overwrite committed PNG goldens
 ./gradlew :renderer:run --args="--output /tmp/out.png" -q  # CLI: stdin JSON → PNG
 
-# Phase 5 — npm CLI packaging (Android engine)
+# npm CLI packaging (Android engine)
 ./gradlew :renderer:packageForNpm                        # stage for build host
 ./gradlew :renderer:packageForNpm -Ptarget=linux         # stage linux-x64 via Docker
+
+# Jest capture package (rn-quick-render-jest)
+cd npm-jest && npm install && npm run build              # bundle to dist/ (committed; CI checks drift)
+cd spikes/jest-capture && npm install && npx jest        # consumer-shaped test bed
+node spikes/jest-capture/run-matrix-probe.js 0.84.1 19.2.3 0.84.1   # RN version probe
+cd npm-cli && npm test                                   # verify-subcommand unit tests
 
 # iOS engine — capture + simulator render over HTTP
 export RN_QUICK_RENDER_IOS_SERVER=http://127.0.0.1:8080  # rn-ios-render-server
@@ -31,7 +37,7 @@ npm-cli-ios/bin/run capture examples/card.tsx --out card.json   # capture JSON o
 
 - **JDK 17** (toolchain is pinned to 17)
 - **CMake + C++ toolchain** on PATH (for Yoga JNI build)
-- **Node 22** for Phase 1 harness
+- **Node 22** for the capture harness
 - **Git submodules** must be checked out: `git submodule update --init --recursive`
 - **Docker** required only for `-Ptarget=linux` cross-build
 
@@ -82,17 +88,19 @@ Node always captures; the Android engine renders in-process on a plain JVM, whil
 | `rn-harness/src/loadRealRn.ts` | Boots full `react-native` package in Node with native-module shim layer. |
 | `rn-harness/src/renderFixture.ts` | `ReactFabric.render()` → capture instructions. Multi-frame via `renderFrames()`. |
 | `rn-harness/src/captureFixtures.ts` | CLI that renders all fixtures and writes `out/*.json`. |
-| `renderer/` | Phase 2: Kotlin JVM renderer. The only Gradle subproject (`:renderer`). |
+| `renderer/` | Android engine: Kotlin JVM renderer. The only Gradle subproject (`:renderer`). |
 | `renderer/src/main/kotlin/.../` | Core renderer classes (see below). |
 | `renderer/src/test/snapshots/` | Committed PNG goldens. Bootstrapped from CI artifacts or `-Drenderer.record=true`. |
 | `renderer/src/test/snapshots/matrix/` | Device/font-scale/theme matrix PNGs. |
 | `renderer/cmake/` | CMake build for Yoga JNI (`libyoga.so` / `.dylib` / `.dll`). |
 | `renderer/docker/` | Dockerfile for linux-x64 cross-build of Yoga. |
-| `npm-cli/` | **Android engine** packaging: Node launcher (`bin/rn-quick-render.js`) that execs the staged JVM renderer. Per-platform payloads under `dist-mac-arm/` and `dist-linux/`, populated by `:renderer:packageForNpm`. |
+| `npm-cli/` | **Android engine** packaging: Node launcher (`bin/rn-quick-render.js`) that execs the staged JVM renderer, plus the `verify` subcommand (`lib/verify.js`) that renders + pixel-diffs Jest-captured snapshots. Per-platform payloads under `dist-mac-arm/` and `dist-linux/`, populated by `:renderer:packageForNpm`. |
+| `npm-jest/` | `rn-quick-render-jest`: capture screen snapshots from inside a consumer app's Jest suite. Bundles the harness capture core (`captureStub` / `normalizeCapture`) into `dist/` (committed). `.npmrc` pins `legacy-peer-deps` so the package never carries its own react-native. |
+| `spikes/jest-capture/` | Consumer-shaped test bed for `npm-jest` (stock `@react-native/jest-preset`, own node_modules) + `run-matrix-probe.js` for RN version-matrix runs. Findings: `FINDINGS.md`. |
 | `npm-cli-ios/` | **iOS engine**: CLI (`bin/run`) that captures via `rn-harness`, then POSTs the stream to an external `rn-ios-render-server` (HTTP) for simulator rendering. `src/serverClient.ts` is the API client; `tests/` holds the fidelity goldens. Pre-alpha; see `npm-cli-ios/README.md`. |
 | `yoga/` | Git submodule: facebook/yoga (C++ layout engine, JNI bindings). |
-| `third_party/bluesky-social-app/` | Git submodule: real RN app source for Phase 3 integration fixtures. |
-| `docs/` | Phase-by-phase design docs. Read these for rationale and scope decisions. |
+| `third_party/bluesky-social-app/` | Git submodule: real RN app source for the integration fixtures. |
+| `docs/` | Architecture, real-app rendering contract, roadmap, and proposals. Read these for rationale and scope decisions. |
 
 ### Key renderer classes
 
@@ -110,15 +118,15 @@ Node always captures; the Android engine renders in-process on a plain JVM, whil
 
 ## Important patterns and gotchas
 
-### Fixture ordering matters
+### Fixture lists live in two places
 
-Fixtures must appear in **the same order** in both `captureFixtures.ts` and `mount-instructions.test.ts`. Fabric assigns monotonically increasing `reactTag` IDs, so adding a fixture in the wrong position shifts all subsequent tags and breaks goldens. **Always append new fixtures at the end of both lists.**
+Every fixture must appear in both `captureFixtures.ts` and `mount-instructions.test.ts`. Ordering no longer matters for goldens: `renderFixture`/`renderFrames`/`renderConcurrent` canonicalize every capture through `normalizeCapture.ts` (reactTags renumbered per capture, surfaces to 1), so a golden is a pure function of its fixture. Convention is still to append at the end so diffs stay tidy.
 
 ### Golden management
 
 - **JSON goldens** (`rn-harness/out/*.json`): Jest deep-equals fresh capture against committed. Re-capture with `npm --prefix rn-harness run capture`.
 - **PNG goldens** (`renderer/src/test/snapshots/*.png`): Pixel-exact diff. Re-record with `-Drenderer.record=true`. CI uploads fresh renders as artifacts on every run (even on failure).
-- CI's capture-diff step intentionally excludes `*.layout.json` files — those are derived artefacts owned by the Phase 2 workflow.
+- CI's capture-diff step intentionally excludes `*.layout.json` files — those are derived artefacts owned by the renderer workflow.
 
 ### Fabric bootstrapping in Node
 
@@ -162,7 +170,7 @@ If running outside Gradle (e.g. from IDE), these must be set manually or the `ex
 
 ### Window background
 
-`SnapshotRenderer` pre-fills the canvas with white before drawing the view tree. This matches `?attr/windowBackground` behavior. Without it, transparent areas render as black pixels (bit us on the `scrollView` fixture in Phase 2.5).
+`SnapshotRenderer` pre-fills the canvas with white before drawing the view tree. This matches `?attr/windowBackground` behavior. Without it, transparent areas render as black pixels (bit us on the `scrollView` fixture early on).
 
 ### Theme variants
 
@@ -184,13 +192,14 @@ Two workflows, triggered by path filters:
 | --- | --- | --- |
 | `phase-1-rn-harness.yml` | `rn-harness/**`, workflow file itself | Node 22, `npm ci && jest && capture && git diff` |
 | `phase-2-renderer.yml` | `renderer/**`, `yoga/**`, `rn-harness/out/**`, `gradle/**`, `build.gradle.kts`, `settings.gradle.kts`, workflow file itself | JDK 17, build Yoga JNI, `./gradlew :renderer:test`, upload PNG artifacts |
+| `jest-capture.yml` | `npm-jest/**`, `npm-cli/{bin,lib,test}/**`, capture-core harness files, `spikes/jest-capture/**`, workflow file itself | Node 22: build `npm-jest` + dist-drift check + `verify` unit tests; consumer-suite matrix across RN 0.83 / 0.84 / 0.85 |
 
-Both run on `ubuntu-latest`. Phase 2 has a `workflow_dispatch` with `record` input to auto-commit new goldens.
+Both run on `ubuntu-latest`. The renderer workflow has a `workflow_dispatch` with `record` input to auto-commit new goldens.
 
 ## Testing approach
 
-- **Phase 1**: Jest golden-diff. Each fixture is re-rendered and deep-equal-compared against its committed JSON. A second pass runs the standalone capture CLI and `git diff`s the output.
-- **Phase 2**: JUnit golden-diff. Each fixture renders to PNG, written to `build/snapshot-output/`. Pixel-exact comparison against `src/test/snapshots/`. Record mode overwrites committed goldens.
+- **Capture**: Jest golden-diff. Each fixture is re-rendered and deep-equal-compared against its committed JSON. A second pass runs the standalone capture CLI and `git diff`s the output.
+- **Render**: JUnit golden-diff. Each fixture renders to PNG, written to `build/snapshot-output/`. Pixel-exact comparison against `src/test/snapshots/`. Record mode overwrites committed goldens.
 - **Matrix tests**: `DeviceMatrixSnapshotTest`, `FontScaleMatrixSnapshotTest`, `ThemeMatrixSnapshotTest` — parameterized renders across device/font-scale/theme axes, goldens under `snapshots/matrix/`.
 
 ## Dependencies
@@ -206,4 +215,4 @@ Both run on `ubuntu-latest`. Phase 2 has a `workflow_dispatch` with `record` inp
 ## Submodules
 
 - `yoga/` → `https://github.com/facebook/yoga.git` (layout engine)
-- `third_party/bluesky-social-app/` → `https://github.com/bluesky-social/social-app` (real RN app for Phase 3 fixtures)
+- `third_party/bluesky-social-app/` → `https://github.com/bluesky-social/social-app` (real RN app for integration fixtures)

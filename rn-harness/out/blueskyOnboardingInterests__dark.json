@@ -1,14 +1,14 @@
 {
   "fixture": "blueskyOnboardingInterests__dark",
-  "surfaceId": 29,
+  "surfaceId": 1,
   "instructionCount": 226,
   "instructions": [
     {
       "op": "createNode",
       "nodeId": 1,
-      "tag": 588,
+      "tag": 2,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Step 2 of 4"
       }
@@ -16,9 +16,9 @@
     {
       "op": "createNode",
       "nodeId": 2,
-      "tag": 590,
+      "tag": 4,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -62,9 +62,9 @@
     {
       "op": "createNode",
       "nodeId": 3,
-      "tag": 592,
+      "tag": 6,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "What are your interests?"
       }
@@ -72,9 +72,9 @@
     {
       "op": "createNode",
       "nodeId": 4,
-      "tag": 594,
+      "tag": 8,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -119,9 +119,9 @@
     {
       "op": "createNode",
       "nodeId": 5,
-      "tag": 596,
+      "tag": 10,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "We'll use this to help customize your experience."
       }
@@ -129,9 +129,9 @@
     {
       "op": "createNode",
       "nodeId": 6,
-      "tag": 598,
+      "tag": 12,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -176,9 +176,9 @@
     {
       "op": "createNode",
       "nodeId": 7,
-      "tag": 600,
+      "tag": 14,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Animals"
       }
@@ -186,9 +186,9 @@
     {
       "op": "createNode",
       "nodeId": 8,
-      "tag": 602,
+      "tag": 16,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -232,9 +232,9 @@
     {
       "op": "createNode",
       "nodeId": 9,
-      "tag": 604,
+      "tag": 18,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -264,9 +264,9 @@
     {
       "op": "createNode",
       "nodeId": 10,
-      "tag": 606,
+      "tag": 20,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -277,9 +277,9 @@
     {
       "op": "createNode",
       "nodeId": 11,
-      "tag": 608,
+      "tag": 22,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Art"
       }
@@ -287,9 +287,9 @@
     {
       "op": "createNode",
       "nodeId": 12,
-      "tag": 610,
+      "tag": 24,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -337,9 +337,9 @@
     {
       "op": "createNode",
       "nodeId": 13,
-      "tag": 612,
+      "tag": 26,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -373,9 +373,9 @@
     {
       "op": "createNode",
       "nodeId": 14,
-      "tag": 614,
+      "tag": 28,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -386,9 +386,9 @@
     {
       "op": "createNode",
       "nodeId": 15,
-      "tag": 616,
+      "tag": 30,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Books"
       }
@@ -396,9 +396,9 @@
     {
       "op": "createNode",
       "nodeId": 16,
-      "tag": 618,
+      "tag": 32,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -442,9 +442,9 @@
     {
       "op": "createNode",
       "nodeId": 17,
-      "tag": 620,
+      "tag": 34,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -474,9 +474,9 @@
     {
       "op": "createNode",
       "nodeId": 18,
-      "tag": 622,
+      "tag": 36,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -487,9 +487,9 @@
     {
       "op": "createNode",
       "nodeId": 19,
-      "tag": 624,
+      "tag": 38,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Comedy"
       }
@@ -497,9 +497,9 @@
     {
       "op": "createNode",
       "nodeId": 20,
-      "tag": 626,
+      "tag": 40,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -543,9 +543,9 @@
     {
       "op": "createNode",
       "nodeId": 21,
-      "tag": 628,
+      "tag": 42,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -575,9 +575,9 @@
     {
       "op": "createNode",
       "nodeId": 22,
-      "tag": 630,
+      "tag": 44,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -588,9 +588,9 @@
     {
       "op": "createNode",
       "nodeId": 23,
-      "tag": 632,
+      "tag": 46,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Comics"
       }
@@ -598,9 +598,9 @@
     {
       "op": "createNode",
       "nodeId": 24,
-      "tag": 634,
+      "tag": 48,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -644,9 +644,9 @@
     {
       "op": "createNode",
       "nodeId": 25,
-      "tag": 636,
+      "tag": 50,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -676,9 +676,9 @@
     {
       "op": "createNode",
       "nodeId": 26,
-      "tag": 638,
+      "tag": 52,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -689,9 +689,9 @@
     {
       "op": "createNode",
       "nodeId": 27,
-      "tag": 640,
+      "tag": 54,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Culture"
       }
@@ -699,9 +699,9 @@
     {
       "op": "createNode",
       "nodeId": 28,
-      "tag": 642,
+      "tag": 56,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -745,9 +745,9 @@
     {
       "op": "createNode",
       "nodeId": 29,
-      "tag": 644,
+      "tag": 58,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -777,9 +777,9 @@
     {
       "op": "createNode",
       "nodeId": 30,
-      "tag": 646,
+      "tag": 60,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -790,9 +790,9 @@
     {
       "op": "createNode",
       "nodeId": 31,
-      "tag": 648,
+      "tag": 62,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Software Dev"
       }
@@ -800,9 +800,9 @@
     {
       "op": "createNode",
       "nodeId": 32,
-      "tag": 650,
+      "tag": 64,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -846,9 +846,9 @@
     {
       "op": "createNode",
       "nodeId": 33,
-      "tag": 652,
+      "tag": 66,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -878,9 +878,9 @@
     {
       "op": "createNode",
       "nodeId": 34,
-      "tag": 654,
+      "tag": 68,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -891,9 +891,9 @@
     {
       "op": "createNode",
       "nodeId": 35,
-      "tag": 656,
+      "tag": 70,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Education"
       }
@@ -901,9 +901,9 @@
     {
       "op": "createNode",
       "nodeId": 36,
-      "tag": 658,
+      "tag": 72,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -947,9 +947,9 @@
     {
       "op": "createNode",
       "nodeId": 37,
-      "tag": 660,
+      "tag": 74,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -979,9 +979,9 @@
     {
       "op": "createNode",
       "nodeId": 38,
-      "tag": 662,
+      "tag": 76,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -992,9 +992,9 @@
     {
       "op": "createNode",
       "nodeId": 39,
-      "tag": 664,
+      "tag": 78,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Finance"
       }
@@ -1002,9 +1002,9 @@
     {
       "op": "createNode",
       "nodeId": 40,
-      "tag": 666,
+      "tag": 80,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1048,9 +1048,9 @@
     {
       "op": "createNode",
       "nodeId": 41,
-      "tag": 668,
+      "tag": 82,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1080,9 +1080,9 @@
     {
       "op": "createNode",
       "nodeId": 42,
-      "tag": 670,
+      "tag": 84,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -1093,9 +1093,9 @@
     {
       "op": "createNode",
       "nodeId": 43,
-      "tag": 672,
+      "tag": 86,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Food"
       }
@@ -1103,9 +1103,9 @@
     {
       "op": "createNode",
       "nodeId": 44,
-      "tag": 674,
+      "tag": 88,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1149,9 +1149,9 @@
     {
       "op": "createNode",
       "nodeId": 45,
-      "tag": 676,
+      "tag": 90,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1181,9 +1181,9 @@
     {
       "op": "createNode",
       "nodeId": 46,
-      "tag": 678,
+      "tag": 92,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -1194,9 +1194,9 @@
     {
       "op": "createNode",
       "nodeId": 47,
-      "tag": 680,
+      "tag": 94,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Video Games"
       }
@@ -1204,9 +1204,9 @@
     {
       "op": "createNode",
       "nodeId": 48,
-      "tag": 682,
+      "tag": 96,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1250,9 +1250,9 @@
     {
       "op": "createNode",
       "nodeId": 49,
-      "tag": 684,
+      "tag": 98,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1282,9 +1282,9 @@
     {
       "op": "createNode",
       "nodeId": 50,
-      "tag": 686,
+      "tag": 100,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -1295,9 +1295,9 @@
     {
       "op": "createNode",
       "nodeId": 51,
-      "tag": 688,
+      "tag": 102,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Journalism"
       }
@@ -1305,9 +1305,9 @@
     {
       "op": "createNode",
       "nodeId": 52,
-      "tag": 690,
+      "tag": 104,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1351,9 +1351,9 @@
     {
       "op": "createNode",
       "nodeId": 53,
-      "tag": 692,
+      "tag": 106,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1383,9 +1383,9 @@
     {
       "op": "createNode",
       "nodeId": 54,
-      "tag": 694,
+      "tag": 108,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -1396,9 +1396,9 @@
     {
       "op": "createNode",
       "nodeId": 55,
-      "tag": 696,
+      "tag": 110,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Movies"
       }
@@ -1406,9 +1406,9 @@
     {
       "op": "createNode",
       "nodeId": 56,
-      "tag": 698,
+      "tag": 112,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1452,9 +1452,9 @@
     {
       "op": "createNode",
       "nodeId": 57,
-      "tag": 700,
+      "tag": 114,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1484,9 +1484,9 @@
     {
       "op": "createNode",
       "nodeId": 58,
-      "tag": 702,
+      "tag": 116,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -1497,9 +1497,9 @@
     {
       "op": "createNode",
       "nodeId": 59,
-      "tag": 704,
+      "tag": 118,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Music"
       }
@@ -1507,9 +1507,9 @@
     {
       "op": "createNode",
       "nodeId": 60,
-      "tag": 706,
+      "tag": 120,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1557,9 +1557,9 @@
     {
       "op": "createNode",
       "nodeId": 61,
-      "tag": 708,
+      "tag": 122,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1593,9 +1593,9 @@
     {
       "op": "createNode",
       "nodeId": 62,
-      "tag": 710,
+      "tag": 124,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -1606,9 +1606,9 @@
     {
       "op": "createNode",
       "nodeId": 63,
-      "tag": 712,
+      "tag": 126,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Nature"
       }
@@ -1616,9 +1616,9 @@
     {
       "op": "createNode",
       "nodeId": 64,
-      "tag": 714,
+      "tag": 128,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1662,9 +1662,9 @@
     {
       "op": "createNode",
       "nodeId": 65,
-      "tag": 716,
+      "tag": 130,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1694,9 +1694,9 @@
     {
       "op": "createNode",
       "nodeId": 66,
-      "tag": 718,
+      "tag": 132,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -1707,9 +1707,9 @@
     {
       "op": "createNode",
       "nodeId": 67,
-      "tag": 720,
+      "tag": 134,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "News"
       }
@@ -1717,9 +1717,9 @@
     {
       "op": "createNode",
       "nodeId": 68,
-      "tag": 722,
+      "tag": 136,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1763,9 +1763,9 @@
     {
       "op": "createNode",
       "nodeId": 69,
-      "tag": 724,
+      "tag": 138,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1795,9 +1795,9 @@
     {
       "op": "createNode",
       "nodeId": 70,
-      "tag": 726,
+      "tag": 140,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -1808,9 +1808,9 @@
     {
       "op": "createNode",
       "nodeId": 71,
-      "tag": 728,
+      "tag": 142,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Pets"
       }
@@ -1818,9 +1818,9 @@
     {
       "op": "createNode",
       "nodeId": 72,
-      "tag": 730,
+      "tag": 144,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1864,9 +1864,9 @@
     {
       "op": "createNode",
       "nodeId": 73,
-      "tag": 732,
+      "tag": 146,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1896,9 +1896,9 @@
     {
       "op": "createNode",
       "nodeId": 74,
-      "tag": 734,
+      "tag": 148,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -1909,9 +1909,9 @@
     {
       "op": "createNode",
       "nodeId": 75,
-      "tag": 736,
+      "tag": 150,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Photography"
       }
@@ -1919,9 +1919,9 @@
     {
       "op": "createNode",
       "nodeId": 76,
-      "tag": 738,
+      "tag": 152,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -1969,9 +1969,9 @@
     {
       "op": "createNode",
       "nodeId": 77,
-      "tag": 740,
+      "tag": 154,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2005,9 +2005,9 @@
     {
       "op": "createNode",
       "nodeId": 78,
-      "tag": 742,
+      "tag": 156,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -2018,9 +2018,9 @@
     {
       "op": "createNode",
       "nodeId": 79,
-      "tag": 744,
+      "tag": 158,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Politics"
       }
@@ -2028,9 +2028,9 @@
     {
       "op": "createNode",
       "nodeId": 80,
-      "tag": 746,
+      "tag": 160,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2074,9 +2074,9 @@
     {
       "op": "createNode",
       "nodeId": 81,
-      "tag": 748,
+      "tag": 162,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2106,9 +2106,9 @@
     {
       "op": "createNode",
       "nodeId": 82,
-      "tag": 750,
+      "tag": 164,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -2119,9 +2119,9 @@
     {
       "op": "createNode",
       "nodeId": 83,
-      "tag": 752,
+      "tag": 166,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Science"
       }
@@ -2129,9 +2129,9 @@
     {
       "op": "createNode",
       "nodeId": 84,
-      "tag": 754,
+      "tag": 168,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2175,9 +2175,9 @@
     {
       "op": "createNode",
       "nodeId": 85,
-      "tag": 756,
+      "tag": 170,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2207,9 +2207,9 @@
     {
       "op": "createNode",
       "nodeId": 86,
-      "tag": 758,
+      "tag": 172,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -2220,9 +2220,9 @@
     {
       "op": "createNode",
       "nodeId": 87,
-      "tag": 760,
+      "tag": 174,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Sports"
       }
@@ -2230,9 +2230,9 @@
     {
       "op": "createNode",
       "nodeId": 88,
-      "tag": 762,
+      "tag": 176,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2276,9 +2276,9 @@
     {
       "op": "createNode",
       "nodeId": 89,
-      "tag": 764,
+      "tag": 178,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2308,9 +2308,9 @@
     {
       "op": "createNode",
       "nodeId": 90,
-      "tag": 766,
+      "tag": 180,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -2321,9 +2321,9 @@
     {
       "op": "createNode",
       "nodeId": 91,
-      "tag": 768,
+      "tag": 182,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Tech"
       }
@@ -2331,9 +2331,9 @@
     {
       "op": "createNode",
       "nodeId": 92,
-      "tag": 770,
+      "tag": 184,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2381,9 +2381,9 @@
     {
       "op": "createNode",
       "nodeId": 93,
-      "tag": 772,
+      "tag": 186,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2417,9 +2417,9 @@
     {
       "op": "createNode",
       "nodeId": 94,
-      "tag": 774,
+      "tag": 188,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -2430,9 +2430,9 @@
     {
       "op": "createNode",
       "nodeId": 95,
-      "tag": 776,
+      "tag": 190,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "TV"
       }
@@ -2440,9 +2440,9 @@
     {
       "op": "createNode",
       "nodeId": 96,
-      "tag": 778,
+      "tag": 192,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2486,9 +2486,9 @@
     {
       "op": "createNode",
       "nodeId": 97,
-      "tag": 780,
+      "tag": 194,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2518,9 +2518,9 @@
     {
       "op": "createNode",
       "nodeId": 98,
-      "tag": 782,
+      "tag": 196,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -2531,9 +2531,9 @@
     {
       "op": "createNode",
       "nodeId": 99,
-      "tag": 784,
+      "tag": 198,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Writers"
       }
@@ -2541,9 +2541,9 @@
     {
       "op": "createNode",
       "nodeId": 100,
-      "tag": 786,
+      "tag": 200,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2587,9 +2587,9 @@
     {
       "op": "createNode",
       "nodeId": 101,
-      "tag": 788,
+      "tag": 202,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2619,9 +2619,9 @@
     {
       "op": "createNode",
       "nodeId": 102,
-      "tag": 790,
+      "tag": 204,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -2632,9 +2632,9 @@
     {
       "op": "createNode",
       "nodeId": 103,
-      "tag": 792,
+      "tag": 206,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2772,9 +2772,9 @@
     {
       "op": "createNode",
       "nodeId": 104,
-      "tag": 794,
+      "tag": 208,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2792,9 +2792,9 @@
     {
       "op": "createNode",
       "nodeId": 105,
-      "tag": 796,
+      "tag": 210,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2814,9 +2814,9 @@
     {
       "op": "createNode",
       "nodeId": 106,
-      "tag": 798,
+      "tag": 212,
       "viewName": "RCTRawText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "text": "Continue"
       }
@@ -2824,9 +2824,9 @@
     {
       "op": "createNode",
       "nodeId": 107,
-      "tag": 800,
+      "tag": 214,
       "viewName": "RCTText",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2865,9 +2865,9 @@
     {
       "op": "createNode",
       "nodeId": 108,
-      "tag": 802,
+      "tag": 216,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2902,9 +2902,9 @@
     {
       "op": "createNode",
       "nodeId": 109,
-      "tag": 804,
+      "tag": 218,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {}
     },
     {
@@ -2915,9 +2915,9 @@
     {
       "op": "createNode",
       "nodeId": 110,
-      "tag": 806,
+      "tag": 220,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": [
           {
@@ -2958,9 +2958,9 @@
     {
       "op": "createNode",
       "nodeId": 111,
-      "tag": 808,
+      "tag": 222,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flex": 1,
@@ -2979,9 +2979,9 @@
     {
       "op": "createNode",
       "nodeId": 112,
-      "tag": 810,
+      "tag": 224,
       "viewName": "RCTView",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flex": 1
@@ -3005,7 +3005,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 29,
+      "surfaceId": 1,
       "childSetId": 1
     }
   ]

@@ -1,12 +1,8 @@
-# Phase 2 golden PNGs
+# Renderer golden PNGs
 
-Per-fixture PNG goldens for `SnapshotRendererTest`. One PNG per Phase 1 fixture:
-
-- `simpleView.png`
-- `nestedViews.png`
-- `textAndImage.png`
-- `scrollView.png`
-- `conditional.png`
+One PNG per capture fixture in `rn-harness/out/`, verified pixel-exact
+by `SnapshotRendererTest`. Device / font-scale / theme variants live
+under `matrix/` (owned by the matrix test classes).
 
 ## How to (re)record
 
@@ -14,6 +10,5 @@ Per-fixture PNG goldens for `SnapshotRendererTest`. One PNG per Phase 1 fixture:
 ./gradlew :renderer:test -Drenderer.record=true
 ```
 
-Or, on first CI run when no goldens exist, download the
-`phase2-fresh-renders` artifact from the failing job and commit the PNGs
-to this directory.
+Or download the fresh-renders artifact from the CI run (uploaded on
+every run, even failures), eyeball it, and commit the PNGs here.

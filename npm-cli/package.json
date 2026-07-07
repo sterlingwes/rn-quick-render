@@ -16,7 +16,8 @@
   },
   "scripts": {
     "stage": "cd .. && ./gradlew :renderer:packageForNpm",
-    "smoke": "node bin/rn-quick-render.js --help || true"
+    "smoke": "node bin/rn-quick-render.js --help || true",
+    "test": "node --test test/verify.test.js"
   },
   "keywords": [
     "react-native",
@@ -25,5 +26,8 @@
     "layoutlib",
     "yoga"
   ],
-  "private": true
+  "private": true,
+  "dependencies": {
+    "pngjs": "^7.0.0"
+  }
 }

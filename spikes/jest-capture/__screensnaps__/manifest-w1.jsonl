@@ -1,0 +1,4 @@
+{"name":"inboxCard","input":"inboxCard.json","testPath":"__tests__/InboxCard.test.js","devices":["pixel5","tablet"],"fontScales":["default","a11y"]}
+{"name":"themedBanner","input":"themedBanner.json","testPath":"__tests__/InboxCard.test.js","devices":["pixel5"],"fontScales":["default"],"colorScheme":"light"}
+{"name":"themedBanner__dark","input":"themedBanner__dark.json","testPath":"__tests__/InboxCard.test.js","devices":["pixel5"],"fontScales":["default"],"colorScheme":"dark"}
+{"name":"activityFeed","input":"activityFeed.json","testPath":"__tests__/InboxCard.test.js","devices":["pixel5"],"fontScales":["default"]}

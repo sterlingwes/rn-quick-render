@@ -1,14 +1,14 @@
 {
   "fixture": "transformsAndEffects",
-  "surfaceId": 18,
+  "surfaceId": 1,
   "instructionCount": 74,
   "instructions": [
     {
       "op": "createNode",
       "nodeId": 1,
-      "tag": 134,
+      "tag": 2,
       "viewName": "RCTRawText",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "text": "translateX 24, translateY 8"
       }
@@ -16,9 +16,9 @@
     {
       "op": "createNode",
       "nodeId": 2,
-      "tag": 136,
+      "tag": 4,
       "viewName": "RCTParagraph",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 12,
@@ -35,9 +35,9 @@
     {
       "op": "createNode",
       "nodeId": 3,
-      "tag": 138,
+      "tag": 6,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -49,9 +49,9 @@
     {
       "op": "createNode",
       "nodeId": 4,
-      "tag": 140,
+      "tag": 8,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 32
@@ -61,9 +61,9 @@
     {
       "op": "createNode",
       "nodeId": 5,
-      "tag": 142,
+      "tag": 10,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -83,9 +83,9 @@
     {
       "op": "createNode",
       "nodeId": 6,
-      "tag": 144,
+      "tag": 12,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "row",
@@ -111,9 +111,9 @@
     {
       "op": "createNode",
       "nodeId": 7,
-      "tag": 146,
+      "tag": 14,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "marginBottom": 12
@@ -133,9 +133,9 @@
     {
       "op": "createNode",
       "nodeId": 8,
-      "tag": 148,
+      "tag": 16,
       "viewName": "RCTRawText",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "text": "rotate 15deg"
       }
@@ -143,9 +143,9 @@
     {
       "op": "createNode",
       "nodeId": 9,
-      "tag": 150,
+      "tag": 18,
       "viewName": "RCTParagraph",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 12,
@@ -162,9 +162,9 @@
     {
       "op": "createNode",
       "nodeId": 10,
-      "tag": 152,
+      "tag": 20,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -176,9 +176,9 @@
     {
       "op": "createNode",
       "nodeId": 11,
-      "tag": 154,
+      "tag": 22,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 32
@@ -188,9 +188,9 @@
     {
       "op": "createNode",
       "nodeId": 12,
-      "tag": 156,
+      "tag": 24,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -207,9 +207,9 @@
     {
       "op": "createNode",
       "nodeId": 13,
-      "tag": 158,
+      "tag": 26,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "row",
@@ -235,9 +235,9 @@
     {
       "op": "createNode",
       "nodeId": 14,
-      "tag": 160,
+      "tag": 28,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "marginBottom": 12
@@ -257,9 +257,9 @@
     {
       "op": "createNode",
       "nodeId": 15,
-      "tag": 162,
+      "tag": 30,
       "viewName": "RCTRawText",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "text": "scale 1.3"
       }
@@ -267,9 +267,9 @@
     {
       "op": "createNode",
       "nodeId": 16,
-      "tag": 164,
+      "tag": 32,
       "viewName": "RCTParagraph",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 12,
@@ -286,9 +286,9 @@
     {
       "op": "createNode",
       "nodeId": 17,
-      "tag": 166,
+      "tag": 34,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -300,9 +300,9 @@
     {
       "op": "createNode",
       "nodeId": 18,
-      "tag": 168,
+      "tag": 36,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 32
@@ -312,9 +312,9 @@
     {
       "op": "createNode",
       "nodeId": 19,
-      "tag": 170,
+      "tag": 38,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -331,9 +331,9 @@
     {
       "op": "createNode",
       "nodeId": 20,
-      "tag": 172,
+      "tag": 40,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "row",
@@ -359,9 +359,9 @@
     {
       "op": "createNode",
       "nodeId": 21,
-      "tag": 174,
+      "tag": 42,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "marginBottom": 12
@@ -381,9 +381,9 @@
     {
       "op": "createNode",
       "nodeId": 22,
-      "tag": 176,
+      "tag": 44,
       "viewName": "RCTRawText",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "text": "opacity 0.4"
       }
@@ -391,9 +391,9 @@
     {
       "op": "createNode",
       "nodeId": 23,
-      "tag": 178,
+      "tag": 46,
       "viewName": "RCTParagraph",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 12,
@@ -410,9 +410,9 @@
     {
       "op": "createNode",
       "nodeId": 24,
-      "tag": 180,
+      "tag": 48,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -424,9 +424,9 @@
     {
       "op": "createNode",
       "nodeId": 25,
-      "tag": 182,
+      "tag": 50,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 32
@@ -436,9 +436,9 @@
     {
       "op": "createNode",
       "nodeId": 26,
-      "tag": 184,
+      "tag": 52,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -451,9 +451,9 @@
     {
       "op": "createNode",
       "nodeId": 27,
-      "tag": 186,
+      "tag": 54,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "row",
@@ -479,9 +479,9 @@
     {
       "op": "createNode",
       "nodeId": 28,
-      "tag": 188,
+      "tag": 56,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "marginBottom": 12
@@ -501,9 +501,9 @@
     {
       "op": "createNode",
       "nodeId": 29,
-      "tag": 190,
+      "tag": 58,
       "viewName": "RCTRawText",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "text": "boxShadow 0 4 12 rgba(0,0,0,.35)"
       }
@@ -511,9 +511,9 @@
     {
       "op": "createNode",
       "nodeId": 30,
-      "tag": 192,
+      "tag": 60,
       "viewName": "RCTParagraph",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "fontSize": 12,
@@ -530,9 +530,9 @@
     {
       "op": "createNode",
       "nodeId": 31,
-      "tag": 194,
+      "tag": 62,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -544,9 +544,9 @@
     {
       "op": "createNode",
       "nodeId": 32,
-      "tag": 196,
+      "tag": 64,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 32
@@ -556,9 +556,9 @@
     {
       "op": "createNode",
       "nodeId": 33,
-      "tag": 198,
+      "tag": 66,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "width": 64,
@@ -579,9 +579,9 @@
     {
       "op": "createNode",
       "nodeId": 34,
-      "tag": 200,
+      "tag": 68,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "flexDirection": "row",
@@ -607,9 +607,9 @@
     {
       "op": "createNode",
       "nodeId": 35,
-      "tag": 202,
+      "tag": 70,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "marginBottom": 12
@@ -629,9 +629,9 @@
     {
       "op": "createNode",
       "nodeId": 36,
-      "tag": 204,
+      "tag": 72,
       "viewName": "RCTView",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "props": {
         "style": {
           "padding": 32,
@@ -675,7 +675,7 @@
     },
     {
       "op": "completeRoot",
-      "surfaceId": 18,
+      "surfaceId": 1,
       "childSetId": 1
     }
   ]

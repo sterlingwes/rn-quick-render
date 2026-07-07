@@ -1,6 +1,25 @@
 import { act } from "react";
 import { loadFabric, type FabricRuntime } from "./loadFabric";
+import {
+  normalizeInstructions,
+  synthesizeScrollContentViews,
+} from "./normalizeCapture";
 import type { MountInstruction } from "./types";
+
+// Every capture path returns a canonicalized stream: scroll-content
+// wrappers synthesized (a no-op for the canonical shapes these
+// fixtures produce) and tags/surfaces renumbered per capture, so a
+// stream is a pure function of the rendered element rather than of
+// how many captures ran before it in the process. The returned
+// surfaceId is the normalized one (what the instructions reference).
+function canonicalize(raw: MountInstruction[]): RenderResult {
+  const instructions = normalizeInstructions(synthesizeScrollContentViews(raw));
+  const surfaceId =
+    instructions
+      .map((i) => ("surfaceId" in i ? (i as { surfaceId?: number }).surfaceId : undefined))
+      .find((s) => s !== undefined) ?? 1;
+  return { surfaceId, instructions };
+}
 
 let runtime: FabricRuntime | null = null;
 let nextSurfaceId = 11;
@@ -44,10 +63,7 @@ export function renderFrames(elements: unknown[]): RenderResult {
   const instructions = rt.capture.instructions.slice();
   rt.ReactFabric.stopSurface(surfaceId);
 
-  return {
-    surfaceId,
-    instructions,
-  };
+  return canonicalize(instructions);
 }
 
 // Opt-in fixture shape for concurrent-root capture. `settle` is invoked
@@ -99,8 +115,5 @@ export async function renderConcurrent(
     rt.ReactFabric.stopSurface(surfaceId);
   });
 
-  return {
-    surfaceId,
-    instructions,
-  };
+  return canonicalize(instructions);
 }
